@@ -60,7 +60,15 @@ const Button = ({ value }) => {
     setCalc({
       num: (calc.num / 100),
       res: (calc.res / 100),
-      //sign: ''
+      sign: ''
+    })
+  }
+
+  const ivertClick = () => {
+    setCalc({
+      num: calc.num ? calc.num * (-1) : 0,
+      res: calc.res ? calc.num * (-1) : 0,
+      sign: ''
     })
   }
 
@@ -79,7 +87,6 @@ const Button = ({ value }) => {
       }
 
       const funcToCall = result[sign]; 
-
       return funcToCall 
         ? funcToCall(a,b)
         : 0;
@@ -104,6 +111,7 @@ const Button = ({ value }) => {
       '-': signClick,
       '=': equalsClick,
       '%': percentClick,
+      '+-': ivertClick,
       '1': () => digitClick(1),
       '2': () => digitClick(2),
       '3': () => digitClick(3),
