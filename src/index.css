@@ -53,6 +53,11 @@ button {
     border: 2px dotted #242424;
 }
 
+.cButton{
+    background: lightgray;
+    grid-column: 1/3;
+}
+
 .equals {
     background: #4bd086;
     grid-column: 3/5;
