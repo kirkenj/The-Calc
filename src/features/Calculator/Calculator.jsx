@@ -3,19 +3,20 @@ import Screen from "./Screen";
 import ButtonBox from "./ButtonBox";
 import Button from "./Button";
 import { useReducer } from "react";
-import { appendNumber } from "../../utils/calculatorInputUtils";
+import { appendDot, appendNumber } from "../../utils/calculatorInputUtils";
 
 
 const reducer = (state, action) => {
   if (!isNaN(action.type)) {
-    const newState = appendNumber(state, action.type)
-    console.log('newState', newState);
-    return newState
+    return appendNumber(action.type, state)
   }
 
   switch (action.type) {
     case "C":
       return "0"
+
+    case ".":
+      return appendDot(state)
 
     default:
       return state
