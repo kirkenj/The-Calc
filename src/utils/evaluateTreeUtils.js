@@ -8,10 +8,10 @@ const evaluateNode = (tree, nodeName) => {
     }
 
     let evaluationToCalculate;
-
+    let childrenValues;
     if (node.children.length > 0) {
         let nodeEquation = node.content
-        const childrenValues = node.children.map(child => {
+        childrenValues = node.children.map(child => {
             return {
                 ...evaluateNode(tree, child),
                 name: child,
@@ -26,11 +26,13 @@ const evaluateNode = (tree, nodeName) => {
     }
     else {
         evaluationToCalculate = node.content
+        childrenValues = []
     }
 
     const valueToReturn = {
         name: nodeName,
         initNode: node,
+        childrenValues,
         result: calculateSimpleEquation(evaluationToCalculate)
     }
 

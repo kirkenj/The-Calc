@@ -9,9 +9,9 @@ const minusContinuationCondition = (eqn, lIndex) =>
         unaryTriggers.includes(eqn[lIndex - 2]))
 
 export const getCurrentNumberString = (equation, index) => {
-    if (typeof equation !== 'string' || equation.trim() === "") {
-        return null
-    }
+    // if (typeof equation !== 'string' || equation.trim() === "") {
+    //     return null
+    // }
 
     if (isNaN(index)) {
         return null
@@ -60,8 +60,10 @@ export const getCurrentNumberString = (equation, index) => {
     }
     while (moveLeft || moveRight)
 
+    const valStr = equation.slice(leftIndex, rightIndex + 1).join("")
     return {
-        number: equation.slice(leftIndex, rightIndex + 1),
+        number: parseFloat(valStr),
+        numberLength: valStr.length,
         absoluteStartIndex: leftIndex,
         relativeCaretIndex: index - leftIndex + (edgeRight ? 1 : 0)
     }
