@@ -1,6 +1,6 @@
-import { getCurrentNumberString } from "./getCurrenNumberUtil"
+import { parseToken } from "./parseTokenUtil"
 
-const numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+const numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]
 
 export const isNumber = (num) => numbers.includes(num.toString())
 
@@ -21,7 +21,7 @@ export const appendNumber = (num, equation) => {
 }
 
 export const appendDot = (equation) => {
-    const currentNumber = getCurrentNumberString(equation, equation.length - 1);
+    const currentNumber = parseToken(equation, equation.length - 1, numbers);
     if (currentNumber.number === "0" || currentNumber.number === "") {
         return "0."
     }
