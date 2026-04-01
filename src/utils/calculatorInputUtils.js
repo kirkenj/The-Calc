@@ -1,8 +1,5 @@
 import { parseToken } from "./parseTokenUtil"
-
-const numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]
-
-export const isNumber = (num) => numbers.includes(num.toString())
+import {numberRestrictions} from "./tokenTypesRestrictions"
 
 export const appendNumber = (num, equation) => {
     if (typeof equation !== 'string') {
@@ -10,7 +7,7 @@ export const appendNumber = (num, equation) => {
         return equation
     }
 
-    if (!isNumber(num)) {
+    if (!numberRestrictions.isNumberSymbol(num)) {
         console.log("num !E [0,9]")
         return equation
     }
@@ -20,16 +17,20 @@ export const appendNumber = (num, equation) => {
         : equation + num.toString()
 }
 
-export const appendDot = (equation) => {
-    const currentNumber = parseToken(equation, equation.length - 1, numbers);
-    if (currentNumber.number === "0" || currentNumber.number === "") {
-        return "0."
-    }
+// export const appendDot = (equation) => {
+//     const currentNumber = parseToken(
+//         equation, 
+//         equation.length - 1, 
+//         numberRestrictions.allowedSymbols);
 
-    if (currentNumber.number.includes(".")) {
-        console.log(`Number already has dot`, currentNumber);
-        return equation
-    }
+//     if (currentNumber.number === "0" || currentNumber.number === "") {
+//         return "0."
+//     }
 
-    return equation + '.'
-}
+//     if (currentNumber.number.includes(".")) {
+//         console.log(`Number already has dot`, currentNumber);
+//         return equation
+//     }
+
+//     return equation + '.'
+// }

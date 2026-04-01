@@ -1,6 +1,5 @@
 import { calculateSimpleEquation } from "./calculateSimpleEquation";
 
-
 const evaluateNode = (tree, nodeName) => {
     const node = tree[nodeName]
     if (!node) {
@@ -31,13 +30,12 @@ const evaluateNode = (tree, nodeName) => {
 
     const valueToReturn = {
         name: nodeName,
-        initNode: node,
+        content: node.content,
         childrenValues,
         result: calculateSimpleEquation(evaluationToCalculate)
     }
 
     console.log("valueToReturn", valueToReturn);
-
     return valueToReturn
 }
 
