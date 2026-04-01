@@ -6,13 +6,15 @@ export const operatorsAccordingToPriorities = [
     "operators": {
       "sin": handleFunction,
     },
-    "preHandler": preHandleUnarFunction
+    "preHandler": preHandleUnarFunction,
+    "fallIfPreHandleFailed": true
   },
   {
     "operators": {
       "-": handleUnaryMinus,
     },
-    "preHandler": preHandleUnarOperation
+    "preHandler": preHandleUnarOperation,
+    "fallIfPreHandleFailed": false
   },
   {
     "operators": {
@@ -21,13 +23,15 @@ export const operatorsAccordingToPriorities = [
       "/": handleDivision,
       "\\": handleDivision,
     },
-    "preHandler": preHandleBinarOperation
+    "preHandler": preHandleBinarOperation,
+    "fallIfPreHandleFailed": true
   },
   {
     "operators": {
       "+": handleSum,
       "-": handleDiff,
     },
-    "preHandler": preHandleBinarOperation
+    "preHandler": preHandleBinarOperation,
+    "fallIfPreHandleFailed": true
   }
 ]

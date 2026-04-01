@@ -1,52 +1,5 @@
-import { numberRestrictions, wordRestrictions } from './tokenTypesRestrictions'
-import { parseToken } from './parseTokenUtil'
-
 import { operatorsAccordingToPriorities } from './operatorsAccordingToPriorities'
-
-export const getNumberAtIndex = (equation, index) => {
-  if (isNaN(index)) {
-    return null
-  }
-
-  if (index < 0 || index >= equation.length) {
-    return null
-  }
-
-  const parseTokenResult = parseToken(equation,
-    index,
-    numberRestrictions.allowedSymbols)
-
-  const number = parseFloat(parseTokenResult.result)
-
-  if (number.toString() !== parseTokenResult.result) {
-    throw Error(`Couldn't parse number properly at index ${index}`)
-  }
-
-  return {
-    ...parseTokenResult,
-    resultStr: parseTokenResult.result,
-    result: number
-  }
-}
-
-export const getWordAtIndex = (equation, index) => {
-  if (isNaN(index)) {
-    return null
-  }
-
-  if (index < 0 || index >= equation.length) {
-    return null
-  }
-
-  const parseTokenResult = parseToken(equation,
-    index,
-    wordRestrictions.allowedSymbols)
-
-  return {
-    ...parseTokenResult,
-    resultStr: parseTokenResult.result,
-  }
-}
+import { tokenTypes } from './tokenTypes'
 
 export const tokenizeEquation = (equation) => {
   if (!equation
@@ -65,21 +18,21 @@ export const tokenizeEquation = (equation) => {
   let arr = Array.from(equation)
 
   for (let i = 0; i < arr.length; i++) {
-    if (numberRestrictions.isNumberSymbol(arr[i])) {
-      console.log("Found number at index", i, arr[i])
-      const val = getNumberAtIndex(arr, i)
+    let tokenizerTriggered = false
+    for (const ttype of tokenTypes) {
+      tokenizerTriggered = ttype.checkDelegate(arr[i])
+      if (!tokenizerTriggered) {
+        continue
+      }
+
+      console.log(`Found ${ttype.name} at index`, i, arr[i])
+      const val = ttype.tokenizer(arr, i)
       arr.splice(val.absoluteStartIndex, val.resultStr.length, val.result)
       i = val.absoluteStartIndex
       console.log("Arr:", arr, "Index before inc:", i)
     }
-    else if (wordRestrictions.isWordSymbol(arr[i])) {
-      console.log("Found char at index", i, arr[i])
-      const val = getWordAtIndex(arr, i)
-      arr.splice(val.absoluteStartIndex, val.resultStr.length, val.result)
-      i = val.absoluteStartIndex
-      console.log("Arr:", arr, "Index before inc:", i)
-    }
-    else {
+
+    if (!tokenizerTriggered) {
       console.log("skipped item at index", i, arr[i])
     }
   }
@@ -89,17 +42,15 @@ export const tokenizeEquation = (equation) => {
 }
 
 export const calculateTokens = (tokens) => {
-  if (tokens && tokens.length === 1 && typeof tokens[0] === 'number'){
+  if (tokens && tokens.length === 1 && typeof tokens[0] === 'number') {
     return tokens[0]
   }
 
   for (let k = 0; k < operatorsAccordingToPriorities.length; k++) {
-    const currentOperatorsAccordingToPriorities = operatorsAccordingToPriorities[k]
-    const currentOperatorsDict = currentOperatorsAccordingToPriorities.operators
-    const currentOperatorsPreHandler = currentOperatorsAccordingToPriorities.preHandler
+    const operatorsToPriority = operatorsAccordingToPriorities[k]
 
-    console.log("Current key set", currentOperatorsDict,
-      "Prevalidator", currentOperatorsPreHandler
+    console.log("Current operators to handle", operatorsToPriority,
+      "Prevalidator", operatorsToPriority.operators
     )
 
     for (let i = 0; i < tokens.length; i++) {
@@ -108,16 +59,24 @@ export const calculateTokens = (tokens) => {
         continue
       }
 
-      const currentOperatorHandler = currentOperatorsDict[tokens[i]]
+      const currentOperatorHandler = operatorsToPriority.operators[tokens[i]]
       if (!currentOperatorHandler) {
-        console.log(`Handler not found for or not at current operators priority. operator: ${tokens[i]} at index ${i}`, tokens)
+        console.log(`Handler not found or not at current operators priority. operator: ${tokens[i]} at index ${i}`, tokens)
         continue
       }
 
-      const prevalidationResult = currentOperatorsPreHandler(tokens, i)
+      const prevalidationResult = operatorsToPriority.preHandler(tokens, i)
+      console.log("prevalidationResult", prevalidationResult, "fallIfPreHandleFailed", operatorsToPriority.fallIfPreHandleFailed);
+
       if (!prevalidationResult) {
-        console.log(`Invalid syntax at index:${i}`)
-        return
+        if (operatorsToPriority.fallIfPreHandleFailed) {
+          console.log(`Invalid syntax at index:${i}`)
+          return
+        }
+        else {
+          console.log(`Operator of function is not applicable at index:${i}`)
+          continue
+        }
       }
 
       const res = currentOperatorHandler(tokens, prevalidationResult)
@@ -147,10 +106,12 @@ export const calculateTokens = (tokens) => {
   return tokens[0]
 }
 
+export const calculateSimpleEquation = (equation, isTokenized = false) => {
+  console.log("Started calculateSimpleEquation. parameter:", equation, "isTokenized:", isTokenized)
+  const tokens = isTokenized
+    ? equation
+    : tokenizeEquation(equation)
 
-export const calculateSimpleEquation = (equation) => {
-  console.log("Started calculateSimpleEquation. parameter:", equation)
-  const tokens = tokenizeEquation(equation)
   console.log("Recieved tokens to handle:", tokens)
   return calculateTokens(tokens)
 }

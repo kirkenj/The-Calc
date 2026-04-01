@@ -1,3 +1,5 @@
+import { numberRestrictions, wordRestrictions } from './tokenTypesRestrictions'
+
 export const parseToken = (equation, index, setOfSymbols) => {
     if (isNaN(index)) {
         return null
@@ -85,4 +87,49 @@ export const parseToken = (equation, index, setOfSymbols) => {
         absoluteStartIndex: leftIndex,
         relativeCaretIndex: index - leftIndex + (edgeRight ? 1 : 0)
     }
+}
+
+export const getNumberAtIndex = (equation, index) => {
+  if (isNaN(index)) {
+    return null
+  }
+
+  if (index < 0 || index >= equation.length) {
+    return null
+  }
+
+  const parseTokenResult = parseToken(equation,
+    index,
+    numberRestrictions.allowedSymbols)
+
+  const number = parseFloat(parseTokenResult.result)
+
+  if (number.toString() !== parseTokenResult.result) {
+    throw Error(`Couldn't parse number properly at index ${index}`)
+  }
+
+  return {
+    ...parseTokenResult,
+    resultStr: parseTokenResult.result,
+    result: number
+  }
+}
+
+export const getWordAtIndex = (equation, index) => {
+  if (isNaN(index)) {
+    return null
+  }
+
+  if (index < 0 || index >= equation.length) {
+    return null
+  }
+
+  const parseTokenResult = parseToken(equation,
+    index,
+    wordRestrictions.allowedSymbols)
+
+  return {
+    ...parseTokenResult,
+    resultStr: parseTokenResult.result,
+  }
 }
