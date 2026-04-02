@@ -6,33 +6,27 @@ const evaluateNode = (tree, nodeName) => {
         throw Error("node is null")
     }
 
-    let evaluationToCalculate;
-    let childrenValues;
-    if (node.children.length > 0) {
-        let nodeEquation = node.content
-        childrenValues = node.children.map(child => {
+    let evaluationToCalculate = node.content;
+    const context = node.children.length <= 0
+        ? []
+        : node.children.map(child => {
             return {
-                ...evaluateNode(tree, child),
-                name: child,
+                key: child,
+                value: evaluateNode(tree, child).result,
             }
         })
 
-        childrenValues.forEach(element => {
-            nodeEquation = nodeEquation.replaceAll(element.name, element.result)
-        });
-
-        evaluationToCalculate = nodeEquation
-    }
-    else {
-        evaluationToCalculate = node.content
-        childrenValues = []
+    console.log("evaluationToCalculate:", evaluationToCalculate, "node:", node)
+    const calculationResult = calculateSimpleEquation(evaluationToCalculate, true, context)
+    if (!calculationResult || typeof calculationResult !=='number'){
+        throw Error("Invalid calculation result")
     }
 
     const valueToReturn = {
         name: nodeName,
         content: node.content,
-        childrenValues,
-        result: calculateSimpleEquation(evaluationToCalculate)
+        context,
+        result: calculationResult 
     }
 
     console.log("valueToReturn", valueToReturn);
@@ -40,11 +34,11 @@ const evaluateNode = (tree, nodeName) => {
 }
 
 
-export const evaluateTree = (tree) => {
+export const evaluateTree = (parseResult) => {
     console.log("evaluateTree executed")
-    if (!tree) {
+    if (!parseResult || !parseResult.map || !parseResult.entryPointName) {
         throw Error("tree is null")
     }
 
-    return evaluateNode(tree, "@0").result
+    return evaluateNode(parseResult.map, parseResult.entryPointName).result
 }

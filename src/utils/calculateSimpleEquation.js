@@ -41,9 +41,20 @@ export const tokenizeEquation = (equation) => {
   return arr
 }
 
-export const calculateTokens = (tokens) => {
+export const calculateTokens = (tokens, context = null) => {
+
+  console.log("Started calculateTokens.",
+    "tokens:", tokens ? tokens : "[null]",
+    "context:", context ? context : "[null]"
+  )
+
   if (tokens && tokens.length === 1 && typeof tokens[0] === 'number') {
     return tokens[0]
+  }
+
+  if (tokens.length > 2 && tokens[0] === '(' && tokens[tokens.length - 1] === ')'){
+    tokens = tokens.slice(1, tokens.length - 1)
+    console.log("Found braces at both equation sides. New tokens:", tokens);
   }
 
   for (let k = 0; k < operatorsAccordingToPriorities.length; k++) {
@@ -65,6 +76,7 @@ export const calculateTokens = (tokens) => {
         continue
       }
 
+      // handle fund
       const prevalidationResult = operatorsToPriority.preHandler(tokens, i)
       console.log("prevalidationResult", prevalidationResult, "fallIfPreHandleFailed", operatorsToPriority.fallIfPreHandleFailed);
 
@@ -84,6 +96,8 @@ export const calculateTokens = (tokens) => {
         "prevalidationResult:", prevalidationResult,
         "func:", currentOperatorHandler,
         "res:", res)
+
+      // end handle func - extract iinto a separate function
 
       console.log("arr", tokens)
 
@@ -106,12 +120,15 @@ export const calculateTokens = (tokens) => {
   return tokens[0]
 }
 
-export const calculateSimpleEquation = (equation, isTokenized = false) => {
-  console.log("Started calculateSimpleEquation. parameter:", equation, "isTokenized:", isTokenized)
+export const calculateSimpleEquation = (equation, isTokenized = false, context = null) => {
+  console.log("Started calculateSimpleEquation. parameter:", equation, 
+    "isTokenized:", isTokenized ? "true" : "false",
+    "context:", context ? context : "[null]"
+  )
   const tokens = isTokenized
     ? equation
     : tokenizeEquation(equation)
 
   console.log("Recieved tokens to handle:", tokens)
-  return calculateTokens(tokens)
+  return calculateTokens(tokens, context)
 }

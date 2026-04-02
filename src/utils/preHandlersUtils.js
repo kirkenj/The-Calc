@@ -1,6 +1,3 @@
-//import {calculateTokens} from './calculateSimpleEquation'
-
-
 export const preHandleUnarFunction = (equation, index) => {
   if (isNaN(index)) {
     return null
@@ -24,16 +21,6 @@ export const preHandleUnarFunction = (equation, index) => {
 
   const operatorPlacedCorrectly = index >= 0 && index < equation.length - 1
   let argumentIsValid = typeof equation[index + 1] === 'number'
-  // if (!argumentIsValid && equation[index + 1] && equation[index + 2]) {
-  //   const eqToCalculate = [equation[index + 1], equation[index + 2]]
-  //   console.log("Possible unar minus. Calculating tokens:", eqToCalculate);
-  //   valueToReturn.unarMinusCalculationResult = calculateTokens(eqToCalculate)
-  //   console.log("Calculation result for Possible unar minus:", valueToReturn.unarMinusCalculationResult);
-  //   if (valueToReturn.unarMinusCalculationResult){
-  //     valueToReturn.operationLength++
-  //     argumentIsValid = true
-  //   }    
-  // }
 
   return operatorPlacedCorrectly && argumentIsValid
     ? valueToReturn
