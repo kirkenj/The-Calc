@@ -7,26 +7,27 @@ const evaluateNode = (tree, nodeName) => {
     }
 
     let evaluationToCalculate = node.content;
-    const context = node.children.length <= 0
-        ? []
-        : node.children.map(child => {
-            return {
-                key: child,
-                value: evaluateNode(tree, child).result,
-            }
-        })
-
-    console.log("evaluationToCalculate:", evaluationToCalculate, "node:", node)
-    const calculationResult = calculateSimpleEquation(evaluationToCalculate, true, context)
-    if (!calculationResult || typeof calculationResult !=='number'){
+    const map = new Map();
+    if (node.children.length > 0) {
+        node.children.forEach(child => {
+            const key = child
+            const value = evaluateNode(tree, key).result
+            console.log("Child:", key, "Child value:", value)
+            map.set(child, value)
+        });
+    }
+    
+    console.log("evaluationToCalculate:", evaluationToCalculate, "node:", node, "map:", map)
+    const calculationResult = calculateSimpleEquation(evaluationToCalculate, true, map)
+    if (!calculationResult || typeof calculationResult !== 'number') {
         throw Error("Invalid calculation result")
     }
 
     const valueToReturn = {
         name: nodeName,
         content: node.content,
-        context,
-        result: calculationResult 
+        map,
+        result: calculationResult
     }
 
     console.log("valueToReturn", valueToReturn);

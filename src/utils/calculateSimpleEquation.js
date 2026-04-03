@@ -1,5 +1,7 @@
-import { operatorsAccordingToPriorities } from './operatorsAccordingToPriorities'
+import { getDefaultOperatorsAccordingToPriorities } from './operatorsAccordingToPriorities'
 import { tokenTypes } from './tokenTypes'
+import { getOperatorsForVariables } from './variableResolver';
+
 
 export const tokenizeEquation = (equation) => {
   if (!equation
@@ -42,7 +44,6 @@ export const tokenizeEquation = (equation) => {
 }
 
 export const calculateTokens = (tokens, context = null) => {
-
   console.log("Started calculateTokens.",
     "tokens:", tokens ? tokens : "[null]",
     "context:", context ? context : "[null]"
@@ -56,6 +57,16 @@ export const calculateTokens = (tokens, context = null) => {
     tokens = tokens.slice(1, tokens.length - 1)
     console.log("Found braces at both equation sides. New tokens:", tokens);
   }
+
+  const operatorsAccordingToPriorities = getDefaultOperatorsAccordingToPriorities();
+  const variables = getOperatorsForVariables(context)
+  console.log("Variables handlers:", variables)
+  if (variables)
+  {
+    operatorsAccordingToPriorities.unshift(variables)
+    console.log("operatorsAccordingToPriorities with variables:", variables)
+  }
+
 
   for (let k = 0; k < operatorsAccordingToPriorities.length; k++) {
     const operatorsToPriority = operatorsAccordingToPriorities[k]
@@ -76,7 +87,6 @@ export const calculateTokens = (tokens, context = null) => {
         continue
       }
 
-      // handle fund
       const prevalidationResult = operatorsToPriority.preHandler(tokens, i)
       console.log("prevalidationResult", prevalidationResult, "fallIfPreHandleFailed", operatorsToPriority.fallIfPreHandleFailed);
 
@@ -96,8 +106,6 @@ export const calculateTokens = (tokens, context = null) => {
         "prevalidationResult:", prevalidationResult,
         "func:", currentOperatorHandler,
         "res:", res)
-
-      // end handle func - extract iinto a separate function
 
       console.log("arr", tokens)
 

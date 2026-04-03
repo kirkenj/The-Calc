@@ -11,7 +11,6 @@ export const preHandleUnarFunction = (equation, index) => {
     argumentIndexes: [index + 1],
     operationStartIndex: index,
     operationLength: 2,
-    unarMinusCalculationResult: undefined
   }
 
   console.log(

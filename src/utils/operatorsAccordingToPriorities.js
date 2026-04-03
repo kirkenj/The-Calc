@@ -1,11 +1,11 @@
 import { preHandleBinarOperation, preHandleUnarOperation, preHandleUnarFunction } from './preHandlersUtils'
-import { handleDiff, handleDivision, handleSum, handleMultiplication, handleUnaryMinus, handleFunction } from './operationHandlersUtils'
+import { handleDiff, handleDivision, handleSum, handleMultiplication, handleUnaryMinus, handleSin } from './operationHandlersUtils'
 
 
-export const operatorsAccordingToPriorities = [
+export const getDefaultOperatorsAccordingToPriorities = () => [
   {
     operators: {
-      "sin": handleFunction,
+      "sin": handleSin,
     },
     preHandler: preHandleUnarFunction,
     fallIfPreHandleFailed: true
@@ -37,7 +37,4 @@ export const operatorsAccordingToPriorities = [
   }
 ]
 
-export const definedNames = () =>{
-  //return new Set(operatorsAccordingToPriorities.map(o => o.operators))
-  return operatorsAccordingToPriorities.map(o => o)
-}
+export const defaultDefinedNames = getDefaultOperatorsAccordingToPriorities().map(o => o.operators).map(op => Object.keys(op)).flat()

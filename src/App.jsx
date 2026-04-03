@@ -1,9 +1,9 @@
-//import Calculator from "./features/Calculator/Calculator";
+import Calculator from "./features/Calculator/Calculator";
 
 import { calculateSimpleEquation } from "./utils/calculateSimpleEquation";
 import { evaluateTree } from "./utils/evaluateTreeUtils";
 import { parseBrackets } from "./utils/parseBracketsUtils";
-import { definedNames, operatorsAccordingToPriorities } from "./utils/operatorsAccordingToPriorities";
+import { defaultDefinedNames, getDefaultOperatorsAccordingToPriorities } from "./utils/operatorsAccordingToPriorities";
 
 // const originalLog = console.log;
 
@@ -23,21 +23,22 @@ import { definedNames, operatorsAccordingToPriorities } from "./utils/operatorsA
 
 function App() {
   return (
-    <button onClick={() => {
+    <>
+      <Calculator />
 
-      // const def = definedNames()
-      // console.log("definedNames:", def)
-      // console.log("operatorsAccordingToPriorities:", operatorsAccordingToPriorities)
-      //const parseResult = parseBrackets("10 + ( 5 * ( 6 / 2 )) + 4")
-      //const parseResult = parseBrackets("10 + ( 5 * ( 6 / 2 )")
-      const parseResult = parseBrackets("10 + + sin( 5 * ( 6 / 2 ) - (3 + 5)) + (18 + 121) + (( 6 / 2 )")
-      //const parseResult = parseBrackets("(-5.5+2*1.5-4.5/-1.5)")
-      // console.log(parseResult)
-      const result = evaluateTree(parseResult)
-      //const result = calculateSimpleEquation("(-5.5+sin2*1.5-4.5/-1.5)", false)
-      console.log(result)
-    }}>Start</button>
-  )
+      <button onClick={() => {
+        //console.log("defaultDefinedNames:", defaultDefinedNames)
+        //const parseResult = parseBrackets("10 + ( 5 * ( 6 / 2 )) + 4")
+        //const parseResult = parseBrackets("10 + ( 5 * ( 6 / 2 )")
+        const parseResult = parseBrackets("10 + sin( 5 * ( 6 / 2 ) - (3 + 5)) + (18 + 121) + (( 6 / 2 )")
+        //const parseResult = parseBrackets("sin( 5 * ( 6 / 2 ) - (3 + 5))")
+        //const parseResult = parseBrackets("(-5.5+2*1.5-4.5/-1.5)")
+        console.log(parseResult)
+        const result = evaluateTree(parseResult)
+        //const result = calculateSimpleEquation("(-5.5+sin2*1.5-4.5/-1.5)", false)
+        console.log(result)
+      }}>Start</button>
+    </>)
 }
 
 export default App;

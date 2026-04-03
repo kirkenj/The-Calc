@@ -17,20 +17,20 @@ export const appendNumber = (num, equation) => {
         : equation + num.toString()
 }
 
-// export const appendDot = (equation) => {
-//     const currentNumber = parseToken(
-//         equation, 
-//         equation.length - 1, 
-//         numberRestrictions.allowedSymbols);
+export const appendDot = (equation) => {
+    const currentNumber = parseToken(
+        equation, 
+        equation.length - 1, 
+        numberRestrictions.allowedSymbols);
 
-//     if (currentNumber.number === "0" || currentNumber.number === "") {
-//         return "0."
-//     }
+    if (currentNumber.number === "0" || currentNumber.number === "") {
+        return "0."
+    }
 
-//     if (currentNumber.number.includes(".")) {
-//         console.log(`Number already has dot`, currentNumber);
-//         return equation
-//     }
+    if (currentNumber.number.includes(".")) {
+        console.log(`Number already has dot`, currentNumber);
+        return equation
+    }
 
-//     return equation + '.'
-// }
+    return equation + '.'
+}

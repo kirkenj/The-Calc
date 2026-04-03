@@ -1,15 +1,17 @@
-export const handleFunction = (equation, prevalidationResult) => {
-  console.log("handleFunction", "equation", equation, "prevalidationResult", prevalidationResult)
+const handleFunction = (equation, prevalidationResult, handler) => {
+  console.log("handleFunction", "equation", equation, "prevalidationResult", prevalidationResult, "handler:", handler)
   
+  if (!handler || handler.length !== 1) {
+    throw Error("Invalid handler")
+  }
+
   if (!prevalidationResult || !equation
     || prevalidationResult.argumentIndexes.length !== 1
     || equation.length <= prevalidationResult.argumentIndexes[0]) {
     throw Error("Couldn't handle operation", { equation, prevalidationResult })
   }
 
-  const argument = prevalidationResult.unarMinusCalculationResult
-    ? prevalidationResult.unarMinusCalculationResult
-    : equation[prevalidationResult.argumentIndexes[0]]
+  const argument = equation[prevalidationResult.argumentIndexes[0]]
 
   console.log("Argument for handleFunc:", argument);
   
@@ -17,7 +19,7 @@ export const handleFunction = (equation, prevalidationResult) => {
     throw Error("Couldn't handle operation", { equation, prevalidationResult })
   }
 
-  return Math.sin(argument)
+  return handler(argument)
 }
 
 export const handleUnaryMinus = (equation, prevalidationResult) => {
@@ -71,9 +73,9 @@ const handleBinarOperation = (equation, prevalidationResult, handler) => {
 }
 
 export const handleMultiplication = (equation, prevalidationResult) => handleBinarOperation(equation, prevalidationResult, (a, b) => a * b)
-
 export const handleDivision = (equation, prevalidationResult) => handleBinarOperation(equation, prevalidationResult, (a, b) => a / b)
 
 export const handleSum = (equation, prevalidationResult) => handleBinarOperation(equation, prevalidationResult, (a, b) => a + b)
-
 export const handleDiff = (equation, prevalidationResult) => handleBinarOperation(equation, prevalidationResult, (a, b) => a - b)
+
+export const handleSin = (equation, prevalidationResult) => handleFunction(equation, prevalidationResult, (a) => Math.sin(a))
