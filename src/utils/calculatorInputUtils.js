@@ -1,5 +1,5 @@
-import { parseToken } from "./parseTokenUtil"
-import {numberRestrictions} from "./tokenTypesRestrictions"
+import { getTokenStringAtIndex as parseToken } from "./tokenStringBuilder"
+import { numberRestrictions } from "./tokenTypesRestrictions"
 
 export const appendNumber = (num, equation) => {
     if (typeof equation !== 'string') {
@@ -7,7 +7,7 @@ export const appendNumber = (num, equation) => {
         return equation
     }
 
-    if (!numberRestrictions.isNumberSymbol(num)) {
+    if (!numberRestrictions.symbolMembershipCheckCallback(num)) {
         console.log("num !E [0,9]")
         return equation
     }
@@ -19,8 +19,8 @@ export const appendNumber = (num, equation) => {
 
 export const appendDot = (equation) => {
     const currentNumber = parseToken(
-        equation, 
-        equation.length - 1, 
+        equation,
+        equation.length - 1,
         numberRestrictions.allowedSymbols);
 
     if (currentNumber.number === "0" || currentNumber.number === "") {

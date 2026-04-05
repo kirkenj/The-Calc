@@ -1,3 +1,5 @@
+import { tokenTypeNames } from "./tokenTypes"
+
 export const getOperatorsForVariables = (context) => {
     console.log("getOperatorsForVariables executed",
         "context:", context
@@ -28,7 +30,7 @@ export const getOperatorsForVariables = (context) => {
         }
 
         const key = equation[index]
-        if (typeof key !== 'string') {
+        if (key.typeName !== tokenTypeNames.Word) {
             console.log(executedFunc,
             "typeof key !== 'string'")
             return null

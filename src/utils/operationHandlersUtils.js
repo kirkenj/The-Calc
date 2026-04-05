@@ -1,3 +1,5 @@
+import { tokenTypeNames } from "./tokenTypes"
+
 const handleFunction = (equation, prevalidationResult, handler) => {
   console.log("handleFunction", "equation", equation, "prevalidationResult", prevalidationResult, "handler:", handler)
   
@@ -11,11 +13,11 @@ const handleFunction = (equation, prevalidationResult, handler) => {
     throw Error("Couldn't handle operation", { equation, prevalidationResult })
   }
 
-  const argument = equation[prevalidationResult.argumentIndexes[0]]
+  const argument = equation[prevalidationResult.argumentIndexes[0]].value
 
   console.log("Argument for handleFunc:", argument);
   
-  if (!argument || typeof (argument) !== 'number') {
+  if (!argument || argument.typeName !== tokenTypeNames.Number) {
     throw Error("Couldn't handle operation", { equation, prevalidationResult })
   }
 
@@ -36,8 +38,8 @@ export const handleUnaryMinus = (equation, prevalidationResult) => {
       throw Error("Couldn't handle operation", { equation, prevalidationResult })
   }
 
-  let argument = equation[prevalidationResult.argumentIndexes[0]]
-  if (!argument || typeof (argument) !== 'number') {
+  let argument = equation[prevalidationResult.argumentIndexes[0]].value
+  if (!argument || argument.typeName !== tokenTypeNames.Number) {
     throw Error("Couldn't get argument for operation", { equation, prevalidationResult })
   }
 
@@ -61,15 +63,15 @@ const handleBinarOperation = (equation, prevalidationResult, handler) => {
 
   for (const index of prevalidationResult.argumentIndexes) {
     const argument = equation[index]
-    if (!argument || typeof (argument) !== 'number') {
+    if (!argument || argument.typeName !== tokenTypeNames.Number) {
       console.log("Couldn't handle operation", argument, prevalidationResult.argumentIndexes, index)
       throw Error("Invalid arguments")
     }
   }
 
   return handler(
-    equation[prevalidationResult.argumentIndexes[0]],
-    equation[prevalidationResult.argumentIndexes[1]])
+    equation[prevalidationResult.argumentIndexes[0]].value,
+    equation[prevalidationResult.argumentIndexes[1]].value)
 }
 
 export const handleMultiplication = (equation, prevalidationResult) => handleBinarOperation(equation, prevalidationResult, (a, b) => a * b)

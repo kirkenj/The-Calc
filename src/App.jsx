@@ -1,9 +1,7 @@
-import Calculator from "./features/Calculator/Calculator";
+// import Calculator from "./features/Calculator/Calculator";
 
-import { calculateSimpleEquation } from "./utils/calculateSimpleEquation";
 import { evaluateTree } from "./utils/evaluateTreeUtils";
 import { parseBrackets } from "./utils/parseBracketsUtils";
-import { defaultDefinedNames, getDefaultOperatorsAccordingToPriorities } from "./utils/operatorsAccordingToPriorities";
 
 // const originalLog = console.log;
 
@@ -24,13 +22,16 @@ import { defaultDefinedNames, getDefaultOperatorsAccordingToPriorities } from ".
 function App() {
   return (
     <>
-      <Calculator />
+      {/* <Calculator /> */}
 
       <button onClick={() => {
+
+
         //console.log("defaultDefinedNames:", defaultDefinedNames)
         //const parseResult = parseBrackets("10 + ( 5 * ( 6 / 2 )) + 4")
         //const parseResult = parseBrackets("10 + ( 5 * ( 6 / 2 )")
-        const parseResult = parseBrackets("10 + sin( 5 * ( 6 / 2 ) - (3 + 5)) + (18 + 121) + (( 6 / 2 )")
+        const parseResult = parseBrackets("100 + ( 60            / 2 )")
+        //const parseResult = parseBrackets("10 + sin( 5 * ( 6 / 2 ) - (3 + 5)) + (18 + 121) + (( 6 / 2 )")
         //const parseResult = parseBrackets("sin( 5 * ( 6 / 2 ) - (3 + 5))")
         //const parseResult = parseBrackets("(-5.5+2*1.5-4.5/-1.5)")
         console.log(parseResult)

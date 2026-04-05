@@ -1,40 +1,41 @@
-import { preHandleBinarOperation, preHandleUnarOperation, preHandleUnarFunction } from './preHandlersUtils'
-import { handleDiff, handleDivision, handleSum, handleMultiplication, handleUnaryMinus, handleSin } from './operationHandlersUtils'
-
+import { preHandleBinarOperation, preHandleUnarFunction } from './preHandlersUtils'
+import { handleDiff, handleDivision, handleSum,handleMultiplication,handleUnaryMinus,handleSin } from './operationHandlersUtils'
 
 export const getDefaultOperatorsAccordingToPriorities = () => [
   {
-    operators: {
-      "sin": handleSin,
-    },
+    operators: new Map([
+      ["sin", handleSin]
+    ]),
     preHandler: preHandleUnarFunction,
     fallIfPreHandleFailed: true
   },
   {
-    operators: {
-      "-": handleUnaryMinus,
-    },
-    preHandler: preHandleUnarOperation,
+    operators: new Map([
+      ["-", handleUnaryMinus]
+    ]),
+    preHandler: preHandleUnarFunction,
     fallIfPreHandleFailed: false
   },
   {
-    operators: {
-      "*": handleMultiplication,
-      ":": handleDivision,
-      "/": handleDivision,
-      "\\": handleDivision,
-    },
+    operators: new Map([
+      ["*", handleMultiplication],
+      [":", handleDivision],
+      ["/", handleDivision],
+      ["\\", handleDivision]
+    ]),
     preHandler: preHandleBinarOperation,
     fallIfPreHandleFailed: true
   },
   {
-    operators: {
-      "+": handleSum,
-      "-": handleDiff,
-    },
+    operators: new Map([
+      ["+", handleSum],
+      ["-", handleDiff]
+    ]),
     preHandler: preHandleBinarOperation,
     fallIfPreHandleFailed: true
   }
 ]
 
-export const defaultDefinedNames = getDefaultOperatorsAccordingToPriorities().map(o => o.operators).map(op => Object.keys(op)).flat()
+export const defaultDefinedNames = [...new Set(
+  getDefaultOperatorsAccordingToPriorities().flatMap(item => Array.from(item.operators.keys()))
+)]

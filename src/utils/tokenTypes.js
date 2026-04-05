@@ -1,15 +1,56 @@
-import { numberRestrictions, wordRestrictions } from './tokenTypesRestrictions'
-import { getNumberAtIndex, getWordAtIndex } from './parseTokenUtil'
+import { numberRestrictions, specSymbolRestrictions, whiteSpaceRestrictions, wordRestrictions } from './tokenTypesRestrictions'
+import { getNumberAtIndex, getTokenSubstringAtIndex } from './tokenStringBuilder'
+
+export const createToken = (typeName, value, initStringIndex, fromSlice) => {
+  const valueToRet = {
+    typeName,
+    value,
+    initStringIndex,
+    fromSlice
+  }
+
+  Object.freeze(valueToRet)
+  return valueToRet
+}
+
+export const tokenTypeNames =
+{
+  Number: "Numbr",
+  Word: " Word",
+  WhiteSpace: "Space",
+  SpecSymbol: "Specl"
+}
+
+Object.freeze(tokenTypeNames)
 
 export const tokenTypes = [
   {
-    name: "Number",
-    checkDelegate: numberRestrictions.isNumberSymbol,
-    tokenizer: getNumberAtIndex
+    name: tokenTypeNames.Number,
+    charCheckDelegate: numberRestrictions.symbolMembershipCheckCallback,
+    tokenStringCollector: getNumberAtIndex,
+    tokenFactory: (value, initStringIndex, fromString) => createToken(tokenTypeNames.Number, value, initStringIndex, fromString)
   },
   {
-    name: "Word\\Symbol",
-    checkDelegate: wordRestrictions.isWordSymbol,
-    tokenizer: getWordAtIndex
+    name: tokenTypeNames.Word,
+    charCheckDelegate: wordRestrictions.symbolMembershipCheckCallback,
+    tokenStringCollector: (equation, index) => getTokenSubstringAtIndex(equation, index, wordRestrictions),
+    tokenFactory: (value, initStringIndex, fromString) => createToken(tokenTypeNames.Word, value, initStringIndex, fromString)
+  },
+  {
+    name: tokenTypeNames.SpecSymbol,
+    charCheckDelegate: specSymbolRestrictions.symbolMembershipCheckCallback,
+    tokenStringCollector: (equation, index) => getTokenSubstringAtIndex(equation, index, specSymbolRestrictions),
+    tokenFactory: (value, initStringIndex, fromString) => createToken(tokenTypeNames.SpecSymbol, value, initStringIndex, fromString)
+  },
+  {
+    name: tokenTypeNames.WhiteSpace,
+    charCheckDelegate: whiteSpaceRestrictions.symbolMembershipCheckCallback,
+    tokenStringCollector: (equation, index) => getTokenSubstringAtIndex(equation, index, whiteSpaceRestrictions),
+    tokenFactory: (value, initStringIndex, fromString) => createToken(tokenTypeNames.WhiteSpace, value, initStringIndex, fromString)
   }
 ]
+
+Object.freeze(tokenTypes)
+for (const type of tokenTypes) {
+  Object.freeze(type)
+}
