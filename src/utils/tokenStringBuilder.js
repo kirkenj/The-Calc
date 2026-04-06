@@ -1,7 +1,11 @@
 import { numberRestrictions } from './tokenTypesRestrictions'
 
 export const getTokenStringAtIndex = (equation, index, symbolMembershipCheckCallback, maxLength = null) => {
-    console.log("getTokenStringAtIndex executed with arguments:", "equation",equation, "index", index, "symbolMembershipCheckCallback", symbolMembershipCheckCallback, "maxLength", maxLength === null ? "[null]" : maxLength)
+    console.log("getTokenStringAtIndex executed with arguments:", 
+        "equation",equation, 
+        "index", index, 
+        "symbolMembershipCheckCallback", symbolMembershipCheckCallback, 
+        "maxLength", maxLength === null ? "[null]" : maxLength)
     
     if (isNaN(index)) {
         throw Error("ArgumentNull: index")
@@ -46,6 +50,12 @@ export const getTokenStringAtIndex = (equation, index, symbolMembershipCheckCall
         }
     }
 
+    let length = rightIndex - leftIndex + 1
+
+    const lengthCanBeExpanded = maxLength === null 
+        ? () => true
+        : (length) => length + 1 <= maxLength
+
     do {
         if (moveLeft) {
             const leftIndexToCheck = leftIndex - 1
@@ -54,7 +64,7 @@ export const getTokenStringAtIndex = (equation, index, symbolMembershipCheckCall
                 : null
 
             const isLeftSymbolAllowed = leftSymbolToCheck
-                ? symbolMembershipCheckCallback(leftSymbolToCheck)
+                ? symbolMembershipCheckCallback(leftSymbolToCheck) && lengthCanBeExpanded(length)
                 : false
 
             console.log("Left!",
@@ -64,6 +74,7 @@ export const getTokenStringAtIndex = (equation, index, symbolMembershipCheckCall
 
             if (isLeftSymbolAllowed) {
                 leftIndex--;
+                length++
             } else {
                 moveLeft = false
             }
@@ -75,8 +86,8 @@ export const getTokenStringAtIndex = (equation, index, symbolMembershipCheckCall
                 ? equation[rightIndexToCheck]
                 : null
 
-            const isRightSymbolAllowed = rightSymbolToCheck
-                ? symbolMembershipCheckCallback(rightSymbolToCheck)
+            const isRightSymbolAllowed = rightSymbolToCheck 
+                ? symbolMembershipCheckCallback(rightSymbolToCheck) && lengthCanBeExpanded(length)
                 : false
 
             console.log("Right!",
@@ -86,21 +97,31 @@ export const getTokenStringAtIndex = (equation, index, symbolMembershipCheckCall
 
             if (isRightSymbolAllowed) {
                 rightIndex++;
+                length++
             } else {
                 moveRight = false
             }
         }
     }
-    while ((moveLeft || moveRight)
-        && (maxLength === null || rightIndex - leftIndex + 1 < maxLength))
+    while ((moveLeft || moveRight))
 
-    const valStr = equation.slice(leftIndex, rightIndex + 1).join("")
+    const valStr = equation.slice(leftIndex, rightIndex + 1)
+    console.log('valStr to return:', valStr, "leftIndex:", leftIndex, "rightIndex:", rightIndex)
+
+    if (maxLength !== null && valStr.length > maxLength){
+        console.log(valStr)
+        throw new Error("Eblan");
+    }
+
+
     return {
         result: valStr,
         absoluteStartIndex: leftIndex,
         relativeCaretIndex: index - leftIndex + (edgeRight ? 1 : 0)
     }
 }
+
+
 
 export const getTokenSubstringAtIndex = (equation, index, tokenTypeRestrictions) => {
     if (isNaN(index)) {

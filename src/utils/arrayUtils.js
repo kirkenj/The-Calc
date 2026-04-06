@@ -4,7 +4,7 @@ export const getIndexOfFirst = (equation, сheckCallback) => {
   }
 
   if (!сheckCallback || сheckCallback.length < 1) {
-    throw Error("InvalidArgument: notIgnoredTokenCheckCallback")
+    throw Error("InvalidArgument: сheckCallback")
   }
 
   for (let i = 0; i < equation.length; i++) {
@@ -30,7 +30,7 @@ export const getItemIndexToTheRightByCallback = (equation, index, сheckCallback
   }
 
   if (!сheckCallback || сheckCallback.length < 1) {
-    throw Error("InvalidArgument: notIgnoredTokenCheckCallback")
+    throw Error("InvalidArgument: сheckCallback")
   }
 
   for (let i = index + 1; i < equation.length; i++) {
@@ -56,7 +56,7 @@ export const getItemIndexToTheLeftByCallback = (equation, index, сheckCallback)
   }
 
   if (!сheckCallback || сheckCallback.length < 1) {
-    throw Error("InvalidArgument: notIgnoredTokenCheckCallback")
+    throw Error("InvalidArgument: сheckCallback")
   }
 
   for (let i = index - 1; i >= 0; i--) {

@@ -24,7 +24,6 @@ const handleUnarOperation = (equation, prevalidationResult, handler) => {
   return handler(argument.value)
 }
 
-
 const handleBinarOperation = (equation, prevalidationResult, handler) => {
   console.log("handleBinarOperation", "equation", equation, "prevalidationResult", prevalidationResult)
   
