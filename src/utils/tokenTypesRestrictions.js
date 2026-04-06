@@ -7,7 +7,7 @@ Object.freeze(wordAllowedSymbols)
 const whiteSpaceAllowedSymbols = new Set([' '])
 Object.freeze(whiteSpaceAllowedSymbols)
 
-const specSymbolAllowedSymbols = new Set(['*', "/", "\\", "+", "-", ":"])
+const specSymbolAllowedSymbols = new Set(['*', "/", "\\", "+", "-", ":", "^"])
 Object.freeze(specSymbolAllowedSymbols)
 
 const closedBracketAllowedSymbols = new Set([')'])

@@ -1,6 +1,6 @@
 import { tokenTypeNames } from "./tokenTypes"
 
-const handleFunction = (equation, prevalidationResult, handler) => {
+const handleUnarOperation = (equation, prevalidationResult, handler) => {
   console.log("handleFunction", "equation", equation, "prevalidationResult", prevalidationResult, "handler:", handler)
   
   if (!handler || handler.length !== 1) {
@@ -13,7 +13,7 @@ const handleFunction = (equation, prevalidationResult, handler) => {
     throw Error("Couldn't handle operation", { equation, prevalidationResult })
   }
 
-  const argument = equation[prevalidationResult.argumentIndexes[0]].value
+  const argument = equation[prevalidationResult.argumentIndexes[0]]
 
   console.log("Argument for handleFunc:", argument);
   
@@ -21,32 +21,9 @@ const handleFunction = (equation, prevalidationResult, handler) => {
     throw Error("Couldn't handle operation", { equation, prevalidationResult })
   }
 
-  return handler(argument)
+  return handler(argument.value)
 }
 
-export const handleUnaryMinus = (equation, prevalidationResult) => {
-  console.log("handleUnaryMinus", "equation", equation, "prevalidationResult", prevalidationResult)
-  
-  const prevalidationResultIsNull = !prevalidationResult 
-  const equationIsNull = !equation 
-
-  if (prevalidationResultIsNull || equationIsNull
-    || prevalidationResult.argumentIndexes.length !== 1
-    || equation.length <= prevalidationResult.argumentIndexes[0]) {
-    
-      console.log("prevalidationResultIsNull:", prevalidationResultIsNull, "equationIsNull:", equationIsNull)
-      throw Error("Couldn't handle operation", { equation, prevalidationResult })
-  }
-
-  let argument = equation[prevalidationResult.argumentIndexes[0]].value
-  if (!argument || argument.typeName !== tokenTypeNames.Number) {
-    throw Error("Couldn't get argument for operation", { equation, prevalidationResult })
-  }
-
-  argument = -argument
-  console.log("Finished unary minus. result:", argument)
-  return argument
-}
 
 const handleBinarOperation = (equation, prevalidationResult, handler) => {
   console.log("handleBinarOperation", "equation", equation, "prevalidationResult", prevalidationResult)
@@ -80,4 +57,5 @@ export const handleDivision = (equation, prevalidationResult) => handleBinarOper
 export const handleSum = (equation, prevalidationResult) => handleBinarOperation(equation, prevalidationResult, (a, b) => a + b)
 export const handleDiff = (equation, prevalidationResult) => handleBinarOperation(equation, prevalidationResult, (a, b) => a - b)
 
-export const handleSin = (equation, prevalidationResult) => handleFunction(equation, prevalidationResult, (a) => Math.sin(a))
+export const handleSin = (equation, prevalidationResult) => handleUnarOperation(equation, prevalidationResult, (a) => Math.sin(a))
+export const handleUnaryMinus = (equation, prevalidationResult) => handleUnarOperation(equation, prevalidationResult, (a) => -a)

@@ -21,7 +21,6 @@ export const tokenTypeNames =
   SpecSymbol: "Specl",
   OpenBracket: "OpenBracket",
   ClosedBracket: "ClosedBracket" 
-
 }
 
 Object.freeze(tokenTypeNames)
