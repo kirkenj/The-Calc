@@ -29,14 +29,14 @@ export const getOperatorsForVariables = (context) => {
             return null
         }
 
-        const key = equation[index]
-        if (key.typeName !== tokenTypeNames.Word) {
+        const token = equation[index]
+        if (token.typeName !== tokenTypeNames.Word) {
             console.log(executedFunc,
             "typeof key !== 'string'")
             return null
         }
 
-        return context.has(key)
+        return context.has(token.value)
             ? {
                 argumentIndexes: [index],
                 operationStartIndex: index,
@@ -45,9 +45,9 @@ export const getOperatorsForVariables = (context) => {
             : null
     }
 
-    const operators = {}
-    for (let [key, value] of context.entries()) {
-        operators[key] = () => value
+    const operators = new Map()
+    for (let [variableName, variableValue] of context.entries()) {
+        operators.set(variableName, (equation, prevalidationResult) => variableValue)
     }
 
     return {

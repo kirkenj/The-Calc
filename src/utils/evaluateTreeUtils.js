@@ -1,4 +1,5 @@
 import { calculateSimpleEquation } from "./calculateSimpleEquation";
+import { tokenTypeNames } from "./tokenTypes";
 
 const evaluateNode = (tree, nodeName) => {
     const node = tree[nodeName]
@@ -11,15 +12,15 @@ const evaluateNode = (tree, nodeName) => {
     if (node.children.length > 0) {
         node.children.forEach(child => {
             const key = child
-            const value = evaluateNode(tree, key).result
-            console.log("Child:", key, "Child value:", value)
-            map.set(child, value)
+            const resultToken = evaluateNode(tree, key).result
+            console.log("Child:", key, "Child value:", resultToken)
+            map.set(child, resultToken.value)
         });
     }
     
     console.log("evaluationToCalculate:", evaluationToCalculate, "node:", node, "map:", map)
-    const calculationResult = calculateSimpleEquation(evaluationToCalculate, true, map)
-    if (!calculationResult || typeof calculationResult !== 'number') {
+    const calculationResultToken = calculateSimpleEquation(evaluationToCalculate, map)
+    if (!calculationResultToken || calculationResultToken.typeName !== tokenTypeNames.Number) {
         throw Error("Invalid calculation result")
     }
 
@@ -27,7 +28,7 @@ const evaluateNode = (tree, nodeName) => {
         name: nodeName,
         content: node.content,
         map,
-        result: calculationResult
+        result: calculationResultToken
     }
 
     console.log("valueToReturn", valueToReturn);

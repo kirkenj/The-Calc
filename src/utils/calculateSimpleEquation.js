@@ -1,6 +1,7 @@
 import { getDefaultOperatorsAccordingToPriorities } from './operatorsAccordingToPriorities'
 import { tokenTypeNames, createToken } from './tokenTypes'
 import { getOperatorsForVariables } from './variableResolver';
+import { getItemIndexToTheRightByCallback, getIndexOfFirst } from './arrayUtils';
 
 const ignoredByDefaultTokenTypes = new Set([tokenTypeNames.WhiteSpace])
 const notIgnoredTokenCheckCallback = (token) => !ignoredByDefaultTokenTypes.has(token.typeName) 
@@ -8,7 +9,7 @@ const notIgnoredTokenCheckCallback = (token) => !ignoredByDefaultTokenTypes.has(
 export const calculateTokens = (tokens, context = null) => {
   console.log("Started calculateTokens.",
     "tokens:", tokens ? tokens : "[null]",
-    "context:", context ? context : "[null]"
+    "context:", context
   )
 
   if (tokens.length > 2 && tokens[0] === '(' && tokens[tokens.length - 1] === ')'){
@@ -67,9 +68,18 @@ export const calculateTokens = (tokens, context = null) => {
         "res:", res)
 
       const sliceToReplace = tokens.slice(
-        prevalidationResult.operationStartIndex, 
-        prevalidationResult.operationLength + 1)
+        prevalidationResult.operationStartIndex,
+        prevalidationResult.operationStartIndex + prevalidationResult.operationLength)
       
+
+      if (k ===0){
+        console.log("MEEEEEEEEEEEEEEEEEEEEEEEOW",
+          "prevalidationResult:",prevalidationResult,
+          "sliceToReplace", sliceToReplace,
+          "res", res
+        )
+      }
+
       const tokenToPaste = createToken(
         tokenTypeNames.Number, 
         res, 
@@ -89,21 +99,22 @@ export const calculateTokens = (tokens, context = null) => {
   }
 
   console.log("Calculation finished. Postcalculation validation", tokens)
-  let firstNotIgnoredTokenIndex = null
-  for (let i = 0; i < tokens.length; i++){
-    if (notIgnoredTokenCheckCallback(tokens[i])){
-      if (firstNotIgnoredTokenIndex !== null){
-        console.log("Couldn't handle equation properly (not ignored tokens count > 1)");
-        return null
-      }
-      
-      firstNotIgnoredTokenIndex = i
-    }
+  const firstNotIgnoredTokenIndex = getIndexOfFirst(tokens, notIgnoredTokenCheckCallback)
+  if (firstNotIgnoredTokenIndex === null)
+  {
+    console.log("Couldn't handle equation properly (not ignored tokens not found)");
+    return null
+  }
+
+  const secondNotIgnoredTokenIndex = getItemIndexToTheRightByCallback(tokens, firstNotIgnoredTokenIndex, notIgnoredTokenCheckCallback)
+  if (secondNotIgnoredTokenIndex !== null){
+    console.log("Couldn't handle equation properly (not ignored tokens count > 1)");
+    return null
   }
 
   const calculationResult = tokens[firstNotIgnoredTokenIndex]
   console.log("Calculation finished. result:", calculationResult);
-  return calculationResult.value
+  return calculationResult
 }
 
 export const calculateSimpleEquation = (tokens, context = null) => {

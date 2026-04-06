@@ -1,4 +1,4 @@
-import { numberRestrictions, specSymbolRestrictions, whiteSpaceRestrictions, wordRestrictions } from './tokenTypesRestrictions'
+import { numberRestrictions, openBracketRestrictions, closedBracketRestrictions, specSymbolRestrictions, whiteSpaceRestrictions, wordRestrictions } from './tokenTypesRestrictions'
 import { getNumberAtIndex, getTokenSubstringAtIndex } from './tokenStringBuilder'
 
 export const createToken = (typeName, value, initStringIndex, fromSlice) => {
@@ -18,7 +18,10 @@ export const tokenTypeNames =
   Number: "Numbr",
   Word: " Word",
   WhiteSpace: "Space",
-  SpecSymbol: "Specl"
+  SpecSymbol: "Specl",
+  OpenBracket: "OpenBracket",
+  ClosedBracket: "ClosedBracket" 
+
 }
 
 Object.freeze(tokenTypeNames)
@@ -47,6 +50,18 @@ export const tokenTypes = [
     charCheckDelegate: whiteSpaceRestrictions.symbolMembershipCheckCallback,
     tokenStringCollector: (equation, index) => getTokenSubstringAtIndex(equation, index, whiteSpaceRestrictions),
     tokenFactory: (value, initStringIndex, fromString) => createToken(tokenTypeNames.WhiteSpace, value, initStringIndex, fromString)
+  },
+  {
+    name: tokenTypeNames.OpenBracket,
+    charCheckDelegate: openBracketRestrictions.symbolMembershipCheckCallback,
+    tokenStringCollector: (equation, index) => getTokenSubstringAtIndex(equation, index, openBracketRestrictions),
+    tokenFactory: (value, initStringIndex, fromString) => createToken(tokenTypeNames.OpenBracket, value, initStringIndex, fromString)
+  },
+  {
+    name: tokenTypeNames.ClosedBracket,
+    charCheckDelegate: closedBracketRestrictions.symbolMembershipCheckCallback,
+    tokenStringCollector: (equation, index) => getTokenSubstringAtIndex(equation, index, closedBracketRestrictions),
+    tokenFactory: (value, initStringIndex, fromString) => createToken(tokenTypeNames.ClosedBracket, value, initStringIndex, fromString)
   }
 ]
 

@@ -1,57 +1,5 @@
 import { tokenTypeNames } from "./tokenTypes"
-
-const getNotIgnoredTokenIndexToTheRight = (equation, index, notIgnoredTokenCheckCallback) => {
-  if (isNaN(index)) {
-    throw Error("ArgumentNull: index")
-  }
-
-  if (!equation || equation.length === 0) {
-    throw Error("InvalidArgument: equation")
-  }
-
-  if (index < 0 || index >= equation.length) {
-    throw Error("ArgumentOutOfRange: Invalid index")
-  }
-
-  if (!notIgnoredTokenCheckCallback || notIgnoredTokenCheckCallback.length < 1) {
-    throw Error("InvalidArgument: notIgnoredTokenCheckCallback")
-  }
-
-  for (let i = index + 1; i < equation.length; i++) {
-    if (notIgnoredTokenCheckCallback(equation[i])) {
-      return i
-    }
-  }
-
-  return null
-}
-
-const getNotIgnoredTokenIndexToTheLeft = (equation, index, notIgnoredTokenCheckCallback) => {
-  if (isNaN(index)) {
-    throw Error("ArgumentNull: index")
-  }
-
-  if (!equation || equation.length === 0) {
-    throw Error("InvalidArgument: equation")
-  }
-
-  if (index < 0 || index >= equation.length) {
-    throw Error("ArgumentOutOfRange: Invalid index")
-  }
-
-  if (!notIgnoredTokenCheckCallback || notIgnoredTokenCheckCallback.length < 1) {
-    throw Error("InvalidArgument: notIgnoredTokenCheckCallback")
-  }
-
-  for (let i = index - 1; i > 0; i--) {
-    if (notIgnoredTokenCheckCallback(equation[i])) {
-      return i
-    }
-  }
-
-  return null
-}
-
+import { getItemIndexToTheLeftByCallback, getItemIndexToTheRightByCallback } from "./arrayUtils"
 
 export const preHandleUnarFunction = (equation, index, notIgnoredTokenCheckCallback) => {
   if (isNaN(index)) {
@@ -59,7 +7,7 @@ export const preHandleUnarFunction = (equation, index, notIgnoredTokenCheckCallb
   }
 
   if (!equation || equation.length === 0) {
-    throw Error("InvalidArgument: equation")
+    throw Error("Invalid Argument: equation")
   }
 
   if (index < 0 || index >= equation.length) {
@@ -74,8 +22,8 @@ export const preHandleUnarFunction = (equation, index, notIgnoredTokenCheckCallb
     return null
   }
 
-  const notIgnoredTokenIndexToTheRight = getNotIgnoredTokenIndexToTheRight(equation, index, notIgnoredTokenCheckCallback)
-  if (!notIgnoredTokenIndexToTheRight) {
+  const notIgnoredTokenIndexToTheRight = getItemIndexToTheRightByCallback(equation, index, notIgnoredTokenCheckCallback)
+  if (notIgnoredTokenIndexToTheRight === null) {
     return null
   }
 
@@ -115,13 +63,15 @@ export const preHandleBinarOperation = (equation, index, notIgnoredTokenCheckCal
     return null
   }
 
-  const notIgnoredTokenIndexToTheRight = getNotIgnoredTokenIndexToTheRight(equation, index, notIgnoredTokenCheckCallback)
-  if (!notIgnoredTokenIndexToTheRight) {
+  const notIgnoredTokenIndexToTheRight = getItemIndexToTheRightByCallback(equation, index, notIgnoredTokenCheckCallback)
+  console.log("notIgnoredTokenIndexToTheRight:", notIgnoredTokenIndexToTheRight);
+  if (notIgnoredTokenIndexToTheRight === null) {
     return null
   }
 
-  const notIgnoredTokenIndexToTheLeft = getNotIgnoredTokenIndexToTheLeft(equation, index, notIgnoredTokenCheckCallback)
-  if (!notIgnoredTokenIndexToTheLeft) {
+  const notIgnoredTokenIndexToTheLeft = getItemIndexToTheLeftByCallback(equation, index, notIgnoredTokenCheckCallback)
+  console.log("notIgnoredTokenIndexToTheLeft:", notIgnoredTokenIndexToTheLeft);
+  if (notIgnoredTokenIndexToTheLeft === null) {
     return null
   }
 
@@ -142,37 +92,8 @@ export const preHandleBinarOperation = (equation, index, notIgnoredTokenCheckCal
   );
 
   return (
-    index >= 1
-    && index <= equation.length - 2
-    && equation[notIgnoredTokenIndexToTheRight].typeName === tokenTypeNames.Number
+    equation[notIgnoredTokenIndexToTheRight].typeName === tokenTypeNames.Number
     && equation[notIgnoredTokenIndexToTheLeft].typeName === tokenTypeNames.Number)
     ? valueToReturn
     : null
 }
-
-
-// export const preHandleUnarOperation = (equation, index) => {
-//   if (isNaN(index)) {
-//     return null
-//   }
-
-//   if (index < 0 || index >= equation.length) {
-//     return null
-//   }
-
-//   const valueToReturn = {
-//     argumentIndexes: [index + 1],
-//     operationStartIndex: index,
-//     operationLength: 2
-//   }
-
-//   console.log(
-//     "eq", equation,
-//     valueToReturn
-//   );
-
-//   return ((index >= 0 && index < equation.length - 1 && equation[index + 1].typeName === tokenTypeNames.Number)
-//     && (index === 0 || equation[index - 1].typeName !== tokenTypeNames.Number))
-//     ? valueToReturn
-//     : null
-// }

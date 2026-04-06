@@ -10,6 +10,12 @@ Object.freeze(whiteSpaceAllowedSymbols)
 const specSymbolAllowedSymbols = new Set(['*', "/", "\\", "+", "-", ":"])
 Object.freeze(specSymbolAllowedSymbols)
 
+const closedBracketAllowedSymbols = new Set([')'])
+Object.freeze(closedBracketAllowedSymbols)
+
+const openBracketAllowedSymbols = new Set(['('])
+Object.freeze(openBracketAllowedSymbols)
+
 export const numberRestrictions = {
     allowedSymbols: numberAllowedSymbols,
     symbolMembershipCheckCallback: (symbol) => numberAllowedSymbols.has(symbol),
@@ -40,3 +46,17 @@ export const specSymbolRestrictions = {
     maxLength: 1
 }
 Object.freeze(specSymbolRestrictions)
+
+export const openBracketRestrictions = {
+    allowedSymbols: openBracketAllowedSymbols,
+    symbolMembershipCheckCallback: (symbol) => openBracketAllowedSymbols.has(symbol),
+    maxLength: 1
+}
+Object.freeze(openBracketRestrictions)
+
+export const closedBracketRestrictions = {
+    allowedSymbols: closedBracketAllowedSymbols,
+    symbolMembershipCheckCallback: (symbol) => closedBracketAllowedSymbols.has(symbol),
+    maxLength: 1
+}
+Object.freeze(closedBracketRestrictions)
