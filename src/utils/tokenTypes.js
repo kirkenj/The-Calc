@@ -15,10 +15,10 @@ export const createToken = (typeName, value, initStringIndex, fromSlice) => {
 
 export const tokenTypeNames =
 {
-  Number: "Numbr",
+  Number: "Number",
   Word: " Word",
-  WhiteSpace: "Space",
-  SpecSymbol: "Specl",
+  WhiteSpace: "Whitespace",
+  SpecSymbol: "Special symbol",
   OpenBracket: "OpenBracket",
   ClosedBracket: "ClosedBracket" 
 }

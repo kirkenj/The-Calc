@@ -3,7 +3,7 @@ import { tokenTypeNames, createToken } from './tokenTypes'
 import { getOperatorsForVariables } from './variableResolver';
 import { getItemIndexToTheRightByCallback, getIndexOfFirst } from './arrayUtils';
 
-const ignoredByDefaultTokenTypes = new Set([tokenTypeNames.WhiteSpace])
+const ignoredByDefaultTokenTypes = new Set([tokenTypeNames.WhiteSpace, tokenTypeNames.ClosedBracket, tokenTypeNames.OpenBracket])
 const notIgnoredTokenCheckCallback = (token) => !ignoredByDefaultTokenTypes.has(token.typeName) 
 
 export const calculateTokens = (tokens, context = null) => {
@@ -66,32 +66,11 @@ export const calculateTokens = (tokens, context = null) => {
         "prevalidationResult:", prevalidationResult,
         "func:", currentOperatorHandler,
         "res:", res)
-
-      const sliceToReplace = tokens.slice(
-        prevalidationResult.operationStartIndex,
-        prevalidationResult.operationStartIndex + prevalidationResult.operationLength)
-      
-
-      if (k ===0){
-        console.log("MEEEEEEEEEEEEEEEEEEEEEEEOW",
-          "prevalidationResult:",prevalidationResult,
-          "sliceToReplace", sliceToReplace,
-          "res", res
-        )
-      }
-
-      const tokenToPaste = createToken(
-        tokenTypeNames.Number, 
-        res, 
-        sliceToReplace[0].initStringIndex, 
-        sliceToReplace.map(s => s.fromSlice).join(""))
-
-      console.log("arr", tokens, "slice to replace", sliceToReplace)
       
       const popped = tokens.splice(
         prevalidationResult.operationStartIndex,
         prevalidationResult.operationLength,
-        tokenToPaste)
+        res)
 
       console.log("arr", tokens, "popped", popped)
       i = prevalidationResult.operationStartIndex
@@ -113,8 +92,16 @@ export const calculateTokens = (tokens, context = null) => {
   }
 
   const calculationResult = tokens[firstNotIgnoredTokenIndex]
-  console.log("Calculation finished. result:", calculationResult);
-  return calculationResult
+
+  const tokenToReturn = createToken(
+    tokenTypeNames.Number, 
+    calculationResult.value, 
+    tokens[0].initStringIndex,
+    tokens.map(t => t.fromSlice).join(""))
+
+
+  console.log("Calculation finished. result:", tokenToReturn);
+  return tokenToReturn
 }
 
 export const calculateSimpleEquation = (tokens, context = null) => {

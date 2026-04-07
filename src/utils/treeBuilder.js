@@ -1,175 +1,61 @@
 import { parseTokens } from "./tokenParser"
+import { tokenTypeNames, tokenTypes } from "./tokenTypes"
+import { createAlphaCounter } from "./alphaCounter"
 
-// const getDefaultTokenTypeFromTokenType = (tokenType) => {
-//   return {
-//     ...tokenType,
-//     charCheckDelegate: () => true,
-//     tokenStringCollector: (equation, index) => {
-//       return {
-//         absoluteStartIndex: index,
-//         relativeCaretIndex: index,
-//         resultStr: equation[index],
-//         result: equation[index]
-//       }
-//     }
-//   }
-// }
-
-
-
-export const parseTree = (equation) => {
-  const onTokenParsed = (token) => {
-    console.log("Token parsed:", token)
+const createBracketInfo = (name, index) => {
+  return {
+    index: index,
+    name: name,
+    children: [],
+    content: [],
   }
-
-  parseTokens(equation, onTokenParsed)
-
-
-
-  return
 }
 
-// const createBracketInfo = (name, index, initIndex) => {
-//   return {
-//     index: index,
-//     name: name,
-//     children: [],
-//     initIndex
-//   }
-// }
+export const parseTree = (equation) => {
+  const defaultTokenTypeName = tokenTypeNames.Word
+  const defaultTokenType = tokenTypes.find(t => t.name === defaultTokenTypeName)
+  if (!defaultTokenType) {
+    throw new Error(`Couldn't get default token type by name '${defaultTokenTypeName}'`)
+  }
 
-// export const parseBrackets = (equation) => {
-//   let initString = equation = '(' + equation
-//   let getNextStringName = createAlphaCounter();
-//   const entryPointName = getNextStringName()
+  let getNextStringName = createAlphaCounter();
+  const entryPointName = getNextStringName()
+  const eqMap = new Map()
+  let stack = [
+    createBracketInfo(entryPointName, 0)
+  ]
+  eqMap.set(entryPointName, stack[stack.length - 1])
 
-//   let eqMap = {}
-//   let stack = [
-//     createBracketInfo(entryPointName, 0, 0)
-//   ]
+  const onTokenParsed = (token) => {
+    console.log("Token parsed:", token)
+    const isOpenBracket = token.typeName === tokenTypeNames.OpenBracket
+    if (isOpenBracket) {
+      const newStackName = getNextStringName()
+      const stackValueToPush = createBracketInfo(newStackName, token.initStringIndex)
 
-//   const defaultTokenTypeName = tokenTypeNames.Word
-//   const defaultTokenType = tokenTypes.find(t => t.name === defaultTokenTypeName)
-//   if (!defaultTokenType) {
-//     throw new Error(`Couldn't get default token type by name '${defaultTokenTypeName}'`)
-//   }
+      stack.push(stackValueToPush)
+      eqMap.set(newStackName, stackValueToPush)
 
-//   const currenTokenTypes = [...tokenTypes, getDefaultTokenTypeFromTokenType(defaultTokenType)]
+      console.log("Pushed stack value:", stackValueToPush)
 
-//   let arr = Array.from(initString)
-//   let initIndex = 1
-//   let i = initIndex
-//   while (i < arr.length) {
-//     const areSymbolsEqual = arr[i] === initString[initIndex] ? "yes" : "NOOOOOO"
-//     console.log("Init index:", initIndex,
-//       "I:", i,
-//       "InitString:", initString,
-//       "Current symbol from init string:", initString[initIndex],
-//       "Current arr symbol:", arr[i],
-//       "Are symbols equal:", areSymbolsEqual)
+      const tokenToPushIntoParent = defaultTokenType.tokenFactory(newStackName, token.initStringIndex, newStackName)
+      const parentStackValue = stack[stack.length - 2]
 
-//     if (arr[i] === '(') {
-//       console.log("Found open bracket at index:", i)
-//       const openBracketInfo = createBracketInfo(getNextStringName(), i, initIndex)
-//       stack.push(openBracketInfo)
-//       stack[stack.length - 2].children.push(openBracketInfo.name)
-//     }
-//     else if (arr[i] === ')') {
-//       console.log("Found closed bracket at index:", i)
-//       if (stack.length === 0) {
-//         throw new Error("Unmatched parenthesis")
-//       }
+      parentStackValue.content.push(tokenToPushIntoParent)
+      parentStackValue.children.push(tokenToPushIntoParent.value)
+    }
 
-//       const openBracketInfo = stack.pop()
-//       console.log(openBracketInfo);
+    stack[stack.length - 1].content.push(token)
 
-//       const initStringSlice = initString.slice(openBracketInfo.initIndex, initIndex + 1)
-//       const bracketContentWithoutBrackets = arr.slice(openBracketInfo.index + 1, i)
-//       const currentStackValue = eqMap[openBracketInfo.name] = {
-//         ...openBracketInfo,
-//         content: bracketContentWithoutBrackets,
-//         children: openBracketInfo.children,
-//         fromSlice: initStringSlice
-//       }
+    if (!isOpenBracket && token.typeName === tokenTypeNames.ClosedBracket) {
+      stack.pop(stack.length - 1)
+    }
+  }
 
-//       console.log("arr before pop", arr,
-//         "CurrentBracketInfo", openBracketInfo,
-//         "CurrentStackValue", currentStackValue
-//       );
+  const parsedTokens = parseTokens(equation, onTokenParsed)
+  console.log("parsedTokens:", parsedTokens)
+  console.log("stack:", stack)
+  console.log("eqMap", eqMap)
 
-//       const tokenToInsert = defaultTokenType.tokenFactory(
-//         currentStackValue.name,
-//         openBracketInfo.initIndex,
-//         initStringSlice)
-
-//       const popped = arr.splice(
-//         openBracketInfo.index,
-//         bracketContentWithoutBrackets.length + 2,
-//         tokenToInsert)
-
-
-//       console.log("popped as brackets", popped);
-//       console.log("arr after pop", arr);
-//       i = openBracketInfo.index;
-//     }
-//     else {
-//       let tokenizerExecuted = false;
-
-//       for (const tokenType of currenTokenTypes) {
-//         if (!tokenType.charCheckDelegate(arr[i])) {
-//           continue
-//         }
-
-//         tokenizerExecuted = true
-//         console.log(`Found ${tokenType.name} at index`, i, arr[i])
-
-//         const parsedTokenInfo = tokenType.tokenStringCollector(arr, i)
-//         const token = tokenType.tokenFactory(parsedTokenInfo.result, initIndex, parsedTokenInfo.resultStr)
-//         console.log("Arr before token pop:", arr);
-        
-//         console.log("Parsed token:", token)
-
-//         const poppedForToken = arr.splice(
-//           parsedTokenInfo.absoluteStartIndex, 
-//           parsedTokenInfo.resultStr.length, 
-//           token)
-
-//         console.log("poppedForToken:", poppedForToken,
-//           "New arr state:", arr,
-//           "Index before inc:", i,
-//           "placedValue:", token)
-
-//         console.log("Placed:", token, "atIndex:", i, "initIndex:", initIndex)
-
-//         i = parsedTokenInfo.absoluteStartIndex
-//         initIndex += token.fromSlice.length - 1
-//         console.log("New initIndex:", initIndex)
-
-//         break
-//       }
-
-//       if (!tokenizerExecuted){
-//         throw Error(`Unknown token '${initString[initIndex]}' at index ${initIndex}`)
-//       }
-//     }
-
-//     if (i === arr.length - 1) {
-//       console.log("Reached last index", "stack:", stack)
-//       if (stack.length > 0) {
-//         arr.push(')')
-//         initString = initString + ')'
-//         console.log("Added brackets in the end. new arr:", arr)
-//       } else {
-//         console.log("Addition of closing brackets in the end not needed:", arr)
-//       }
-//     }
-
-//     i++;
-//     initIndex++;
-//   }
-
-
-//   console.log(i);
-
-//   return { map: eqMap, entryPointName }
-// }
+  return { map: eqMap, entryPointName }
+}

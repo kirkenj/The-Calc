@@ -1,8 +1,14 @@
-import { tokenTypeNames } from "./tokenTypes"
+import { tokenTypeNames, createToken } from "./tokenTypes"
+
+
+
+const getFromSliceString = (equation, prevalidationResult) => equation.slice(
+    prevalidationResult.operationStartIndex,
+    prevalidationResult.operationStartIndex + prevalidationResult.operationLength)
 
 const handleUnarOperation = (equation, prevalidationResult, handler) => {
   console.log("handleFunction", "equation", equation, "prevalidationResult", prevalidationResult, "handler:", handler)
-  
+
   if (!handler || handler.length !== 1) {
     throw Error("Invalid handler")
   }
@@ -16,17 +22,25 @@ const handleUnarOperation = (equation, prevalidationResult, handler) => {
   const argument = equation[prevalidationResult.argumentIndexes[0]]
 
   console.log("Argument for handleFunc:", argument);
-  
+
   if (!argument || argument.typeName !== tokenTypeNames.Number) {
     throw Error("Couldn't handle operation", { equation, prevalidationResult })
   }
 
-  return handler(argument.value)
+  const calculationResult = handler(argument.value)
+
+  const fromSlice = getFromSliceString(equation, prevalidationResult)
+
+  return createToken(
+    tokenTypeNames.Number,
+    calculationResult,
+    prevalidationResult.operationStartIndex,
+    fromSlice.map(s => s.fromSlice).join(""))
 }
 
 const handleBinarOperation = (equation, prevalidationResult, handler) => {
   console.log("handleBinarOperation", "equation", equation, "prevalidationResult", prevalidationResult)
-  
+
   if (!handler || handler.length !== 2) {
     throw Error("Invalid handler")
   }
@@ -45,9 +59,19 @@ const handleBinarOperation = (equation, prevalidationResult, handler) => {
     }
   }
 
-  return handler(
-    equation[prevalidationResult.argumentIndexes[0]].value,
-    equation[prevalidationResult.argumentIndexes[1]].value)
+  const leftArgumentIndex = prevalidationResult.argumentIndexes[0]
+  const rightArgumentIndex = prevalidationResult.argumentIndexes[1]
+
+  const calculationResult = handler(equation[leftArgumentIndex].value, equation[rightArgumentIndex].value)
+
+  const fromSlice = getFromSliceString(equation, prevalidationResult)
+  
+
+  return createToken(
+    tokenTypeNames.Number,
+    calculationResult,
+    prevalidationResult.operationStartIndex,
+    fromSlice.map(s => s.fromSlice).join(""))
 }
 
 export const handleMultiplication = (equation, prevalidationResult) => handleBinarOperation(equation, prevalidationResult, (a, b) => a * b)

@@ -1,6 +1,6 @@
 // import Calculator from "./features/Calculator/Calculator";
 
-//import { evaluateTree } from "./utils/evaluateTreeUtils";
+import { evaluateTree } from "./utils/evaluateTreeUtils";
 
 
 import { parseTree } from "./utils/treeBuilder";
@@ -41,9 +41,9 @@ function App() {
         //const parseResult = parseTree("sin( 5 * ( 6 / 2 ) - (3 + 5))")
         //const parseResult = parseTree("(-5.5+2*1.5-4.5/-1.5)")
         console.log(parseResult)
-        //const result = evaluateTree(parseResult)
+        const result = evaluateTree(parseResult)
         //const result = calculateSimpleEquation("(-5.5+sin2*1.5-4.5/-1.5)", false)
-        //console.log(result)
+        console.log(result)
       }}>Start</button>
     </>)
 }

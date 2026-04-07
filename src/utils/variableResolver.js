@@ -47,8 +47,11 @@ export const getOperatorsForVariables = (context) => {
 
     const operators = new Map()
     for (let [variableName, variableValue] of context.entries()) {
-        operators.set(variableName, (equation, prevalidationResult) => variableValue)
+        operators.set(variableName, () => variableValue)
     }
+
+    console.log("Created variable map:", operators)
+
 
     return {
         operators: operators,

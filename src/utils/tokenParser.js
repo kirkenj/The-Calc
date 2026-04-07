@@ -26,7 +26,7 @@ export const parseTokens = (equation, onTokenParsedCallback = null) => {
       const parsedTokenString = tokenType.tokenStringCollector(equation, i)
       const token = tokenType.tokenFactory(parsedTokenString.result, i, parsedTokenString.resultStr)
 
-      console.log("Parsed token:", token)
+      console.log("Token parse result:", token)
 
       if (isOnTokenParsedCallbackPassed){
         onTokenParsedCallback(token)
