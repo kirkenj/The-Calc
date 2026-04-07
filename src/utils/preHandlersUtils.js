@@ -28,7 +28,53 @@ export const preHandleUnarFunction = (equation, index, notIgnoredTokenCheckCallb
   }
 
   console.log("notIgnoredTokenIndexToTheRight:", notIgnoredTokenIndexToTheRight)
-  return equation[index + 1].typeName === tokenTypeNames.Number
+  return equation[notIgnoredTokenIndexToTheRight].typeName === tokenTypeNames.Number
+  ? {
+      argumentIndexes: [notIgnoredTokenIndexToTheRight],
+      operationStartIndex: index,
+      operationLength: notIgnoredTokenIndexToTheRight - index + 1,
+    }
+  : null
+}
+
+export const preHandleUnarMinus = (equation, index, notIgnoredTokenCheckCallback) => {
+  if (isNaN(index)) {
+    throw Error("ArgumentNull: index")
+  }
+
+  if (!equation || equation.length === 0) {
+    throw Error("Invalid Argument: equation")
+  }
+
+  if (index < 0 || index >= equation.length) {
+    throw Error("ArgumentOutOfRange: Invalid index")
+  }
+
+  if (!notIgnoredTokenCheckCallback || notIgnoredTokenCheckCallback.length < 1) {
+    throw Error("InvalidArgument: notIgnoredTokenCheckCallback")
+  }
+
+  if (!(index >= 0 && index < equation.length - 1)) {
+    return null
+  }
+
+  const notIgnoredTokenIndexToTheRight = getItemIndexToTheRightByCallback(equation, index, notIgnoredTokenCheckCallback)
+  console.log("notIgnoredTokenIndexToTheRight:", notIgnoredTokenIndexToTheRight);
+  if (notIgnoredTokenIndexToTheRight === null) {
+    return null
+  }
+
+  const notIgnoredTokenIndexToTheLeft = getItemIndexToTheLeftByCallback(equation, index, notIgnoredTokenCheckCallback)
+  const notIgnoredTokenToTheLeft = notIgnoredTokenIndexToTheLeft === null ? null : equation[notIgnoredTokenIndexToTheLeft]
+
+  console.log(
+    "notIgnoredTokenIndexToTheLeft:", notIgnoredTokenIndexToTheLeft,
+    "notIgnoredTokenToTheLeft:", notIgnoredTokenToTheLeft,
+    "notIgnoredTokenIndexToTheRight:", notIgnoredTokenIndexToTheRight,
+  )
+
+  return equation[notIgnoredTokenIndexToTheRight].typeName === tokenTypeNames.Number
+  && notIgnoredTokenToTheLeft === null || notIgnoredTokenToTheLeft.typeName !== tokenTypeNames.Number
   ? {
       argumentIndexes: [notIgnoredTokenIndexToTheRight],
       operationStartIndex: index,

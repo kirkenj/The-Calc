@@ -1,4 +1,4 @@
-import { preHandleBinarOperation, preHandleUnarFunction } from './preHandlersUtils'
+import { preHandleBinarOperation, preHandleUnarFunction, preHandleUnarMinus } from './preHandlersUtils'
 import { handleDiff, handleDivision, handleSum,handleMultiplication,handleUnaryMinus,handleSin } from './operationHandlersUtils'
 
 export const getDefaultOperatorsAccordingToPriorities = () => [
@@ -13,7 +13,7 @@ export const getDefaultOperatorsAccordingToPriorities = () => [
     operators: new Map([
       ["-", handleUnaryMinus]
     ]),
-    preHandler: preHandleUnarFunction,
+    preHandler: preHandleUnarMinus,
     fallIfPreHandleFailed: false
   },
   {
