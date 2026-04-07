@@ -12,11 +12,6 @@ export const calculateTokens = (tokens, context = null) => {
     "context:", context
   )
 
-  if (tokens.length > 2 && tokens[0] === '(' && tokens[tokens.length - 1] === ')'){
-    tokens = tokens.slice(1, tokens.length - 1)
-    console.log("Found braces at both equation sides. New tokens:", tokens);
-  }
-
   const operatorsAccordingToPriorities = getDefaultOperatorsAccordingToPriorities();
   const variables = getOperatorsForVariables(context)
   console.log("Variables handlers:", variables)

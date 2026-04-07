@@ -1,7 +1,5 @@
 import { tokenTypeNames, createToken } from "./tokenTypes"
 
-
-
 const getFromSliceString = (equation, prevalidationResult) => equation.slice(
     prevalidationResult.operationStartIndex,
     prevalidationResult.operationStartIndex + prevalidationResult.operationLength)
@@ -66,7 +64,6 @@ const handleBinarOperation = (equation, prevalidationResult, handler) => {
 
   const fromSlice = getFromSliceString(equation, prevalidationResult)
   
-
   return createToken(
     tokenTypeNames.Number,
     calculationResult,

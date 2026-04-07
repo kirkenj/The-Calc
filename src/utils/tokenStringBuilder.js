@@ -108,12 +108,6 @@ export const getTokenStringAtIndex = (equation, index, symbolMembershipCheckCall
     const valStr = equation.slice(leftIndex, rightIndex + 1)
     console.log('valStr to return:', valStr, "leftIndex:", leftIndex, "rightIndex:", rightIndex)
 
-    if (maxLength !== null && valStr.length > maxLength){
-        console.log(valStr)
-        throw new Error("Eblan");
-    }
-
-
     return {
         result: valStr,
         absoluteStartIndex: leftIndex,
