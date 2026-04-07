@@ -94,7 +94,6 @@ export const calculateTokens = (tokens, context = null) => {
     tokens[0].initStringIndex,
     tokens.map(t => t.fromSlice).join(""))
 
-
   console.log("Calculation finished. result:", tokenToReturn);
   return tokenToReturn
 }
