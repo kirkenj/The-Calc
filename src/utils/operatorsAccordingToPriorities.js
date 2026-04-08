@@ -1,4 +1,4 @@
-import { preHandleBinarOperation, preHandleUnarFunction, preHandleUnarMinus } from './preHandlersUtils'
+import { validateBinarOperation, validateUnarFunction, validateUnarMinus } from './syntaxValidators'
 import { handleDiff, handleDivision, handleSum,handleMultiplication,handleUnaryMinus,handleSin } from './operationHandlersUtils'
 
 export const getDefaultOperatorsAccordingToPriorities = () => [
@@ -6,15 +6,15 @@ export const getDefaultOperatorsAccordingToPriorities = () => [
     operators: new Map([
       ["sin", handleSin]
     ]),
-    preHandler: preHandleUnarFunction,
-    fallIfPreHandleFailed: true
+    syntaxValidator: validateUnarFunction,
+    fallIfSyntaxValidationFailed: true
   },
   {
     operators: new Map([
       ["-", handleUnaryMinus]
     ]),
-    preHandler: preHandleUnarMinus,
-    fallIfPreHandleFailed: false
+    syntaxValidator: validateUnarMinus,
+    fallIfSyntaxValidationFailed: false
   },
   {
     operators: new Map([
@@ -23,16 +23,16 @@ export const getDefaultOperatorsAccordingToPriorities = () => [
       ["/", handleDivision],
       ["\\", handleDivision]
     ]),
-    preHandler: preHandleBinarOperation,
-    fallIfPreHandleFailed: true
+    syntaxValidator: validateBinarOperation,
+    fallIfSyntaxValidationFailed: true
   },
   {
     operators: new Map([
       ["+", handleSum],
       ["-", handleDiff]
     ]),
-    preHandler: preHandleBinarOperation,
-    fallIfPreHandleFailed: true
+    syntaxValidator: validateBinarOperation,
+    fallIfSyntaxValidationFailed: true
   }
 ]
 

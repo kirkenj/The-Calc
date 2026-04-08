@@ -1,7 +1,7 @@
 import { tokenTypeNames } from "./tokenTypes"
 import { getItemIndexToTheLeftByCallback, getItemIndexToTheRightByCallback } from "./arrayUtils"
 
-export const preHandleUnarFunction = (equation, index, notIgnoredTokenCheckCallback) => {
+export const validateUnarFunction = (equation, index, notIgnoredTokenCheckCallback) => {
   if (isNaN(index)) {
     throw Error("ArgumentNull: index")
   }
@@ -37,7 +37,7 @@ export const preHandleUnarFunction = (equation, index, notIgnoredTokenCheckCallb
   : null
 }
 
-export const preHandleUnarMinus = (equation, index, notIgnoredTokenCheckCallback) => {
+export const validateUnarMinus = (equation, index, notIgnoredTokenCheckCallback) => {
   if (isNaN(index)) {
     throw Error("ArgumentNull: index")
   }
@@ -74,7 +74,7 @@ export const preHandleUnarMinus = (equation, index, notIgnoredTokenCheckCallback
   )
 
   return equation[notIgnoredTokenIndexToTheRight].typeName === tokenTypeNames.Number
-  && notIgnoredTokenToTheLeft === null || notIgnoredTokenToTheLeft.typeName !== tokenTypeNames.Number
+  && (notIgnoredTokenToTheLeft === null || notIgnoredTokenToTheLeft.typeName !== tokenTypeNames.Number)
   ? {
       argumentIndexes: [notIgnoredTokenIndexToTheRight],
       operationStartIndex: index,
@@ -83,7 +83,7 @@ export const preHandleUnarMinus = (equation, index, notIgnoredTokenCheckCallback
   : null
 }
 
-export const preHandleBinarOperation = (equation, index, notIgnoredTokenCheckCallback) => {
+export const validateBinarOperation = (equation, index, notIgnoredTokenCheckCallback) => {
   console.log("preHandleBinarOperation executed with arguments:", 
     "equation:", equation, 
     "index:",index, 

@@ -50,7 +50,11 @@ export const parseTree = (equation) => {
     stack[stack.length - 1].content.push(token)
 
     if (!isOpenBracket && token.typeName === tokenTypeNames.ClosedBracket) {
-      stack.pop(stack.length - 1)
+      if (stack.length === 0){
+        throw new Error("Bracket mismatch")
+      }
+      
+      stack.pop()
     }
   }
 

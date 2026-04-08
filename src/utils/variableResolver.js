@@ -5,14 +5,14 @@ export const getOperatorsForVariables = (context) => {
         "context:", context
     )
     
-    if (!context) {
-        console.log("!Context")
+    if (context === null) {
+        console.log("Context is null")
         return null
     }
 
     const size = context.size
     if (!size || size <= 0) {
-        console.log("!keys || !size || size <= 0")
+        console.log("Invalid context size")
         return null
     }
 
@@ -52,10 +52,9 @@ export const getOperatorsForVariables = (context) => {
 
     console.log("Created variable map:", operators)
 
-
     return {
         operators: operators,
-        preHandler: preHandleVariable,
-        fallIfPreHandleFailed: true
+        syntaxValidator: preHandleVariable,
+        fallIfSyntaxValidationFailed: true
     }
 }

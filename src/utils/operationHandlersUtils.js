@@ -21,7 +21,7 @@ const handleUnarOperation = (equation, prevalidationResult, handler) => {
 
   console.log("Argument for handleFunc:", argument);
 
-  if (!argument || argument.typeName !== tokenTypeNames.Number) {
+  if (!argument || argument.typeName !== tokenTypeNames.Number || isNaN(argument.value)) {
     throw Error("Couldn't handle operation", { equation, prevalidationResult })
   }
 
@@ -51,7 +51,7 @@ const handleBinarOperation = (equation, prevalidationResult, handler) => {
 
   for (const index of prevalidationResult.argumentIndexes) {
     const argument = equation[index]
-    if (!argument || argument.typeName !== tokenTypeNames.Number) {
+    if (!argument || argument.typeName !== tokenTypeNames.Number || isNaN(argument.value)) {
       console.log("Couldn't handle operation", argument, prevalidationResult.argumentIndexes, index)
       throw Error("Invalid arguments")
     }
