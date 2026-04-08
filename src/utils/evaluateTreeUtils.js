@@ -2,6 +2,9 @@ import { calculateTokens } from "./calculateSimpleEquation";
 import { tokenTypeNames } from "./tokenTypes";
 
 const evaluateNode = (tree, nodeName) => {
+    console.groupCollapsed("tree:", tree, 
+        "nodeName:", nodeName)
+
     const node = tree.get(nodeName)
     if (!node) {
         throw Error("node is null")
@@ -35,15 +38,18 @@ const evaluateNode = (tree, nodeName) => {
     }
 
     console.log("valueToReturn", valueToReturn);
+
+    console.groupEnd()
     return valueToReturn
 }
 
 
 export const evaluateTree = (parseResult) => {
-    console.log("evaluateTree executed")
+    console.groupCollapsed("evaluateTree", parseResult)
     if (!parseResult || !parseResult.map || !parseResult.entryPointName) {
         throw Error("tree is null")
     }
 
+    console.groupEnd()
     return evaluateNode(parseResult.map, parseResult.entryPointName).result
 }

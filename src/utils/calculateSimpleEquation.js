@@ -19,12 +19,9 @@ const getIndexedItemsOnCallback = (tokens, callback) => {
   return arrToRet
 }
 
-const shiftIndexes = (indexes, decrement, startingWithIndexIntoPairsArr) => {
-
-}
-
-
 export const calculateTokens = (tokens, context = null) => {
+  console.groupCollapsed(`calculateTokens`, tokens);
+
   console.log("Started calculateTokens.",
     "tokens:", tokens ? tokens : "[null]",
     "context:", context
@@ -147,5 +144,6 @@ export const calculateTokens = (tokens, context = null) => {
     tokens.map(t => t.fromSlice).join(""))
 
   console.log("Calculation finished. result:", tokenToReturn);
+  console.groupEnd();
   return tokenToReturn
 }

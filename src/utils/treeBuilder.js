@@ -12,6 +12,8 @@ const createBracketInfo = (name, index) => {
 }
 
 export const parseTree = (equation) => {
+  console.groupCollapsed(`ParseTree`, equation);
+
   const defaultTokenTypeName = tokenTypeNames.Word
   const defaultTokenType = tokenTypes.find(t => t.name === defaultTokenTypeName)
   if (!defaultTokenType) {
@@ -57,5 +59,6 @@ export const parseTree = (equation) => {
   console.log("stack:", stack)
   console.log("eqMap", eqMap)
 
+  console.groupEnd()
   return { map: eqMap, entryPointName }
 }

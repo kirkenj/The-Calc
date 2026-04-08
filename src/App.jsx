@@ -1,30 +1,11 @@
+import { evaluateTree } from "./utils/evaluateTreeUtils";
+import { parseTree } from "./utils/treeBuilder";
 // import Calculator from "./features/Calculator/Calculator";
 
-import { evaluateTree } from "./utils/evaluateTreeUtils";
 
-
-import { parseTree } from "./utils/treeBuilder";
-
-//const originalLog = console.log;
-//
-// Перехватываем управление
-// console.log = function (...args) {
-//   const safeArgs = args.map(arg => {
-//     // Если это объект или массив, делаем глубокую копию
-//     if (typeof arg === 'object' && arg !== null) {
-//       return JSON.parse(JSON.stringify(arg));
-//     }
-//     return arg; // Строки и числа оставляем как есть
-//   });
-//   // Вызываем настоящий логгер с безопасными копиями
-//   originalLog.apply(console, safeArgs);
-// };
 
 
 function App() {
-
-
-
   return (
     <>
       {/* <Calculator /> */}
