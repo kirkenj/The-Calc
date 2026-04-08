@@ -2,22 +2,13 @@ import { getDefaultOperatorsAccordingToPriorities } from './operatorsAccordingTo
 import { tokenTypeNames, createToken } from './tokenTypes'
 import { getOperatorsForVariables } from './variableResolver';
 import { getItemIndexToTheRightByCallback, getIndexOfFirst } from './arrayUtils';
+import { shuffleIndexes, getIndexedItemsOnCallback } from './indexUtils';
 
 const ignoredByDefaultTokenTypes = new Set([tokenTypeNames.WhiteSpace, tokenTypeNames.ClosedBracket, tokenTypeNames.OpenBracket])
 const notIgnoredTokenCheckCallback = (token) => !ignoredByDefaultTokenTypes.has(token.typeName)
 
-const getIndexedItemsOnCallback = (tokens, callback) => {
-  const arrToRet = []
-
-  for (let i = 0; i < tokens.length; i++) {
-    const token = tokens[i]
-    if (callback(token)) {
-      arrToRet.push({ index: i, token })
-    }
-  }
-
-  return arrToRet
-}
+const operatorsTokenTypes = new Set([tokenTypeNames.Word, tokenTypeNames.SpecSymbol])
+const isOperatorsTokenTypesCallback = (token) => operatorsTokenTypes.has(token.typeName)
 
 export const calculateTokens = (tokens, context = null) => {
   console.groupCollapsed(`calculateTokens`, tokens);
@@ -27,57 +18,49 @@ export const calculateTokens = (tokens, context = null) => {
     "context:", context
   )
 
-  const operatorsAccordingToPriorities = getDefaultOperatorsAccordingToPriorities();
-  console.log("operatorsAccordingToPriorities:",operatorsAccordingToPriorities)
-
-
+  const operatorsByPriority = getDefaultOperatorsAccordingToPriorities();
+  
   const variables = getOperatorsForVariables(context)
-  console.log("Variables handlers:", variables)
   if (variables) {
-    operatorsAccordingToPriorities.unshift(variables)
-    console.log("operatorsAccordingToPriorities with variables:", variables)
+    operatorsByPriority.unshift(variables)
   }
+  
+  const operatorIndexArr = getIndexedItemsOnCallback(tokens, isOperatorsTokenTypesCallback)
+  console.log("handlersIndex:", operatorIndexArr)
 
-  const currentTokensToIgnore = new Set([...ignoredByDefaultTokenTypes, tokenTypeNames.Number])
-  const notIgnoredTokensIndexes = getIndexedItemsOnCallback(tokens, (token) => !currentTokensToIgnore.has(token.typeName))
-  console.log("notIgnoredTokens:", notIgnoredTokensIndexes)
-
-  console.log("operatorsAccordingToPriorities:",operatorsAccordingToPriorities)
-
-  for (let k = 0; k < operatorsAccordingToPriorities.length; k++) {
-    const operatorsToPriority = operatorsAccordingToPriorities[k]
+  for (let k = 0; k < operatorsByPriority.length; k++) {
+    const currenrPriorityOperators = operatorsByPriority[k]
 
     console.log(
-      "Current operators to handle", operatorsToPriority,
-      "Operators:", operatorsToPriority.operators)
+      "Operators from current priority", currenrPriorityOperators,
+      "Operators:", currenrPriorityOperators.operators)
 
+    for (let i = 0; i < operatorIndexArr.length; i++) {
+      const operatorIndexPair = operatorIndexArr[i]
+      const operatorTokenIndex = operatorIndexPair.index
+      const operatorToken = tokens[operatorTokenIndex]
 
-    for (let i = 0; i < notIgnoredTokensIndexes.length; i++) {
-      const notIgnoredTokenIndexPair = notIgnoredTokensIndexes[i]
-      const notIgnoredTokenIndex = notIgnoredTokenIndexPair.index
-      const notIgnoredToken = tokens[notIgnoredTokenIndex]
-
-      const currentOperatorHandler = operatorsToPriority.operators.get(notIgnoredToken.value)
+      const currentOperatorHandler = currenrPriorityOperators.operators.get(operatorToken.value)
       if (!currentOperatorHandler) {
         console.log("Handler not found or not at current operators priority. " +
-          `operator:${notIgnoredToken.value} at index ${notIgnoredTokenIndex}`, "Current operators:", operatorsToPriority.operators.keys(), tokens)
+          `operator:${operatorToken.value} at index ${operatorTokenIndex}`, "Current operators:", currenrPriorityOperators.operators.keys(), tokens)
         continue
       }
 
-      const prevalidationResult = operatorsToPriority.preHandler(
-        tokens, notIgnoredTokenIndex, notIgnoredTokenCheckCallback)
+      const prevalidationResult = currenrPriorityOperators.preHandler(
+        tokens, operatorTokenIndex, notIgnoredTokenCheckCallback)
 
       console.log(
         "prevalidationResult", prevalidationResult,
-        "fallIfPreHandleFailed", operatorsToPriority.fallIfPreHandleFailed);
+        "fallIfPreHandleFailed", currenrPriorityOperators.fallIfPreHandleFailed);
 
       if (!prevalidationResult) {
-        if (operatorsToPriority.fallIfPreHandleFailed) {
-          console.log(`Invalid syntax for token at index ${notIgnoredTokenIndex}`, notIgnoredToken)
+        if (currenrPriorityOperators.fallIfPreHandleFailed) {
+          console.log(`Invalid syntax for token at index ${operatorTokenIndex}`, operatorToken)
           return null
         }
         else {
-          console.log(`Operator of function is not applicable at index:${notIgnoredToken}`)
+          console.log(`Operator of function is not applicable at index: ${operatorToken}`)
           continue
         }
       }
@@ -93,32 +76,16 @@ export const calculateTokens = (tokens, context = null) => {
         prevalidationResult.operationLength,
         res)
 
+      console.log("arr", tokens, "popped", popped)
 
-      console.log("Not ignored token indexes before pop:", notIgnoredTokensIndexes,
-        "Index to pop index:", i, "Index pair to pop:", notIgnoredTokensIndexes[i]
+      console.log("Not ignored token indexes before pop:", operatorIndexArr,
+        "Index to pop index:", i, "Index pair to pop:", operatorIndexArr[i]
       )
-      const poppedNotIgnoredToken = notIgnoredTokensIndexes.splice(i, 1)[0]
+      const poppedNotIgnoredToken = operatorIndexArr.splice(i, 1)[0]
       console.log("poppedNotIgnoredToken", poppedNotIgnoredToken, "at index(i)", i)
 
-      const indexDecrement = (prevalidationResult.operationLength - 1)
-      
-      for (let q = i; q < notIgnoredTokensIndexes.length; q++) {
-      const itemIndex = notIgnoredTokensIndexes[q]
-        const indexBeforeDecrement = itemIndex.index
-        
-        itemIndex.index = itemIndex.index - indexDecrement
-
-        console.log("indexBeforeDecrement", indexBeforeDecrement,
-          "itemIndex after decremented:", itemIndex,
-          "Index refers to", tokens[itemIndex.index]);
-
-        if (itemIndex.token !== tokens[itemIndex.index]) {
-          throw new Error("Self validation failed for indexPair", { cause: { itemIndex, tokens } })
-        }
-      }
-
+      shuffleIndexes(operatorIndexArr, i, (prevalidationResult.operationLength - 1))
       i--
-      console.log("arr", tokens, "popped", popped, notIgnoredTokensIndexes)
     }
   }
 
