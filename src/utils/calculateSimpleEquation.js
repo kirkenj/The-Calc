@@ -19,6 +19,9 @@ const getIndexedItemsOnCallback = (tokens, callback) => {
   return arrToRet
 }
 
+const shiftIndexes = (indexes, decrement, startingWithIndexIntoPairsArr) => {
+
+}
 
 
 export const calculateTokens = (tokens, context = null) => {
@@ -28,6 +31,9 @@ export const calculateTokens = (tokens, context = null) => {
   )
 
   const operatorsAccordingToPriorities = getDefaultOperatorsAccordingToPriorities();
+  console.log("operatorsAccordingToPriorities:",operatorsAccordingToPriorities)
+
+
   const variables = getOperatorsForVariables(context)
   console.log("Variables handlers:", variables)
   if (variables) {
@@ -36,43 +42,45 @@ export const calculateTokens = (tokens, context = null) => {
   }
 
   const currentTokensToIgnore = new Set([...ignoredByDefaultTokenTypes, tokenTypeNames.Number])
-  const isTokenIgnoredCallback = (token) => currentTokensToIgnore.has(token.typeName)
+  const notIgnoredTokensIndexes = getIndexedItemsOnCallback(tokens, (token) => !currentTokensToIgnore.has(token.typeName))
+  console.log("notIgnoredTokens:", notIgnoredTokensIndexes)
 
-  const notIgnoredTokens = getIndexedItemsOnCallback(tokens, (token) => !isTokenIgnoredCallback(token))
-  console.log("notIgnoredTokens:", notIgnoredTokens)
-
+  console.log("operatorsAccordingToPriorities:",operatorsAccordingToPriorities)
 
   for (let k = 0; k < operatorsAccordingToPriorities.length; k++) {
     const operatorsToPriority = operatorsAccordingToPriorities[k]
 
-    console.log("Current operators to handle", operatorsToPriority,
-      "Prevalidator", operatorsToPriority.operators
-    )
+    console.log(
+      "Current operators to handle", operatorsToPriority,
+      "Operators:", operatorsToPriority.operators)
 
 
+    for (let i = 0; i < notIgnoredTokensIndexes.length; i++) {
+      const notIgnoredTokenIndexPair = notIgnoredTokensIndexes[i]
+      const notIgnoredTokenIndex = notIgnoredTokenIndexPair.index
+      const notIgnoredToken = tokens[notIgnoredTokenIndex]
 
-
-
-    for (let i = 0; i < notIgnoredTokens.length; i++) {
-
-      const notIgnoredTokenIndex = notIgnoredTokens[i]
-
-      const currentOperatorHandler = operatorsToPriority.operators.get(tokens[notIgnoredTokenIndex.index].value)
+      const currentOperatorHandler = operatorsToPriority.operators.get(notIgnoredToken.value)
       if (!currentOperatorHandler) {
-        console.log(`Handler not found or not at current operators priority. operator: ${tokens[notIgnoredTokenIndex.index].value} at index ${notIgnoredTokenIndex.index}`, tokens)
+        console.log("Handler not found or not at current operators priority. " +
+          `operator:${notIgnoredToken.value} at index ${notIgnoredTokenIndex}`, "Current operators:", operatorsToPriority.operators.keys(), tokens)
         continue
       }
 
-      const prevalidationResult = operatorsToPriority.preHandler(tokens, i, notIgnoredTokenCheckCallback)
-      console.log("prevalidationResult", prevalidationResult, "fallIfPreHandleFailed", operatorsToPriority.fallIfPreHandleFailed);
+      const prevalidationResult = operatorsToPriority.preHandler(
+        tokens, notIgnoredTokenIndex, notIgnoredTokenCheckCallback)
+
+      console.log(
+        "prevalidationResult", prevalidationResult,
+        "fallIfPreHandleFailed", operatorsToPriority.fallIfPreHandleFailed);
 
       if (!prevalidationResult) {
         if (operatorsToPriority.fallIfPreHandleFailed) {
-          console.log(`Invalid syntax for token at index ${notIgnoredTokenIndex.index}`, tokens[notIgnoredTokenIndex.index])
+          console.log(`Invalid syntax for token at index ${notIgnoredTokenIndex}`, notIgnoredToken)
           return null
         }
         else {
-          console.log(`Operator of function is not applicable at index:${notIgnoredTokenIndex.index}`)
+          console.log(`Operator of function is not applicable at index:${notIgnoredToken}`)
           continue
         }
       }
@@ -89,28 +97,31 @@ export const calculateTokens = (tokens, context = null) => {
         res)
 
 
-      const poppedNotIgnoredToken = notIgnoredTokens.splice(i, 1)[0]
+      console.log("Not ignored token indexes before pop:", notIgnoredTokensIndexes,
+        "Index to pop index:", i, "Index pair to pop:", notIgnoredTokensIndexes[i]
+      )
+      const poppedNotIgnoredToken = notIgnoredTokensIndexes.splice(i, 1)[0]
       console.log("poppedNotIgnoredToken", poppedNotIgnoredToken, "at index(i)", i)
 
-      for (const itemIndex of notIgnoredTokens) {
-        if (itemIndex.index < poppedNotIgnoredToken.index) {
-          continue;
-        }
-
-
-        const indexBeforeDecrement = itemIndex.index 
-        itemIndex.index = itemIndex.index - prevalidationResult.operationLength + 1
+      const indexDecrement = (prevalidationResult.operationLength - 1)
+      
+      for (let q = i; q < notIgnoredTokensIndexes.length; q++) {
+      const itemIndex = notIgnoredTokensIndexes[q]
+        const indexBeforeDecrement = itemIndex.index
+        
+        itemIndex.index = itemIndex.index - indexDecrement
 
         console.log("indexBeforeDecrement", indexBeforeDecrement,
           "itemIndex after decremented:", itemIndex,
           "Index refers to", tokens[itemIndex.index]);
+
+        if (itemIndex.token !== tokens[itemIndex.index]) {
+          throw new Error("Self validation failed for indexPair", { cause: { itemIndex, tokens } })
+        }
       }
 
-
-      console.log("arr", tokens, "popped", popped, notIgnoredTokens)
-      i = prevalidationResult.operationStartIndex
-
-      //throw "break"
+      i--
+      console.log("arr", tokens, "popped", popped, notIgnoredTokensIndexes)
     }
   }
 
@@ -137,13 +148,4 @@ export const calculateTokens = (tokens, context = null) => {
 
   console.log("Calculation finished. result:", tokenToReturn);
   return tokenToReturn
-}
-
-export const calculateSimpleEquation = (tokens, context = null) => {
-  console.log("Started calculateSimpleEquation. parameter:", tokens,
-    "context:", context ? context : "[null]"
-  )
-
-  console.log("Recieved tokens to handle:", tokens)
-  return calculateTokens(tokens, context)
 }

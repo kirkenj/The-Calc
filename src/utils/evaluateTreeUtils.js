@@ -1,4 +1,4 @@
-import { calculateSimpleEquation } from "./calculateSimpleEquation";
+import { calculateTokens } from "./calculateSimpleEquation";
 import { tokenTypeNames } from "./tokenTypes";
 
 const evaluateNode = (tree, nodeName) => {
@@ -22,7 +22,7 @@ const evaluateNode = (tree, nodeName) => {
         "node:", node, 
         "map:", map)
 
-    const calculationResultToken = calculateSimpleEquation(evaluationToCalculate, map)
+    const calculationResultToken = calculateTokens(evaluationToCalculate, map)
     if (!calculationResultToken || calculationResultToken.typeName !== tokenTypeNames.Number) {
         throw Error("Invalid calculation result")
     }
