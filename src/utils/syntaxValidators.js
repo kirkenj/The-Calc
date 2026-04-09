@@ -38,29 +38,8 @@ export const validateUnarFunction = (equation, index, notIgnoredTokenCheckCallba
 }
 
 export const validateUnarMinus = (equation, index, notIgnoredTokenCheckCallback) => {
-  if (isNaN(index)) {
-    throw Error("ArgumentNull: index")
-  }
-
-  if (!equation || equation.length === 0) {
-    throw Error("Invalid Argument: equation")
-  }
-
-  if (index < 0 || index >= equation.length) {
-    throw Error("ArgumentOutOfRange: Invalid index")
-  }
-
-  if (!notIgnoredTokenCheckCallback || notIgnoredTokenCheckCallback.length < 1) {
-    throw Error("InvalidArgument: notIgnoredTokenCheckCallback")
-  }
-
-  if (!(index >= 0 && index < equation.length - 1)) {
-    return null
-  }
-
-  const notIgnoredTokenIndexToTheRight = getItemIndexToTheRightByCallback(equation, index, notIgnoredTokenCheckCallback)
-  console.log("notIgnoredTokenIndexToTheRight:", notIgnoredTokenIndexToTheRight);
-  if (notIgnoredTokenIndexToTheRight === null) {
+  const rightArgumentValicationResult = validateUnarFunction(equation, index, notIgnoredTokenCheckCallback)
+  if (rightArgumentValicationResult === null){
     return null
   }
 
@@ -70,7 +49,7 @@ export const validateUnarMinus = (equation, index, notIgnoredTokenCheckCallback)
   console.log(
     "notIgnoredTokenIndexToTheLeft:", notIgnoredTokenIndexToTheLeft,
     "notIgnoredTokenToTheLeft:", notIgnoredTokenToTheLeft,
-    "notIgnoredTokenIndexToTheRight:", notIgnoredTokenIndexToTheRight,
+    "notIgnoredTokenIndexToTheRight:", rightArgumentValicationResult.argumentIndexes[0],
   )
 
   return equation[notIgnoredTokenIndexToTheRight].typeName === tokenTypeNames.Number
