@@ -1,12 +1,10 @@
-import { getTokenStringAtIndex as parseToken } from "./tokenStringBuilder"
+import { getTokenStringAtIndex} from "./tokenStringBuilder"
 import { numberRestrictions } from "./tokenTypesRestrictions"
 
-export const appendNumber = (num, equation) => {
-    if (typeof equation !== 'string') {
-        console.log("equation is not a string")
-        return equation
-    }
-
+export function appendNumber(
+    num: string, 
+    equation: string
+) : string {
     if (!numberRestrictions.symbolMembershipCheckCallback(num)) {
         console.log("num !E [0,9]")
         return equation
@@ -17,17 +15,20 @@ export const appendNumber = (num, equation) => {
         : equation + num.toString()
 }
 
-export const appendDot = (equation) => {
-    const currentNumber = parseToken(
+export function appendDot(
+    equation: string
+) : string {
+
+    const currentNumber = getTokenStringAtIndex(
         equation,
         equation.length - 1,
-        numberRestrictions.allowedSymbols);
+        numberRestrictions.symbolMembershipCheckCallback);
 
-    if (currentNumber.number === "0" || currentNumber.number === "") {
+    if (currentNumber.tokenString === "0" || currentNumber.tokenString === "") {
         return "0."
     }
 
-    if (currentNumber.number.includes(".")) {
+    if (currentNumber.tokenString.includes(".")) {
         console.log(`Number already has dot`, currentNumber);
         return equation
     }

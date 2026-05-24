@@ -1,15 +1,22 @@
-import { numberRestrictions } from './tokenTypesRestrictions'
+import { numberRestrictions, TokenTypeRestriction } from './tokenTypesRestrictions'
 
-export const getTokenStringAtIndex = (equation, index, symbolMembershipCheckCallback, maxLength = null) => {
-    console.log("getTokenStringAtIndex executed with arguments:", 
-        "equation",equation, 
-        "index", index, 
-        "symbolMembershipCheckCallback", symbolMembershipCheckCallback, 
+interface TokenParseResult {
+    tokenString: string,
+    absoluteStartIndex: number,
+    relativeCaretIndex: number
+}
+
+export function getTokenStringAtIndex(
+    equation: string,
+    index: number,
+    symbolMembershipCheckCallback: (arg: string) => boolean,
+    maxLength: number | null = null
+): TokenParseResult {
+    console.log("getTokenStringAtIndex executed with arguments:",
+        "equation", equation,
+        "index", index,
+        "symbolMembershipCheckCallback", symbolMembershipCheckCallback,
         "maxLength", maxLength === null ? "[null]" : maxLength)
-    
-    if (isNaN(index)) {
-        throw Error("ArgumentNull: index")
-    }
 
     if (!equation || equation.length === 0) {
         throw Error("InvalidArgument: equation")
@@ -23,7 +30,7 @@ export const getTokenStringAtIndex = (equation, index, symbolMembershipCheckCall
         throw Error("InvalidArgument: callback")
     }
 
-    if (maxLength !== null && typeof maxLength !== 'number' && maxLength <= 0){
+    if (maxLength !== null && typeof maxLength !== 'number' && maxLength <= 0) {
         throw Error("InvalidArgument: maxLength")
     }
 
@@ -46,15 +53,15 @@ export const getTokenStringAtIndex = (equation, index, symbolMembershipCheckCall
             rightIndex = index;
         }
         else {
-            return { number: "", absoluteStartIndex: index, relativeCaretIndex: 0 };
+            return { tokenString: "", absoluteStartIndex: index, relativeCaretIndex: 0 };
         }
     }
 
     let length = rightIndex - leftIndex + 1
 
-    const lengthCanBeExpanded = maxLength === null 
+    const lengthCanBeExpanded = maxLength === null
         ? () => true
-        : (length) => length + 1 <= maxLength
+        : (length: number) => length + 1 <= maxLength
 
     do {
         if (moveLeft) {
@@ -86,7 +93,7 @@ export const getTokenStringAtIndex = (equation, index, symbolMembershipCheckCall
                 ? equation[rightIndexToCheck]
                 : null
 
-            const isRightSymbolAllowed = rightSymbolToCheck 
+            const isRightSymbolAllowed = rightSymbolToCheck
                 ? symbolMembershipCheckCallback(rightSymbolToCheck) && lengthCanBeExpanded(length)
                 : false
 
@@ -109,7 +116,7 @@ export const getTokenStringAtIndex = (equation, index, symbolMembershipCheckCall
     console.log('valStr to return:', valStr, "leftIndex:", leftIndex, "rightIndex:", rightIndex)
 
     return {
-        result: valStr,
+        tokenString: valStr,
         absoluteStartIndex: leftIndex,
         relativeCaretIndex: index - leftIndex + (edgeRight ? 1 : 0)
     }
@@ -117,11 +124,11 @@ export const getTokenStringAtIndex = (equation, index, symbolMembershipCheckCall
 
 
 
-export const getTokenSubstringAtIndex = (equation, index, tokenTypeRestrictions) => {
-    if (isNaN(index)) {
-        throw Error("ArgumentNull: index")
-    }
-
+export function getTokenSubstringAtIndex(
+    equation: string,
+    index: number,
+    tokenTypeRestrictions: TokenTypeRestriction
+): TokenParseResult {
     if (!equation || equation.length === 0) {
         throw Error("InvalidArgument: equation")
     }
@@ -130,7 +137,7 @@ export const getTokenSubstringAtIndex = (equation, index, tokenTypeRestrictions)
         throw Error("ArgumentOutOfRange: Invalid index")
     }
 
-    if (!tokenTypeRestrictions){
+    if (!tokenTypeRestrictions) {
         throw Error("InvalidArgument: tokenTypeRestrictions")
     }
 
@@ -140,17 +147,12 @@ export const getTokenSubstringAtIndex = (equation, index, tokenTypeRestrictions)
         tokenTypeRestrictions.maxLength
     )
 
-    return {
-        ...parseTokenResult,
-        resultStr: parseTokenResult.result,
-    }
+    return parseTokenResult
 }
 
-export const getNumberAtIndex = (equation, index) => {
-    if (isNaN(index)) {
-        throw Error("ArgumentNull: index")
-    }
-
+export function getNumberAtIndex(
+    equation: string,
+    index: number): TokenParseResult & { result: number } {
     if (!equation || equation.length === 0) {
         throw Error("InvalidArgument: equation")
     }
@@ -161,12 +163,14 @@ export const getNumberAtIndex = (equation, index) => {
 
     const parseTokenResult = getTokenSubstringAtIndex(equation, index, numberRestrictions)
 
-    const number = parseFloat(parseTokenResult.result)
+    const number = parseFloat(parseTokenResult.tokenString)
 
-    if (number.toString() !== parseTokenResult.result) {
+    if (number.toString() !== parseTokenResult.tokenString) {
         throw Error(`Couldn't parse number properly at index ${index}`)
     }
 
-    parseTokenResult.result = number
-    return parseTokenResult
+    return { 
+        ...parseTokenResult, 
+        result: number 
+    }
 }

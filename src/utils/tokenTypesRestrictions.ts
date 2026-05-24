@@ -16,7 +16,14 @@ Object.freeze(closedBracketAllowedSymbols)
 const openBracketAllowedSymbols = new Set(['('])
 Object.freeze(openBracketAllowedSymbols)
 
-export const numberRestrictions = {
+
+export interface TokenTypeRestriction {
+    allowedSymbols: Set<string>,
+    symbolMembershipCheckCallback: (symbol: string) => boolean,
+    maxLength: number | null
+}
+
+export const numberRestrictions: TokenTypeRestriction = {
     allowedSymbols: numberAllowedSymbols,
     symbolMembershipCheckCallback: (symbol) => numberAllowedSymbols.has(symbol),
     maxLength: null
@@ -24,7 +31,7 @@ export const numberRestrictions = {
 Object.freeze(numberRestrictions)
 
 
-export const wordRestrictions = {
+export const wordRestrictions: TokenTypeRestriction = {
     allowedSymbols: wordAllowedSymbols,
     symbolMembershipCheckCallback: (symbol) => wordAllowedSymbols.has(symbol),
     maxLength: null
@@ -32,7 +39,7 @@ export const wordRestrictions = {
 Object.freeze(wordRestrictions)
 
 
-export const whiteSpaceRestrictions ={
+export const whiteSpaceRestrictions: TokenTypeRestriction ={
     allowedSymbols: whiteSpaceAllowedSymbols,
     symbolMembershipCheckCallback: (symbol) => whiteSpaceAllowedSymbols.has(symbol),
     maxLength: null
@@ -40,21 +47,21 @@ export const whiteSpaceRestrictions ={
 Object.freeze(whiteSpaceRestrictions)
 
 
-export const specSymbolRestrictions = {
+export const specSymbolRestrictions: TokenTypeRestriction = {
     allowedSymbols: specSymbolAllowedSymbols,
     symbolMembershipCheckCallback: (symbol) => specSymbolAllowedSymbols.has(symbol),
     maxLength: 1
 }
 Object.freeze(specSymbolRestrictions)
 
-export const openBracketRestrictions = {
+export const openBracketRestrictions: TokenTypeRestriction = {
     allowedSymbols: openBracketAllowedSymbols,
     symbolMembershipCheckCallback: (symbol) => openBracketAllowedSymbols.has(symbol),
     maxLength: 1
 }
 Object.freeze(openBracketRestrictions)
 
-export const closedBracketRestrictions = {
+export const closedBracketRestrictions: TokenTypeRestriction = {
     allowedSymbols: closedBracketAllowedSymbols,
     symbolMembershipCheckCallback: (symbol) => closedBracketAllowedSymbols.has(symbol),
     maxLength: 1
