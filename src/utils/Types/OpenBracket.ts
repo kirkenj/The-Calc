@@ -1,7 +1,7 @@
-import { Token } from "../Models/Token"
-import { TokenType } from "../Models/TokenType"
-import { TokenTypeRestriction } from "../Models/TokenTypeRestrictions"
-import { TokenStringCollectionResult } from "../tokenStringBuilder"
+import { type Token } from "../Models/Token"
+import { type TokenType } from "../Models/TokenType"
+import { type TokenTypeRestriction } from "../Models/TokenTypeRestrictions"
+import { type TokenStringCollectionResult } from "../tokenStringBuilder"
 
 const openBracketAllowedSymbols = new Set(['('])
 Object.freeze(openBracketAllowedSymbols)

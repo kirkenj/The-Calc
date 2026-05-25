@@ -1,4 +1,4 @@
-import { TokenType } from "./TokenType"
+import { type TokenType } from "./TokenType"
 
 export interface Token {
   type: TokenType,

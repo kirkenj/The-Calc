@@ -1,4 +1,4 @@
-import { Token } from "./Models/Token"
+import { type Token } from "./Models/Token"
 import { getTokenStringAtIndex } from "./tokenStringBuilder"
 import { tokenTypesAsArr } from './Types/TokenTypes'
 

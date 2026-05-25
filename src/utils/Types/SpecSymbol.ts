@@ -1,7 +1,7 @@
 import { type TokenTypeRestriction } from "../Models/TokenTypeRestrictions"
-import { Token } from "../Models/Token"
-import { TokenType } from "../Models/TokenType"
-import { TokenStringCollectionResult } from "../tokenStringBuilder"
+import { type Token } from "../Models/Token"
+import { type TokenType } from "../Models/TokenType"
+import { type TokenStringCollectionResult } from "../tokenStringBuilder"
 
 const specSymbolAllowedSymbols = new Set(['*', "/", "\\", "+", "-", ":", "^"])
 Object.freeze(specSymbolAllowedSymbols)

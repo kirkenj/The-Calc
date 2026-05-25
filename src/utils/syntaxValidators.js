@@ -37,30 +37,30 @@ export const validateUnarFunction = (equation, index, notIgnoredTokenCheckCallba
   : null
 }
 
-export const validateUnarMinus = (equation, index, notIgnoredTokenCheckCallback) => {
-  const rightArgumentValicationResult = validateUnarFunction(equation, index, notIgnoredTokenCheckCallback)
-  if (rightArgumentValicationResult === null){
-    return null
-  }
+// export const validateUnarMinus = (equation, index, notIgnoredTokenCheckCallback) => {
+//   const rightArgumentValidationResult = validateUnarFunction(equation, index, notIgnoredTokenCheckCallback)
+//   if (rightArgumentValidationResult === null){
+//     return null
+//   }
 
-  const notIgnoredTokenIndexToTheLeft = getItemIndexToTheLeftByCallback(equation, index, notIgnoredTokenCheckCallback)
-  const notIgnoredTokenToTheLeft = notIgnoredTokenIndexToTheLeft === null ? null : equation[notIgnoredTokenIndexToTheLeft]
+//   const notIgnoredTokenIndexToTheLeft = getItemIndexToTheLeftByCallback(equation, index, notIgnoredTokenCheckCallback)
+//   const notIgnoredTokenToTheLeft = notIgnoredTokenIndexToTheLeft === null ? null : equation[notIgnoredTokenIndexToTheLeft]
 
-  console.log(
-    "notIgnoredTokenIndexToTheLeft:", notIgnoredTokenIndexToTheLeft,
-    "notIgnoredTokenToTheLeft:", notIgnoredTokenToTheLeft,
-    "notIgnoredTokenIndexToTheRight:", rightArgumentValicationResult.argumentIndexes[0],
-  )
+//   console.log(
+//     "notIgnoredTokenIndexToTheLeft:", notIgnoredTokenIndexToTheLeft,
+//     "notIgnoredTokenToTheLeft:", notIgnoredTokenToTheLeft,
+//     "notIgnoredTokenIndexToTheRight:", rightArgumentValidationResult.argumentIndexes[0],
+//   )
 
-  return equation[notIgnoredTokenIndexToTheRight].typeName === tokenTypeNames.Number
-  && (notIgnoredTokenToTheLeft === null || notIgnoredTokenToTheLeft.typeName !== tokenTypeNames.Number)
-  ? {
-      argumentIndexes: [notIgnoredTokenIndexToTheRight],
-      operationStartIndex: index,
-      operationLength: notIgnoredTokenIndexToTheRight - index + 1,
-    }
-  : null
-}
+//   return equation[notIgnoredTokenIndexToTheRight].typeName === tokenTypeNames.Number
+//   && (notIgnoredTokenToTheLeft === null || notIgnoredTokenToTheLeft.typeName !== tokenTypeNames.Number)
+//   ? {
+//       argumentIndexes: [notIgnoredTokenIndexToTheRight],
+//       operationStartIndex: index,
+//       operationLength: notIgnoredTokenIndexToTheRight - index + 1,
+//     }
+//   : null
+// }
 
 export const validateBinarOperation = (equation, index, notIgnoredTokenCheckCallback) => {
   console.log("preHandleBinarOperation executed with arguments:", 

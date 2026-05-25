@@ -16,7 +16,7 @@ export function getTokenStringAtIndex(
         "symbolMembershipCheckCallback", symbolMembershipCheckCallback,
         "maxLength", maxLength === null ? "[null]" : maxLength)
 
-    if (!equation || equation.length === 0) {
+    if (equation.length === 0) {
         throw Error("InvalidArgument: equation")
     }
 
@@ -24,11 +24,7 @@ export function getTokenStringAtIndex(
         throw Error("ArgumentOutOfRange: Invalid index")
     }
 
-    if (!symbolMembershipCheckCallback || symbolMembershipCheckCallback.length < 1) {
-        throw Error("InvalidArgument: callback")
-    }
-
-    if (maxLength !== null && typeof maxLength !== 'number' && maxLength <= 0) {
+    if (maxLength !== null && !isNaN(maxLength) && maxLength <= 0) {
         throw Error("InvalidArgument: maxLength")
     }
 
@@ -108,7 +104,7 @@ export function getTokenStringAtIndex(
             }
         }
     }
-    while ((moveLeft || moveRight))
+    while (moveLeft || moveRight)
 
     const valStr = equation.slice(leftIndex, rightIndex + 1)
     console.log('valStr to return:', valStr, "leftIndex:", leftIndex, "rightIndex:", rightIndex)

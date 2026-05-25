@@ -1,7 +1,7 @@
 import { type TokenTypeRestriction } from "../Models/TokenTypeRestrictions"
-import { Token } from "../Models/Token"
-import { TokenType } from "../Models/TokenType"
-import { TokenStringCollectionResult } from "../tokenStringBuilder"
+import { type Token } from "../Models/Token"
+import { type TokenType } from "../Models/TokenType"
+import { type TokenStringCollectionResult } from "../tokenStringBuilder"
 
 const wordAllowedSymbols =  new Set(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'])
 Object.freeze(wordAllowedSymbols)

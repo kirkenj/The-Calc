@@ -1,7 +1,7 @@
-import { ValueToken } from "../Models/Token"
-import { TokenType } from "../Models/TokenType"
+import { type ValueToken } from "../Models/Token"
+import { type TokenType } from "../Models/TokenType"
 import { type TokenTypeRestriction } from "../Models/TokenTypeRestrictions"
-import { TokenStringCollectionResult } from "../tokenStringBuilder"
+import { type TokenStringCollectionResult } from "../tokenStringBuilder"
 
 
 const numberAllowedSymbols = new Set(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."])
