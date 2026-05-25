@@ -1,6 +1,4 @@
-import { numberRestrictions, TokenTypeRestriction } from './tokenTypesRestrictions'
-
-interface TokenParseResult {
+export interface TokenStringCollectionResult {
     tokenString: string,
     absoluteStartIndex: number,
     relativeCaretIndex: number
@@ -11,7 +9,7 @@ export function getTokenStringAtIndex(
     index: number,
     symbolMembershipCheckCallback: (arg: string) => boolean,
     maxLength: number | null = null
-): TokenParseResult {
+): TokenStringCollectionResult {
     console.log("getTokenStringAtIndex executed with arguments:",
         "equation", equation,
         "index", index,
@@ -119,58 +117,5 @@ export function getTokenStringAtIndex(
         tokenString: valStr,
         absoluteStartIndex: leftIndex,
         relativeCaretIndex: index - leftIndex + (edgeRight ? 1 : 0)
-    }
-}
-
-
-
-export function getTokenSubstringAtIndex(
-    equation: string,
-    index: number,
-    tokenTypeRestrictions: TokenTypeRestriction
-): TokenParseResult {
-    if (!equation || equation.length === 0) {
-        throw Error("InvalidArgument: equation")
-    }
-
-    if (index < 0 || index >= equation.length) {
-        throw Error("ArgumentOutOfRange: Invalid index")
-    }
-
-    if (!tokenTypeRestrictions) {
-        throw Error("InvalidArgument: tokenTypeRestrictions")
-    }
-
-    const parseTokenResult = getTokenStringAtIndex(equation,
-        index,
-        tokenTypeRestrictions.symbolMembershipCheckCallback,
-        tokenTypeRestrictions.maxLength
-    )
-
-    return parseTokenResult
-}
-
-export function getNumberAtIndex(
-    equation: string,
-    index: number): TokenParseResult & { result: number } {
-    if (!equation || equation.length === 0) {
-        throw Error("InvalidArgument: equation")
-    }
-
-    if (index < 0 || index >= equation.length) {
-        throw Error("ArgumentOutOfRange: Invalid index")
-    }
-
-    const parseTokenResult = getTokenSubstringAtIndex(equation, index, numberRestrictions)
-
-    const number = parseFloat(parseTokenResult.tokenString)
-
-    if (number.toString() !== parseTokenResult.tokenString) {
-        throw Error(`Couldn't parse number properly at index ${index}`)
-    }
-
-    return { 
-        ...parseTokenResult, 
-        result: number 
     }
 }

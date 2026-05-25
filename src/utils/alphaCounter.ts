@@ -1,4 +1,5 @@
-export const createAlphaCounter = () : () => string => {
+export function createAlphaCounter(  
+) : () => string {
   let count = 0;
 
   return () => {
