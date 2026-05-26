@@ -1,5 +1,5 @@
 export function getIndexOfFirst<T>(
-  equation: T[],
+  equation: ArrayLike<T>,
   сheckCallback: (val: T) => boolean
 ): number | null {
   for (let i = 0; i < equation.length; i++) {
@@ -12,7 +12,7 @@ export function getIndexOfFirst<T>(
 }
 
 export function getItemIndexToTheRightByCallback<T>(
-  equation: T[],
+  equation: ArrayLike<T>,
   index: number,
   сheckCallback: (val: T) => boolean
 ): number | null {
@@ -30,7 +30,7 @@ export function getItemIndexToTheRightByCallback<T>(
 }
 
 export function getItemIndexToTheLeftByCallback<T>(
-  equation: T[],
+  equation: ArrayLike<T>,
   index: number,
   сheckCallback: (val: T) => boolean
 ): number | null {

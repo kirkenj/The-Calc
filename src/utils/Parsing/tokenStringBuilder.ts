@@ -1,15 +1,8 @@
-export interface TokenStringCollectionResult {
-    tokenString: string,
-    absoluteStartIndex: number,
-    relativeCaretIndex: number
-}
+import { Result } from "../Models/Core/Result"
+import type { StringCollectionDelegate } from "../Models/Parsing/StringCollectionDelegate"
 
-export function getTokenStringAtIndex(
-    equation: string,
-    index: number,
-    symbolMembershipCheckCallback: (arg: string) => boolean,
-    maxLength: number | null = null
-): TokenStringCollectionResult {
+
+export const getTokenStringAtIndex: StringCollectionDelegate = (equation, index, symbolMembershipCheckCallback, maxLength = null) => {
     console.log("getTokenStringAtIndex executed with arguments:",
         "equation", equation,
         "index", index,
@@ -17,15 +10,15 @@ export function getTokenStringAtIndex(
         "maxLength", maxLength === null ? "[null]" : maxLength)
 
     if (equation.length === 0) {
-        throw Error("InvalidArgument: equation")
+        return Result.Fail("InvalidArgument: equation")
     }
 
     if (index < 0 || index >= equation.length) {
-        throw Error("ArgumentOutOfRange: Invalid index")
+        return Result.Fail("ArgumentOutOfRange: Invalid index")
     }
 
     if (maxLength !== null && !isNaN(maxLength) && maxLength <= 0) {
-        throw Error("InvalidArgument: maxLength")
+        return Result.Fail("InvalidArgument: maxLength")
     }
 
     let leftIndex = index
@@ -47,7 +40,7 @@ export function getTokenStringAtIndex(
             rightIndex = index;
         }
         else {
-            return { tokenString: "", absoluteStartIndex: index, relativeCaretIndex: 0 };
+            return Result.Success({ tokenString: "", absoluteStartIndex: index, relativeCaretIndex: 0 });
         }
     }
 
@@ -109,9 +102,9 @@ export function getTokenStringAtIndex(
     const valStr = equation.slice(leftIndex, rightIndex + 1)
     console.log('valStr to return:', valStr, "leftIndex:", leftIndex, "rightIndex:", rightIndex)
 
-    return {
+    return Result.Success({
         tokenString: valStr,
         absoluteStartIndex: leftIndex,
         relativeCaretIndex: index - leftIndex + (edgeRight ? 1 : 0)
-    }
+    })
 }

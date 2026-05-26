@@ -1,7 +1,12 @@
 //import './App.css'
-import { parseTokens } from "./utils/tokenParser";
+import { createTokenParser} from "./utils/Parsing/tokenParser";
+import { tokenTypesAsArr } from "./utils/Types/TokenTypes";
+import { getTokenStringAtIndex } from "./utils/Parsing/tokenStringBuilder";
 
 function App() {
+  const parseTokensDelegate = createTokenParser(tokenTypesAsArr, getTokenStringAtIndex)
+
+
 
   return (
     <>
@@ -10,7 +15,7 @@ function App() {
 
 
         //console.log("defaultDefinedNames:", defaultDefinedNames)
-        const parseResult = parseTokens("10 + ( 5 * ( 6 / 2 )) + 4")
+        const parseResult = parseTokensDelegate("10 + ( 5 * ( 6 / 2 )) + 4")
         //const parseResult = parseTree("10 + ( 5 * ( 6 / 2 )")
         //const parseResult = parseTree("100 + ( 60            / 2 )")
         //const parseResult = parseTree("(((()())()(", onTokenParsed)

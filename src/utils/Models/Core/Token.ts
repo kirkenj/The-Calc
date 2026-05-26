@@ -1,9 +1,9 @@
 import { type TokenType } from "./TokenType"
 
 export interface Token {
-  type: TokenType,
-  initStringIndex: number,
-  fromString: string
+  readonly type: TokenType,
+  readonly initStringIndex: number,
+  readonly fromString: string
 }
 
 export interface ValueToken<T> extends Token {

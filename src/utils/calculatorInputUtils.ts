@@ -1,5 +1,5 @@
-import { getTokenStringAtIndex} from "./tokenStringBuilder"
-import { numberRestrictions } from "./tokenTypesRestrictions"
+import { getTokenStringAtIndex } from "./Parsing/tokenStringBuilder";
+import { numberRestrictions } from "./Types/Number"
 
 export function appendNumber(
     num: string, 
@@ -18,18 +18,24 @@ export function appendNumber(
 export function appendDot(
     equation: string
 ) : string {
-
-    const currentNumber = getTokenStringAtIndex(
+    const getCurrentNumberResult = getTokenStringAtIndex(
         equation,
         equation.length - 1,
         numberRestrictions.symbolMembershipCheckCallback);
 
-    if (currentNumber.tokenString === "0" || currentNumber.tokenString === "") {
+    if (!getCurrentNumberResult.Success){
+        console.log(`Couldn't get a number`, getCurrentNumberResult);
+        return equation
+    }
+
+    const getCurrentNumber = getCurrentNumberResult.Result;
+
+    if (getCurrentNumber.tokenString === "0" || getCurrentNumber.tokenString === "") {
         return "0."
     }
 
-    if (currentNumber.tokenString.includes(".")) {
-        console.log(`Number already has dot`, currentNumber);
+    if (getCurrentNumber.tokenString.includes(".")) {
+        console.log(`Number already has dot`, getCurrentNumberResult);
         return equation
     }
 

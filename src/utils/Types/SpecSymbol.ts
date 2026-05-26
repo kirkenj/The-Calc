@@ -1,7 +1,10 @@
-import { type TokenTypeRestriction } from "../Models/TokenTypeRestrictions"
-import { type Token } from "../Models/Token"
-import { type TokenType } from "../Models/TokenType"
-import { type TokenStringCollectionResult } from "../tokenStringBuilder"
+import { type TokenTypeRestriction } from "../Models/Core/TokenTypeRestrictions"
+import { type Token } from "../Models/Core/Token"
+import { type TokenType } from "../Models/Core/TokenType"
+import { type TokenStringCollectionResult } from "../Models/Parsing/TokenStringCollectionResult"
+import { getIndexOfFirst } from "../Extensions/arrayUtils"
+import { Result } from "../Models/Core/Result"
+
 
 const specSymbolAllowedSymbols = new Set(['*', "/", "\\", "+", "-", ":", "^"])
 Object.freeze(specSymbolAllowedSymbols)
@@ -19,11 +22,31 @@ export const specSymbolTokenType: TokenType = {
   tokenStringRestriction: specSymbolRestrictions,
   tokenParser: (
     stringCollectionResult: TokenStringCollectionResult
-  ): Token => {
-    return {
+  ): Result<Token> => {
+
+    if (stringCollectionResult.tokenString.length === 0) {
+      return Result.Fail("ArgumentException: length of tokenString can not be 0")
+    }
+
+    if (specSymbolRestrictions.maxLength
+      && stringCollectionResult.tokenString.length > specSymbolRestrictions.maxLength) {
+      return Result.Fail(`ArgumentException: length of tokenString can not be more than ${specSymbolRestrictions.maxLength}`)
+    }
+
+    const invalidSymbolIndex = getIndexOfFirst(
+      stringCollectionResult.tokenString,
+      (s: string) => !specSymbolRestrictions.symbolMembershipCheckCallback(s))
+
+    if (invalidSymbolIndex !== null) {
+      return Result.Fail(`ArgumentException: invalid symbol '${stringCollectionResult.tokenString[invalidSymbolIndex]}' at index: ${invalidSymbolIndex}`)
+    }
+
+    return Result.Success({
       type: specSymbolTokenType,
       initStringIndex: stringCollectionResult.absoluteStartIndex,
       fromString: stringCollectionResult.tokenString,
-    }
+    })
   }
 }
+
+Object.freeze(specSymbolTokenType)

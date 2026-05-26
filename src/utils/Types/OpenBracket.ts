@@ -1,16 +1,18 @@
-import { type Token } from "../Models/Token"
-import { type TokenType } from "../Models/TokenType"
-import { type TokenTypeRestriction } from "../Models/TokenTypeRestrictions"
-import { type TokenStringCollectionResult } from "../tokenStringBuilder"
+import { type Token } from "../Models/Core/Token"
+import { type TokenType } from "../Models/Core/TokenType"
+import { type TokenTypeRestriction } from "../Models/Core/TokenTypeRestrictions"
+import { type TokenStringCollectionResult } from "../Models/Parsing/TokenStringCollectionResult"
+import { Result } from "../Models/Core/Result"
+import { getIndexOfFirst } from "../Extensions/arrayUtils"
 
 const openBracketAllowedSymbols = new Set(['('])
 Object.freeze(openBracketAllowedSymbols)
 
 
 export const openBracketRestrictions: TokenTypeRestriction = {
-    allowedSymbols: openBracketAllowedSymbols,
-    symbolMembershipCheckCallback: (symbol) => openBracketAllowedSymbols.has(symbol),
-    maxLength: 1
+  allowedSymbols: openBracketAllowedSymbols,
+  symbolMembershipCheckCallback: (symbol) => openBracketAllowedSymbols.has(symbol),
+  maxLength: 1
 }
 Object.freeze(openBracketRestrictions)
 
@@ -19,15 +21,30 @@ export const openBracketTokenType: TokenType = {
   tokenStringRestriction: openBracketRestrictions,
   tokenParser: (
     stringCollectionResult: TokenStringCollectionResult
-  ): Token => {
-    return {
+  ): Result<Token> => {
+    if (stringCollectionResult.tokenString.length === 0) {
+      return Result.Fail("ArgumentException: length of tokenString can not be 0")
+    }
+
+    if (openBracketRestrictions.maxLength
+      && stringCollectionResult.tokenString.length > openBracketRestrictions.maxLength) {
+      return Result.Fail(`ArgumentException: length of tokenString can not be more than ${openBracketRestrictions.maxLength}`)
+    }
+
+    const invalidSymbolIndex = getIndexOfFirst(
+      stringCollectionResult.tokenString,
+      (s: string) => !openBracketRestrictions.symbolMembershipCheckCallback(s))
+
+    if (invalidSymbolIndex !== null) {
+      return Result.Fail(`ArgumentException: invalid symbol '${stringCollectionResult.tokenString[invalidSymbolIndex]}' at index: ${invalidSymbolIndex}`)
+    }
+
+    return Result.Success({
       type: openBracketTokenType,
       initStringIndex: stringCollectionResult.absoluteStartIndex,
       fromString: stringCollectionResult.tokenString,
-    }
+    })
   }
 }
 
-
-const closedBracketAllowedSymbols = new Set([')'])
-Object.freeze(closedBracketAllowedSymbols)
+Object.freeze(openBracketTokenType)

@@ -1,7 +1,9 @@
-import { type TokenTypeRestriction } from "../Models/TokenTypeRestrictions"
-import { type Token } from "../Models/Token"
-import { type TokenType } from "../Models/TokenType"
-import { type TokenStringCollectionResult } from "../tokenStringBuilder"
+import { type TokenTypeRestriction } from "../Models/Core/TokenTypeRestrictions"
+import { type Token } from "../Models/Core/Token"
+import { type TokenType } from "../Models/Core/TokenType"
+import { type TokenStringCollectionResult } from "../Models/Parsing/TokenStringCollectionResult"
+import { getIndexOfFirst } from "../Extensions/arrayUtils"
+import { Result } from "../Models/Core/Result"
 
 const wordAllowedSymbols =  new Set(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'])
 Object.freeze(wordAllowedSymbols)
@@ -18,11 +20,32 @@ export const wordTokenType: TokenType = {
   tokenStringRestriction: wordRestrictions,
   tokenParser: (
     stringCollectionResult: TokenStringCollectionResult
-  ): Token => {
-    return {
+  ): Result<Token> => {
+
+    if (stringCollectionResult.tokenString.length === 0) {
+      return Result.Fail("ArgumentException: length of tokenString can not be 0")
+    }
+
+    if (wordRestrictions.maxLength
+      && stringCollectionResult.tokenString.length > wordRestrictions.maxLength) {
+      return Result.Fail(`ArgumentException: length of tokenString can not be more than ${wordRestrictions.maxLength}`)
+    }
+
+    const invalidSymbolIndex = getIndexOfFirst(
+      stringCollectionResult.tokenString,
+      (s: string) => !wordRestrictions.symbolMembershipCheckCallback(s))
+
+    if (invalidSymbolIndex !== null) {
+      return Result.Fail(`ArgumentException: invalid symbol '${stringCollectionResult.tokenString[invalidSymbolIndex]}' at index: ${invalidSymbolIndex}`)
+    }
+
+    
+    return Result.Success({
       type: wordTokenType,
       initStringIndex: stringCollectionResult.absoluteStartIndex,
       fromString: stringCollectionResult.tokenString,
-    }
+    })
   }
 }
+
+Object.freeze(wordTokenType)
