@@ -1,16 +1,17 @@
-import { getDefaultOperatorsAccordingToPriorities } from './operatorsAccordingToPriorities'
-import { tokenTypeNames, createToken } from './tokenTypes'
-import { getOperatorsForVariables } from './variableResolver';
-import { getItemIndexToTheRightByCallback, getIndexOfFirst } from './arrayUtils';
-import { decrementIndexes, getIndexesOnPredicate } from './indexUtils';
+import { getIndexOfFirst, getItemIndexToTheRightByCallback } from './Extensions/arrayUtils';
+import { decrementValuesFromIndex, getIndexesOnPredicate } from './indexUtils';
+import { Result } from './Models/Core/Result';
+import type { Token, ValueToken } from './Models/Core/Token';
+import type { TokenType } from './Models/Core/TokenType';
+import { tokenTypes } from './Types/TokenTypes';
 
-const ignoredByDefaultTokenTypes = new Set([tokenTypeNames.WhiteSpace, tokenTypeNames.ClosedBracket, tokenTypeNames.OpenBracket])
-const notIgnoredTokenCheckCallback = (token) => !ignoredByDefaultTokenTypes.has(token.typeName)
+const ignoredByDefaultTokenTypes = new Set<TokenType>([tokenTypes.WhiteSpaceTokenType, tokenTypes.ClosedBracketTokenType, tokenTypes.OpenBracketTokenType])
+const notIgnoredTokenCheckCallback = (token: Token) => !ignoredByDefaultTokenTypes.has(token.type)
 
-const operatorsTokenTypes = new Set([tokenTypeNames.Word, tokenTypeNames.SpecSymbol])
-const isOperatorsTokenTypesCallback = (token) => operatorsTokenTypes.has(token.typeName)
+const operatorsTokenTypes = new Set<TokenType>([tokenTypes.WordTokenType, tokenTypes.SpecSymbolTokenType])
+const isOperatorsTokenTypesCallback = (token: Token) => operatorsTokenTypes.has(token.type)
 
-const getOperatorsForContext = (context) => {
+const getOperatorsForContext = (context: Map<string, Token>) => {
   const operatorsByPriority = getDefaultOperatorsAccordingToPriorities();
   const variables = getOperatorsForVariables(context)
   if (variables) {
@@ -20,27 +21,33 @@ const getOperatorsForContext = (context) => {
   return operatorsByPriority
 }
 
-const getCalculationResult = (tokens) => {
+const getCalculationResult = (
+  tokens: Token[]
+): Result<Token> => {
   const firstNotIgnoredTokenIndex = getIndexOfFirst(tokens, notIgnoredTokenCheckCallback)
   if (firstNotIgnoredTokenIndex === null) {
-    return {result: null, message: "not ignored tokens not found"}
+    return Result.Fail("not ignored tokens not found") 
   }
 
   const secondNotIgnoredTokenIndex = getItemIndexToTheRightByCallback(tokens, firstNotIgnoredTokenIndex, notIgnoredTokenCheckCallback)
   if (secondNotIgnoredTokenIndex !== null) {
-    return {result: null, message: "not ignored tokens count > 1"}
+    return Result.Fail("not ignored tokens count > 1") 
   }
 
-  return {result: tokens[firstNotIgnoredTokenIndex].value, message: null}
+  return Result.Success(tokens[firstNotIgnoredTokenIndex])
 }
 
-export const calculateTokens = (tokens, context = null) => {
+
+export const calculateTokens = (
+  tokens: Token[],
+  context: Map<string, Token> | null = null
+): Result<Token> => {
   console.groupCollapsed(`calculateTokens`, tokens, context);
-  
+
   const operatorsByPriority = getOperatorsForContext(context)
-  
+
   const operatorIndexes = getIndexesOnPredicate(tokens, isOperatorsTokenTypesCallback)
-  
+
   console.log("handlersIndexes:", operatorIndexes)
 
   for (let k = 0; k < operatorsByPriority.length; k++) {
@@ -94,14 +101,14 @@ export const calculateTokens = (tokens, context = null) => {
       const poppedNotIgnoredToken = operatorIndexes.splice(i, 1)[0]
       console.log("poppedNotIgnoredToken", poppedNotIgnoredToken, "at index(i)", i)
 
-      decrementIndexes(operatorIndexes, i, (syntaxValidationResult.operationLength - 1))
+      decrementValuesFromIndex(operatorIndexes, i, (syntaxValidationResult.operationLength - 1))
       i--
     }
   }
 
   const calculationResult = getCalculationResult(tokens)
-  if (calculationResult.result === null){
-    console.log("Couldn't handle equation properly. " 
+  if (calculationResult.result === null) {
+    console.log("Couldn't handle equation properly. "
       + (calculationResult.message === null ? "[null]" : calculationResult.message))
   }
 

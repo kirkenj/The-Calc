@@ -1,15 +1,8 @@
-import { Result } from "./Models/Core/Result";
-import { type Token } from "./Models/Core/Token";
-import { type TokenType } from "./Models/Core/TokenType";
-import { type BracketInfo } from "./Models/TreeBuilding/BracketInfo";
-
-
-interface NodeCalculationResult {
-    name: string,
-    content: Token[],
-    map: Map<string, Token>,
-    result: Token
-}
+import { type NodeCalculationResult } from "../Models/Calculation/NodeCalculationResult";
+import { Result } from "../Models/Core/Result";
+import { type Token } from "../Models/Core/Token";
+import { type TokenType } from "../Models/Core/TokenType";
+import { type BracketInfo } from "../Models/TreeBuilding/BracketInfo";
 
 
 export const evaluateNode = (
