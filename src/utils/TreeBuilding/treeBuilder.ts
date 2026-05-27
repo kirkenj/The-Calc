@@ -19,6 +19,14 @@ export function parseTree(
 ): Result<ParseTreeResult> {
   console.groupCollapsed(`ParseTree`, equation);
 
+  console.log(
+    "equation:", equation,
+    "nameGenerator:", nameGenerator,
+    "builderTriggers:", builderTriggers,
+    "parseEquationCallback:", parseEquationCallback,
+    "stringCollectionDelegate:", stringCollectionDelegate
+  )
+
   //#region validations
   if (equation.length === 0) {
     return Result.Fail("Equation must not be empty")
