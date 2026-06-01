@@ -1,4 +1,6 @@
 import { tokenTypeNames } from "./tokenTypes"
+import console from "console"
+
 
 export const getOperatorsForVariables = (context) => {
     console.log("getOperatorsForVariables executed",

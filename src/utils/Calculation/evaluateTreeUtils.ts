@@ -1,4 +1,4 @@
-import { type NodeCalculationResult } from "../Models/Calculation/NodeCalculationResult";
+import { type NodeCalculationResult } from "../Models/NodeCalculation/NodeCalculationResult";
 import { Result } from "../Models/Core/Result";
 import { type Token } from "../Models/Core/Token";
 import { type TokenType } from "../Models/Core/TokenType";
@@ -16,7 +16,7 @@ export const evaluateNode = (
         return Result.Fail("node is null")
     }
 
-    let evaluationToCalculate = node.content;
+    const evaluationToCalculate = node.content;
     const map = new Map<string, Token>();
     if (node.children.length > 0) {
         for (const childName of node.children) {

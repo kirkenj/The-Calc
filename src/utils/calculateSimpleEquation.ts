@@ -1,8 +1,8 @@
 import { getIndexOfFirst, getItemIndexToTheRightByCallback } from './Extensions/arrayUtils';
 import { decrementValuesFromIndex, getIndexesOnPredicate } from './indexUtils';
 import { Result } from './Models/Core/Result';
-import type { Token, ValueToken } from './Models/Core/Token';
-import type { TokenType } from './Models/Core/TokenType';
+import { type Token } from './Models/Core/Token';
+import { type TokenType } from './Models/Core/TokenType';
 import { tokenTypes } from './Types/TokenTypes';
 
 const ignoredByDefaultTokenTypes = new Set<TokenType>([tokenTypes.WhiteSpaceTokenType, tokenTypes.ClosedBracketTokenType, tokenTypes.OpenBracketTokenType])
@@ -26,12 +26,12 @@ const getCalculationResult = (
 ): Result<Token> => {
   const firstNotIgnoredTokenIndex = getIndexOfFirst(tokens, notIgnoredTokenCheckCallback)
   if (firstNotIgnoredTokenIndex === null) {
-    return Result.Fail("not ignored tokens not found") 
+    return Result.Fail("not ignored tokens not found")
   }
 
   const secondNotIgnoredTokenIndex = getItemIndexToTheRightByCallback(tokens, firstNotIgnoredTokenIndex, notIgnoredTokenCheckCallback)
   if (secondNotIgnoredTokenIndex !== null) {
-    return Result.Fail("not ignored tokens count > 1") 
+    return Result.Fail("not ignored tokens count > 1")
   }
 
   return Result.Success(tokens[firstNotIgnoredTokenIndex])
@@ -113,7 +113,7 @@ export const calculateTokens = (
   }
 
   const tokenToReturn = createToken(
-    tokenTypeNames.Number,
+    tokenTypes.Number,
     calculationResult.result,
     tokens[0].initStringIndex,
     tokens.map(t => t.fromSlice).join(""))

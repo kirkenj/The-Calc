@@ -18,7 +18,7 @@ export const numberRestrictions: TokenTypeRestriction = {
 Object.freeze(numberRestrictions)
 
 
-export const numberTokenType: TokenType = {
+export const numberTokenType: TokenType<ValueToken<number>> = {
   name: "Number",
   tokenStringRestriction: numberRestrictions,
   tokenParser: (
@@ -53,7 +53,19 @@ export const numberTokenType: TokenType = {
       fromString: stringCollectionResult.tokenString,
       value: number
     })
-  }
+  },
+  
+  isInstance: (token) =>  {
+    const vToken = token as ValueToken<unknown>
+    if (
+      vToken.type !== numberTokenType 
+      || !('value' in vToken) 
+      || typeof vToken.value !== 'number') {
+      return { success: false };
+    }
+
+    return {success: true, result: vToken as ValueToken<number>}
+  }  
 }
 
 Object.freeze(numberTokenType)

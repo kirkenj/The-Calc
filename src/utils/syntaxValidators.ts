@@ -1,7 +1,14 @@
-import { tokenTypeNames } from "./tokenTypes"
-import { getItemIndexToTheLeftByCallback, getItemIndexToTheRightByCallback } from "./arrayUtils"
+import { getItemIndexToTheLeftByCallback, getItemIndexToTheRightByCallback } from "./Extensions/arrayUtils"
+import type { Token } from "./Models/Core/Token"
+import type { PrevalidationResult } from "./Models/EquationCalculation/PrevalidationResult"
+import { tokenTypes } from "./Types/TokenTypes"
 
-export const validateUnarFunction = (equation, index, notIgnoredTokenCheckCallback) => {
+
+export const validateUnarFunction = (
+  equation: Token[],
+  index: number,
+  notIgnoredTokenCheckCallback: (arg: Token) => boolean
+): PrevalidationResult | null => {
   if (isNaN(index)) {
     throw Error("ArgumentNull: index")
   }
@@ -28,44 +35,52 @@ export const validateUnarFunction = (equation, index, notIgnoredTokenCheckCallba
   }
 
   console.log("notIgnoredTokenIndexToTheRight:", notIgnoredTokenIndexToTheRight)
-  return equation[notIgnoredTokenIndexToTheRight].typeName === tokenTypeNames.Number
-  ? {
+  return equation[notIgnoredTokenIndexToTheRight].type === tokenTypes.NumberTokenType
+    ? {
       argumentIndexes: [notIgnoredTokenIndexToTheRight],
       operationStartIndex: index,
       operationLength: notIgnoredTokenIndexToTheRight - index + 1,
     }
-  : null
+    : null
 }
 
-// export const validateUnarMinus = (equation, index, notIgnoredTokenCheckCallback) => {
-//   const rightArgumentValidationResult = validateUnarFunction(equation, index, notIgnoredTokenCheckCallback)
-//   if (rightArgumentValidationResult === null){
-//     return null
-//   }
+export const validateUnarMinus = (
+  equation: Token[],
+  index: number,
+  notIgnoredTokenCheckCallback: (arg: Token) => boolean
+): PrevalidationResult | null => {
+  const rightArgumentValidationResult = validateUnarFunction(equation, index, notIgnoredTokenCheckCallback)
+  if (rightArgumentValidationResult === null) {
+    return null
+  }
 
-//   const notIgnoredTokenIndexToTheLeft = getItemIndexToTheLeftByCallback(equation, index, notIgnoredTokenCheckCallback)
-//   const notIgnoredTokenToTheLeft = notIgnoredTokenIndexToTheLeft === null ? null : equation[notIgnoredTokenIndexToTheLeft]
+  const notIgnoredTokenIndexToTheRight = rightArgumentValidationResult.argumentIndexes[0]
+  const notIgnoredTokenIndexToTheLeft = getItemIndexToTheLeftByCallback(equation, index, notIgnoredTokenCheckCallback)
+  const notIgnoredTokenToTheLeft = notIgnoredTokenIndexToTheLeft === null ? null : equation[notIgnoredTokenIndexToTheLeft]
+  console.log(
+    "notIgnoredTokenIndexToTheLeft:", notIgnoredTokenIndexToTheLeft,
+    "notIgnoredTokenToTheLeft:", notIgnoredTokenToTheLeft,
+    "notIgnoredTokenIndexToTheRight:", notIgnoredTokenIndexToTheRight,
+  )
 
-//   console.log(
-//     "notIgnoredTokenIndexToTheLeft:", notIgnoredTokenIndexToTheLeft,
-//     "notIgnoredTokenToTheLeft:", notIgnoredTokenToTheLeft,
-//     "notIgnoredTokenIndexToTheRight:", rightArgumentValidationResult.argumentIndexes[0],
-//   )
+  return equation[notIgnoredTokenIndexToTheRight].type === tokenTypes.NumberTokenType
+    && (notIgnoredTokenToTheLeft === null || notIgnoredTokenToTheLeft.type !== tokenTypes.NumberTokenType)
+    ? {
+      argumentIndexes: [notIgnoredTokenIndexToTheRight],
+      operationStartIndex: index,
+      operationLength: notIgnoredTokenIndexToTheRight - index + 1,
+    }
+    : null
+}
 
-//   return equation[notIgnoredTokenIndexToTheRight].typeName === tokenTypeNames.Number
-//   && (notIgnoredTokenToTheLeft === null || notIgnoredTokenToTheLeft.typeName !== tokenTypeNames.Number)
-//   ? {
-//       argumentIndexes: [notIgnoredTokenIndexToTheRight],
-//       operationStartIndex: index,
-//       operationLength: notIgnoredTokenIndexToTheRight - index + 1,
-//     }
-//   : null
-// }
-
-export const validateBinarOperation = (equation, index, notIgnoredTokenCheckCallback) => {
-  console.log("preHandleBinarOperation executed with arguments:", 
-    "equation:", equation, 
-    "index:",index, 
+export const validateBinarOperation = (
+  equation: Token[],
+  index: number,
+  notIgnoredTokenCheckCallback: (arg: Token) => boolean
+): PrevalidationResult | null => {
+  console.log("preHandleBinarOperation executed with arguments:",
+    "equation:", equation,
+    "index:", index,
     "notIgnoredTokenCheckCallback:", notIgnoredTokenCheckCallback)
 
   if (isNaN(index)) {
@@ -117,8 +132,8 @@ export const validateBinarOperation = (equation, index, notIgnoredTokenCheckCall
   );
 
   return (
-    equation[notIgnoredTokenIndexToTheRight].typeName === tokenTypeNames.Number
-    && equation[notIgnoredTokenIndexToTheLeft].typeName === tokenTypeNames.Number)
+    equation[notIgnoredTokenIndexToTheRight].type === tokenTypes.NumberTokenType
+    && equation[notIgnoredTokenIndexToTheLeft].type === tokenTypes.NumberTokenType)
     ? valueToReturn
     : null
 }

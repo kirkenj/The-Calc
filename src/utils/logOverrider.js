@@ -1,32 +1,34 @@
-const originalLog = console.log;
-const originalGroupCollapsed = console.groupCollapsed;
-const originalGroup = console.group;
+// import console from "console";
 
-const freezeArgs = (args) => {
-  return args.map(arg => {
-    if (typeof arg === 'object' && arg !== null) {
-      try {
-        return structuredClone(arg);
-      } catch (e) {
-        try {
-          return JSON.parse(JSON.stringify(arg));
-        } catch (err) {
-          return arg; 
-        }
-      }
-    }
-    return arg;
-  });
-};
+// const originalLog = console.log;
+// const originalGroupCollapsed = console.groupCollapsed;
+// const originalGroup = console.group;
 
-console.log = (...args) => {
-  originalLog('[FROZEN]:', ...freezeArgs(args));
-};
+// const freezeArgs = (args) => {
+//   return args.map(arg => {
+//     if (typeof arg === 'object' && arg !== null) {
+//       try {
+//         return structuredClone(arg);
+//       } catch (e) {
+//         try {
+//           return JSON.parse(JSON.stringify(arg));
+//         } catch (err) {
+//           return arg; 
+//         }
+//       }
+//     }
+//     return arg;
+//   });
+// };
 
-console.groupCollapsed = (...args) => {
-  originalGroupCollapsed('[FROZEN GROUP]:', ...freezeArgs(args));
-};
+// console.log = (...args) => {
+//   originalLog('[FROZEN]:', ...freezeArgs(args));
+// };
 
-console.group = (...args) => {
-  originalGroup('[FROZEN GROUP]:', ...freezeArgs(args));
-};
+// console.groupCollapsed = (...args) => {
+//   originalGroupCollapsed('[FROZEN GROUP]:', ...freezeArgs(args));
+// };
+
+// console.group = (...args) => {
+//   originalGroup('[FROZEN GROUP]:', ...freezeArgs(args));
+// };
