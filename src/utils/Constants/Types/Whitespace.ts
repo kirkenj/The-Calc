@@ -1,9 +1,11 @@
-import { type TokenTypeRestriction } from "../Models/Core/TokenTypeRestrictions"
-import { type Token } from "../Models/Core/Token"
-import { type TokenType } from "../Models/Core/TokenType"
-import { type TokenStringCollectionResult } from "../Models/Parsing/TokenStringCollectionResult"
-import { getIndexOfFirst } from "../Extensions/arrayUtils"
-import { Result } from "../Models/Core/Result"
+import { getIndexOfFirst } from "../../Extensions/arrayUtils"
+import { Result } from "../../Models/Core/Result"
+import type { Token } from "../../Models/Core/Token"
+import type { TokenType } from "../../Models/Core/TokenType"
+import type { TokenTypeRestriction } from "../../Models/Core/TokenTypeRestrictions"
+import type { TokenStringCollectionResult } from "../../Models/Parsing/TokenStringCollectionResult"
+import { DefaultTokenIsInstance } from "./defaultTokenTypeCheck"
+
 
 const whiteSpaceAllowedSymbols = new Set([' '])
 Object.freeze(whiteSpaceAllowedSymbols)
@@ -16,7 +18,7 @@ export const whiteSpaceRestrictions: TokenTypeRestriction = {
 Object.freeze(whiteSpaceRestrictions)
 
 
-export const whiteSpaceTokenType: TokenType = {
+export const whiteSpaceTokenType: TokenType<Token> = {
   name: "whiteSpace",
   tokenStringRestriction: whiteSpaceRestrictions,
   tokenParser: (
@@ -45,7 +47,9 @@ export const whiteSpaceTokenType: TokenType = {
       initStringIndex: stringCollectionResult.absoluteStartIndex,
       fromString: stringCollectionResult.tokenString,
     })
-  }
+  },
+
+  isInstance: (arg) => DefaultTokenIsInstance(arg, whiteSpaceTokenType)
 }
 
 Object.freeze(whiteSpaceTokenType)

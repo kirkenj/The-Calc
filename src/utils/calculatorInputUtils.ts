@@ -1,5 +1,5 @@
+import { numberRestrictions } from "./Constants/Types/Number";
 import { getTokenStringAtIndex } from "./Parsing/tokenStringBuilder";
-import { numberRestrictions } from "./Types/Number"
 
 export function appendNumber(
     num: string, 

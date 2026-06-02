@@ -1,9 +1,9 @@
-import { type ValueToken } from "../Models/Core/Token"
-import { type TokenType } from "../Models/Core/TokenType"
-import { type TokenTypeRestriction } from "../Models/Core/TokenTypeRestrictions"
-import { type TokenStringCollectionResult } from "../Models/Parsing/TokenStringCollectionResult"
-import { Result } from "../Models/Core/Result"
-import { getIndexOfFirst } from "../Extensions/arrayUtils"
+import { getIndexOfFirst } from "../../Extensions/arrayUtils"
+import { Result } from "../../Models/Core/Result"
+import type { ValueToken } from "../../Models/Core/Token"
+import type { TokenType } from "../../Models/Core/TokenType"
+import type { TokenTypeRestriction } from "../../Models/Core/TokenTypeRestrictions"
+import type { TokenStringCollectionResult } from "../../Models/Parsing/TokenStringCollectionResult"
 
 
 const numberAllowedSymbols = new Set(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."])
@@ -55,12 +55,15 @@ export const numberTokenType: TokenType<ValueToken<number>> = {
     })
   },
   
-  isInstance: (token) =>  {
+  isInstance: (
+    token
+  ) =>  {
     const vToken = token as ValueToken<unknown>
     if (
       vToken.type !== numberTokenType 
       || !('value' in vToken) 
-      || typeof vToken.value !== 'number') {
+      || typeof vToken.value !== 'number'
+      || isNaN(vToken.value)) {
       return { success: false };
     }
 

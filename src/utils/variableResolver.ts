@@ -1,8 +1,9 @@
-import { tokenTypeNames } from "./tokenTypes"
-import console from "console"
+import { tokenTypes } from "./Constants/Types/TokenTypes"
+import type { Token } from "./Models/Core/Token"
+import type { FunctionValidatorDelegate } from "./Models/EquationCalculation/FunctionValidatorDelegate"
+import type { OperatorsForPriorityConfiguration } from "./Models/EquationCalculation/OperatorsForPriorityConfiguration"
 
-
-export const getOperatorsForVariables = (context) => {
+export const getOperatorsForVariables = (context: Map<string, Token> | null) : OperatorsForPriorityConfiguration | null => {
     console.log("getOperatorsForVariables executed",
         "context:", context
     )
@@ -18,7 +19,7 @@ export const getOperatorsForVariables = (context) => {
         return null
     }
 
-    const preHandleVariable = (equation, index) => {
+    const preHandleVariable: FunctionValidatorDelegate = (equation, index) => {
         const executedFunc = "preHandleVariable" 
         console.log(`${executedFunc} executed`,"equation:", equation, "index", index)
         if (isNaN(index)) {
@@ -31,14 +32,14 @@ export const getOperatorsForVariables = (context) => {
             return null
         }
 
-        const token = equation[index]
-        if (token.typeName !== tokenTypeNames.Word) {
+        const isWordCheckResult = tokenTypes.WordTokenType.isInstance(equation[index])
+        if (!isWordCheckResult.success) {
             console.log(executedFunc,
             "typeof key !== 'string'")
             return null
         }
 
-        return context.has(token.value)
+        return context.has(isWordCheckResult.result.value)
             ? {
                 argumentIndexes: [index],
                 operationStartIndex: index,

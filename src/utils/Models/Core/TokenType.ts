@@ -4,7 +4,7 @@ import { type Result } from "./Result";
 import { type TokenTypeRestriction } from "./TokenTypeRestrictions";
 import type { IsInstanceResult } from "./IsInstanceResult";
 
-export interface TokenType<TToken extends Token> {
+export interface TokenType<TToken extends Token = any> {
   readonly name: string,
   readonly tokenParser: (stringCollectionResult: TokenStringCollectionResult) => Result<Token>,
   readonly tokenStringRestriction: TokenTypeRestriction

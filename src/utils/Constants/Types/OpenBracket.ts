@@ -1,9 +1,11 @@
-import { type Token } from "../Models/Core/Token"
-import { type TokenType } from "../Models/Core/TokenType"
-import { type TokenTypeRestriction } from "../Models/Core/TokenTypeRestrictions"
-import { type TokenStringCollectionResult } from "../Models/Parsing/TokenStringCollectionResult"
-import { Result } from "../Models/Core/Result"
-import { getIndexOfFirst } from "../Extensions/arrayUtils"
+import { getIndexOfFirst } from "../../Extensions/arrayUtils"
+import { Result } from "../../Models/Core/Result"
+import type { Token } from "../../Models/Core/Token"
+import type { TokenType } from "../../Models/Core/TokenType"
+import type { TokenTypeRestriction } from "../../Models/Core/TokenTypeRestrictions"
+import type { TokenStringCollectionResult } from "../../Models/Parsing/TokenStringCollectionResult"
+import { DefaultTokenIsInstance } from "./defaultTokenTypeCheck"
+
 
 const openBracketAllowedSymbols = new Set(['('])
 Object.freeze(openBracketAllowedSymbols)
@@ -16,7 +18,7 @@ export const openBracketRestrictions: TokenTypeRestriction = {
 }
 Object.freeze(openBracketRestrictions)
 
-export const openBracketTokenType: TokenType = {
+export const openBracketTokenType: TokenType<Token> = {
   name: "openBracket",
   tokenStringRestriction: openBracketRestrictions,
   tokenParser: (
@@ -44,7 +46,9 @@ export const openBracketTokenType: TokenType = {
       initStringIndex: stringCollectionResult.absoluteStartIndex,
       fromString: stringCollectionResult.tokenString,
     })
-  }
+  },
+
+  isInstance: (arg) => DefaultTokenIsInstance(arg, openBracketTokenType)
 }
 
 Object.freeze(openBracketTokenType)

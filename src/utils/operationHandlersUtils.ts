@@ -1,8 +1,8 @@
+import { tokenTypes } from "./Constants/Types/TokenTypes"
 import type { Token, ValueToken } from "./Models/Core/Token"
 import type { PrevalidationResult } from "./Models/EquationCalculation/PrevalidationResult"
-import { tokenTypes } from "./Types/TokenTypes"
 
-const getTokensRangeViaPrevalidationResult = (
+export const getTokensRangeViaPrevalidationResult = (
   equation: Token[],
   prevalidationResult: PrevalidationResult
 ): Token[] =>
@@ -10,16 +10,12 @@ const getTokensRangeViaPrevalidationResult = (
     prevalidationResult.operationStartIndex,
     prevalidationResult.operationStartIndex + prevalidationResult.operationLength)
 
-const handleUnarOperation = (
+export const handleUnarOperation = (
   equation: Token[],
   prevalidationResult: PrevalidationResult,
   handler: (arg: number) => number
 ): ValueToken<number> => {
   console.log("handleFunction", "equation", equation, "prevalidationResult", prevalidationResult, "handler:", handler)
-
-  if (!handler || handler.length !== 1) {
-    throw Error("Invalid handler")
-  }
 
   if (!prevalidationResult || !equation
     || prevalidationResult.argumentIndexes.length !== 1
@@ -31,11 +27,16 @@ const handleUnarOperation = (
 
   console.log("Argument for handleFunc:", argument);
 
-  if (!argument || argument.type !== tokenTypes.NumberTokenType || isNaN(argument.value)) {
+  if (!argument) {
     throw Error("Couldn't handle operation", { cause: { equation, prevalidationResult } })
   }
 
-  const calculationResult = handler(argument.value)
+  const isInstanceResult = tokenTypes.NumberTokenType.isInstance(argument)
+  if (!isInstanceResult.success) {
+    throw Error("Couldn't handle operation", { cause: { equation, prevalidationResult } })
+  }
+
+  const calculationResult = handler(isInstanceResult.result.value)
 
   const fromSlice = getTokensRangeViaPrevalidationResult(equation, prevalidationResult)
 
@@ -47,7 +48,7 @@ const handleUnarOperation = (
   }
 }
 
-const handleBinarOperation = (
+export const handleBinarOperation = (
   equation: Token[],
   prevalidationResult: PrevalidationResult,
   handler: (arg1: number, arg2: number) => number
@@ -64,18 +65,25 @@ const handleBinarOperation = (
     throw Error("Invalid location of operator or arguments")
   }
 
+  const argsAsValueTokens: ValueToken<number>[] = []
   for (const index of prevalidationResult.argumentIndexes) {
     const argument = equation[index]
-    if (!argument || argument.type !== tokenTypes.NumberTokenType || isNaN(argument.value)) {
+
+    if (!argument) {
       console.log("Couldn't handle operation", argument, prevalidationResult.argumentIndexes, index)
       throw Error("Invalid arguments")
     }
+
+    const isInstanceResult = tokenTypes.NumberTokenType.isInstance(argument)
+    if (!isInstanceResult.success) {
+      console.log("Couldn't handle operation", argument, prevalidationResult.argumentIndexes, index)
+      throw Error("Invalid arguments")
+    }
+
+    argsAsValueTokens.push(isInstanceResult.result)
   }
 
-  const leftArgumentIndex = prevalidationResult.argumentIndexes[0]
-  const rightArgumentIndex = prevalidationResult.argumentIndexes[1]
-
-  const calculationResult = handler(equation[leftArgumentIndex].value, equation[rightArgumentIndex].value)
+  const calculationResult = handler(argsAsValueTokens[0].value, argsAsValueTokens[1].value)
 
   const fromSlice = getTokensRangeViaPrevalidationResult(equation, prevalidationResult)
 
@@ -86,15 +94,3 @@ const handleBinarOperation = (
     fromString: fromSlice.map(s => s.fromString).join("")
   }
 }
-
-
-type operationHandler = (equation: Token[], prevalidationResult: PrevalidationResult) => ValueToken<number>
-
-export const handleMultiplication: operationHandler = (equation, prevalidationResult) => handleBinarOperation(equation, prevalidationResult, (a, b) => a * b)
-export const handleDivision: operationHandler = (equation, prevalidationResult) => handleBinarOperation(equation, prevalidationResult, (a, b) => a / b)
-
-export const handleSum: operationHandler = (equation, prevalidationResult) => handleBinarOperation(equation, prevalidationResult, (a, b) => a + b)
-export const handleDiff: operationHandler = (equation, prevalidationResult) => handleBinarOperation(equation, prevalidationResult, (a, b) => a - b)
-
-export const handleSin: operationHandler = (equation, prevalidationResult) => handleUnarOperation(equation, prevalidationResult, (a) => Math.sin(a))
-export const handleUnaryMinus: operationHandler = (equation, prevalidationResult) => handleUnarOperation(equation, prevalidationResult, (a) => -a)

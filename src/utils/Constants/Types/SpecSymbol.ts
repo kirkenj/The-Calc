@@ -1,23 +1,25 @@
-import { type TokenTypeRestriction } from "../Models/Core/TokenTypeRestrictions"
-import { type Token } from "../Models/Core/Token"
-import { type TokenType } from "../Models/Core/TokenType"
-import { type TokenStringCollectionResult } from "../Models/Parsing/TokenStringCollectionResult"
-import { getIndexOfFirst } from "../Extensions/arrayUtils"
-import { Result } from "../Models/Core/Result"
+import { getIndexOfFirst } from "../../Extensions/arrayUtils"
+import { Result } from "../../Models/Core/Result"
+import type { Token } from "../../Models/Core/Token"
+import type { TokenType } from "../../Models/Core/TokenType"
+import type { TokenTypeRestriction } from "../../Models/Core/TokenTypeRestrictions"
+import type { TokenStringCollectionResult } from "../../Models/Parsing/TokenStringCollectionResult"
+import { DefaultTokenIsInstance } from "./defaultTokenTypeCheck"
+
 
 
 const specSymbolAllowedSymbols = new Set(['*', "/", "\\", "+", "-", ":", "^"])
 Object.freeze(specSymbolAllowedSymbols)
 
 export const specSymbolRestrictions: TokenTypeRestriction = {
-    allowedSymbols: specSymbolAllowedSymbols,
-    symbolMembershipCheckCallback: (symbol) => specSymbolAllowedSymbols.has(symbol),
-    maxLength: 1
+  allowedSymbols: specSymbolAllowedSymbols,
+  symbolMembershipCheckCallback: (symbol) => specSymbolAllowedSymbols.has(symbol),
+  maxLength: 1
 }
 Object.freeze(specSymbolRestrictions)
 
 
-export const specSymbolTokenType: TokenType = {
+export const specSymbolTokenType: TokenType<Token> = {
   name: "Special symbol",
   tokenStringRestriction: specSymbolRestrictions,
   tokenParser: (
@@ -35,7 +37,7 @@ export const specSymbolTokenType: TokenType = {
 
     const invalidSymbolIndex = getIndexOfFirst(
       stringCollectionResult.tokenString,
-      (s: string) => !specSymbolRestrictions.symbolMembershipCheckCallback(s))
+      (s) => !specSymbolRestrictions.symbolMembershipCheckCallback(s))
 
     if (invalidSymbolIndex !== null) {
       return Result.Fail(`ArgumentException: invalid symbol '${stringCollectionResult.tokenString[invalidSymbolIndex]}' at index: ${invalidSymbolIndex}`)
@@ -46,7 +48,9 @@ export const specSymbolTokenType: TokenType = {
       initStringIndex: stringCollectionResult.absoluteStartIndex,
       fromString: stringCollectionResult.tokenString,
     })
-  }
+  },
+
+  isInstance: (arg) => DefaultTokenIsInstance(arg, specSymbolTokenType)
 }
 
 Object.freeze(specSymbolTokenType)
