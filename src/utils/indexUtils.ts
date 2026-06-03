@@ -1,3 +1,5 @@
+import { Result } from "./Models/Core/Result"
+
 export function decrementValuesFromIndex(
   values: number[], 
   startIndex: number, 
@@ -8,18 +10,31 @@ export function decrementValuesFromIndex(
   }
 }
 
-export function getIndexesOnPredicate<T>(
-  arr: T[], 
-  callback: (arg: T) => boolean
-): number[] {
-  const arrToRet: number[] = []
+export interface IndexKeyValuePair<T>{
+  index: number,
+  value: T
+}
+
+export function getIndexesOnPredicate<TI,TT>(
+  arr: TI[], 
+  transformCallback: (arg: TI) => Result<TT>,
+  stopOnFail: boolean = false
+): Result<IndexKeyValuePair<TT>[]> {
+  
+  const arrToRet: IndexKeyValuePair<TT>[] = []
 
   for (let i = 0; i < arr.length; i++) {
-    const token = arr[i]
-    if (callback(token)) {
-      arrToRet.push(i)
+    const transformResult = transformCallback(arr[i])
+    if (transformResult.Success){
+      arrToRet.push({
+        index: i,
+        value: transformResult.Result
+      })
+    }
+    else if (stopOnFail){
+      return Result.Fail(`Couldn't transform at index ${i}`)
     }
   }
 
-  return arrToRet
+  return Result.Success(arrToRet)
 }

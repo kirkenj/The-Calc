@@ -53,7 +53,9 @@ export const calculateTokens = (
 
   const operatorsByPriority = getOperatorsForContext(context)
 
-  const operatorIndexes = getIndexesOnPredicate(tokens, isOperatorsTokenTypesCallback)
+  const operatorIndexes = getIndexesOnPredicate(tokens, ((token) => {
+    
+  }))
 
   console.log("handlersIndexes:", operatorIndexes)
 
