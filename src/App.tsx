@@ -1,27 +1,105 @@
 //import './App.css'
 import { createTokenParser } from "./utils/Parsing/tokenParser";
-import { tokenTypes, tokenTypesAsArr } from "./utils/Types/TokenTypes";
 import { getTokenStringAtIndex } from "./utils/Parsing/tokenStringBuilder";
 import { parseTree } from "./utils/TreeBuilding/treeBuilder";
 import { createAlphaCounter } from "./utils/TreeBuilding/alphaCounter";
 import type { TreeBuilderTriggerTypes } from "./utils/Models/TreeBuilding/TreeBuilderTriggerTypes";
+import { tokenTypes, tokenTypesAsArr } from "./utils/Constants/Types/TokenTypes";
+import { evaluateNode } from "./utils/Calculation/evaluateTreeUtils";
+import { calculateTokens, indexationCallback } from "./utils/calculateSimpleEquation";
+import { getOperatorsForVariables } from "./utils/variableResolver";
+import type { Token, ValueToken } from "./utils/Models/Core/Token";
+import { getIndexesOnPredicate } from "./utils/indexUtils";
+//import './utils/logOverrider'
+
 
 function App() {
   const exec = () => {
-    const equation = "10 + ( 5 * ( 6 / 2 )) + 4";
-
-    const parseTokensDelegate = createTokenParser(tokenTypesAsArr, getTokenStringAtIndex)
-
-    const alphaCounterNameGenerator = createAlphaCounter()
-
-    const treeBuilderTriggers: TreeBuilderTriggerTypes = {
-      OpenBracket: tokenTypes.OpenBracketTokenType,
-      ClosedBracket: tokenTypes.ClosedBracketTokenType,
-      TypeUsedForAliases: tokenTypes.WordTokenType
+// const tokens: (Token | ValueToken<number> | ValueToken<string>)[] =
+const tokens: Token[] =
+[
+    {
+        type: tokenTypes.NumberTokenType,
+        initStringIndex: 0,
+        fromString: "10",
+        value: 10
+    },
+    {
+        type: tokenTypes.WhiteSpaceTokenType,
+        initStringIndex: 2,
+        fromString: " "
+    },
+    {
+        type: tokenTypes.SpecSymbolTokenType,
+        initStringIndex: 3,
+        fromString: "*",
+        value: "*"
+    },
+    {
+        type: tokenTypes.WhiteSpaceTokenType,
+        initStringIndex: 4,
+        fromString: " "
+    },
+    {
+        type: tokenTypes.WordTokenType,
+        initStringIndex: 5,
+        fromString: "@B"
     }
+]
 
-    const parseTreeResult = parseTree(equation, alphaCounterNameGenerator, treeBuilderTriggers, tokenTypesAsArr, parseTokensDelegate, getTokenStringAtIndex)
-    console.log(parseTreeResult)
+const operatorIndexesResult = getIndexesOnPredicate(tokens, indexationCallback)
+console.log(operatorIndexesResult);
+
+
+
+
+    // const someMap = new Map<string, ValueToken<number>>();
+    // const val:ValueToken<number> = {
+    //   type: tokenTypes.NumberTokenType,
+    //   value: 123,
+    //   fromString: "",
+    //   initStringIndex: 0,
+    // }
+
+    // someMap.set('a', val)
+
+    // const a = getOperatorsForVariables(someMap)
+    // console.log(a)
+
+    // const val:ValueToken<string> = {
+    //   type: tokenTypes.WordTokenType,
+    //   value: "@B",
+    //   fromString: "",
+    //   initStringIndex: 0,
+    // }
+
+    // console.log(tokenTypes.WordTokenType.isInstance(val))
+
+
+
+    //const equation = "10 * ( 5 + 3)";
+    //const equation = "10 + 4";
+    // const equation = "10 * (4)";
+
+    // const parseTokensDelegate = createTokenParser(tokenTypesAsArr, getTokenStringAtIndex)
+
+    // const alphaCounterNameGenerator = createAlphaCounter()
+
+    // const treeBuilderTriggers: TreeBuilderTriggerTypes = {
+    //   OpenBracket: tokenTypes.OpenBracketTokenType,
+    //   ClosedBracket: tokenTypes.ClosedBracketTokenType,
+    //   TypeUsedForAliases: tokenTypes.WordTokenType
+    // }
+
+    // const parseTreeResult = parseTree(equation, alphaCounterNameGenerator, treeBuilderTriggers, tokenTypesAsArr, parseTokensDelegate, getTokenStringAtIndex)
+    // console.log(parseTreeResult)
+    // if (!parseTreeResult.Success){
+    //   return
+    // }
+
+
+    // const evaluateNodeResult = evaluateNode(parseTreeResult.Result.eqMap, parseTreeResult.Result.entryPointName, tokenTypes.NumberTokenType, calculateTokens);
+    // console.log(evaluateNodeResult);
   }
 
   return (

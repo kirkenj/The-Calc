@@ -1,18 +1,18 @@
 import { Result } from "./Models/Core/Result"
 
-export function decrementValuesFromIndex(
-  values: number[], 
+export function decrementValuesFromIndex<T>(
+  indexes: IndexKeyValuePair<T>[], 
   startIndex: number, 
   offset: number
 ): void {
-  for (let q = startIndex; q < values.length; q++) {
-    values[q] -= offset
+  for (let q = startIndex; q < indexes.length; q++) {
+    indexes[q].index -= offset
   }
 }
 
 export interface IndexKeyValuePair<T>{
   index: number,
-  value: T
+  ref: T
 }
 
 export function getIndexesOnPredicate<TI,TT>(
@@ -28,7 +28,7 @@ export function getIndexesOnPredicate<TI,TT>(
     if (transformResult.Success){
       arrToRet.push({
         index: i,
-        value: transformResult.Result
+        ref: transformResult.Result
       })
     }
     else if (stopOnFail){

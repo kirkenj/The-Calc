@@ -1,5 +1,5 @@
 import { Result } from "../Models/Core/Result"
-import { type Token } from "../Models/Core/Token"
+import { type Token, type ValueToken } from "../Models/Core/Token"
 import { type TokenType } from "../Models/Core/TokenType"
 import { type StringCollectionDelegate } from "../Models/Parsing/StringCollectionDelegate"
 import { type EquationTokenParserDelegate } from "../Models/Parsing/TokenParserDelegate"
@@ -45,7 +45,7 @@ export function parseTree(
   //#endregion
 
   const entryPointName = nameGenerator()
-  let stack: BracketInfo[] = [
+  const stack: BracketInfo[] = [
     BracketInfo.createBracketInfo(entryPointName, 0)
   ]
 
@@ -96,10 +96,11 @@ function createOnTokenParsedDelegate(
 
       console.log("Pushed stack value:", stackValueToPush)
 
-      const tokenToPushIntoParent = {
+      const tokenToPushIntoParent: ValueToken<string> = {
         ...token,
         fromString: newStackName,
-        type: builderTriggers.TypeUsedForAliases
+        type: builderTriggers.TypeUsedForAliases,
+        value: newStackName 
       }
 
       const parentStackValue = stack[stack.length - 2]

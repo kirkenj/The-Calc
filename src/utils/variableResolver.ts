@@ -1,13 +1,16 @@
 import { tokenTypes } from "./Constants/Types/TokenTypes"
 import type { Token } from "./Models/Core/Token"
 import type { FunctionValidatorDelegate } from "./Models/EquationCalculation/FunctionValidatorDelegate"
+import type { HandlerDelegate } from "./Models/EquationCalculation/HandleEquationrDelegate"
 import type { OperatorsForPriorityConfiguration } from "./Models/EquationCalculation/OperatorsForPriorityConfiguration"
 
-export const getOperatorsForVariables = (context: Map<string, Token> | null) : OperatorsForPriorityConfiguration | null => {
+export const getOperatorsForVariables = (
+    context: Map<string, Token> | null
+): OperatorsForPriorityConfiguration | null => {
     console.log("getOperatorsForVariables executed",
         "context:", context
     )
-    
+
     if (context === null) {
         console.log("Context is null")
         return null
@@ -20,22 +23,19 @@ export const getOperatorsForVariables = (context: Map<string, Token> | null) : O
     }
 
     const preHandleVariable: FunctionValidatorDelegate = (equation, index) => {
-        const executedFunc = "preHandleVariable" 
-        console.log(`${executedFunc} executed`,"equation:", equation, "index", index)
-        if (isNaN(index)) {
-            return null
-        }
+        const executedFunc = "preHandleVariable"
+        console.log(`${executedFunc} executed`, "equation:", equation, "index", index)
 
         if (index < 0 || index >= equation.length) {
             console.log(executedFunc,
-                 "index < 0 || index >= equation.length")
+                "index < 0 || index >= equation.length")
             return null
         }
 
         const isWordCheckResult = tokenTypes.WordTokenType.isInstance(equation[index])
         if (!isWordCheckResult.success) {
             console.log(executedFunc,
-            "typeof key !== 'string'")
+                "typeof key !== 'string'")
             return null
         }
 
@@ -48,12 +48,16 @@ export const getOperatorsForVariables = (context: Map<string, Token> | null) : O
             : null
     }
 
-    const operators = new Map()
-    for (let [variableName, variableValue] of context.entries()) {
-        operators.set(variableName, () => variableValue)
+    const operators = new Map<string, HandlerDelegate>()
+    for (const [variableName, variableValue] of context.entries()) {
+        const isNumberCheckResult = tokenTypes.NumberTokenType.isInstance(variableValue)
+        if (!isNumberCheckResult.success){
+            console.log("Context value is not a NumberTokenTypeInstance")
+            return null
+        }
+        
+        operators.set(variableName, () => isNumberCheckResult.result)
     }
-
-    console.log("Created variable map:", operators)
 
     return {
         operators: operators,

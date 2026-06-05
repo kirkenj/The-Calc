@@ -5,6 +5,16 @@ import { handleBinarOperation, handleUnarOperation } from './operationHandlersUt
 import type { OperatorsForPriorityConfiguration } from './Models/EquationCalculation/OperatorsForPriorityConfiguration'
 
 
+const handleMultiplication: OperationHandlerDelegate = (equation, prevalidationResult) => handleBinarOperation(equation, prevalidationResult, (a, b) => a * b)
+const handleDivision: OperationHandlerDelegate = (equation, prevalidationResult) => handleBinarOperation(equation, prevalidationResult, (a, b) => a / b)
+
+const handleSum: OperationHandlerDelegate = (equation, prevalidationResult) => handleBinarOperation(equation, prevalidationResult, (a, b) => a + b)
+const handleDiff: OperationHandlerDelegate = (equation, prevalidationResult) => handleBinarOperation(equation, prevalidationResult, (a, b) => a - b)
+
+const handleSin: OperationHandlerDelegate = (equation, prevalidationResult) => handleUnarOperation(equation, prevalidationResult, (a) => Math.sin(a))
+const handleUnaryMinus: OperationHandlerDelegate = (equation, prevalidationResult) => handleUnarOperation(equation, prevalidationResult, (a) => -a)
+
+
 export const getDefaultOperatorsAccordingToPriorities: () => OperatorsForPriorityConfiguration[] = () => [
   {
     operators: new Map<string, HandlerDelegate>([
@@ -45,11 +55,3 @@ export const defaultDefinedNames = [...new Set(
 )]
 
 
-const handleMultiplication: OperationHandlerDelegate = (equation, prevalidationResult) => handleBinarOperation(equation, prevalidationResult, (a, b) => a * b)
-const handleDivision: OperationHandlerDelegate = (equation, prevalidationResult) => handleBinarOperation(equation, prevalidationResult, (a, b) => a / b)
-
-const handleSum: OperationHandlerDelegate = (equation, prevalidationResult) => handleBinarOperation(equation, prevalidationResult, (a, b) => a + b)
-const handleDiff: OperationHandlerDelegate = (equation, prevalidationResult) => handleBinarOperation(equation, prevalidationResult, (a, b) => a - b)
-
-const handleSin: OperationHandlerDelegate = (equation, prevalidationResult) => handleUnarOperation(equation, prevalidationResult, (a) => Math.sin(a))
-const handleUnaryMinus: OperationHandlerDelegate = (equation, prevalidationResult) => handleUnarOperation(equation, prevalidationResult, (a) => -a)
