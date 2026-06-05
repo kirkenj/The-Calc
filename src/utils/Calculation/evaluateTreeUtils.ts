@@ -1,15 +1,13 @@
 import { type NodeCalculationResult } from "../Models/NodeCalculation/NodeCalculationResult";
 import { Result } from "../Models/Core/Result";
-import { type Token } from "../Models/Core/Token";
-import { type TokenType } from "../Models/Core/TokenType";
+import { type Token, type ValueToken } from "../Models/Core/Token";
 import { type BracketInfo } from "../Models/TreeBuilding/BracketInfo";
 
 
 export const evaluateNode = (
     tree: Map<string, BracketInfo>,
     nodeName: string,
-    calculationResultExpectedType: TokenType,
-    calculateSimpleEquationCallback: (tokensToCalculate: Token[], context: Map<string, Token>) => Result<Token>
+    calculateSimpleEquationCallback: (tokensToCalculate: Token[], context: Map<string, ValueToken<number>>) => Result<ValueToken<number>>
 ): Result<NodeCalculationResult> => {
     const node = tree.get(nodeName)
     if (!node) {
@@ -17,11 +15,11 @@ export const evaluateNode = (
     }
 
     const evaluationToCalculate = node.content;
-    const map = new Map<string, Token>();
+    const map = new Map<string, ValueToken<number>>();
     if (node.children.length > 0) {
         for (const childName of node.children) {
-            const nodeCalculationResult = evaluateNode(tree, childName, calculationResultExpectedType, calculateSimpleEquationCallback)
-            if (!nodeCalculationResult.Success){
+            const nodeCalculationResult = evaluateNode(tree, childName, calculateSimpleEquationCallback)
+            if (!nodeCalculationResult.Success) {
                 return nodeCalculationResult
             }
 
@@ -35,12 +33,8 @@ export const evaluateNode = (
         "map:", map)
 
     const calculationResult = calculateSimpleEquationCallback(evaluationToCalculate, map)
-    if (!calculationResult.Success){
+    if (!calculationResult.Success) {
         return calculationResult
-    }
-    
-    if (!calculationResult || calculationResult.Result.type !== calculationResultExpectedType) {
-        return Result.Fail("Invalid calculation result")
     }
 
     const valueToReturn: NodeCalculationResult = {

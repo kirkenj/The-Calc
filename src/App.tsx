@@ -15,40 +15,7 @@ import { getIndexesOnPredicate } from "./utils/indexUtils";
 
 function App() {
   const exec = () => {
-// const tokens: (Token | ValueToken<number> | ValueToken<string>)[] =
-const tokens: Token[] =
-[
-    {
-        type: tokenTypes.NumberTokenType,
-        initStringIndex: 0,
-        fromString: "10",
-        value: 10
-    },
-    {
-        type: tokenTypes.WhiteSpaceTokenType,
-        initStringIndex: 2,
-        fromString: " "
-    },
-    {
-        type: tokenTypes.SpecSymbolTokenType,
-        initStringIndex: 3,
-        fromString: "*",
-        value: "*"
-    },
-    {
-        type: tokenTypes.WhiteSpaceTokenType,
-        initStringIndex: 4,
-        fromString: " "
-    },
-    {
-        type: tokenTypes.WordTokenType,
-        initStringIndex: 5,
-        fromString: "@B"
-    }
-]
 
-const operatorIndexesResult = getIndexesOnPredicate(tokens, indexationCallback)
-console.log(operatorIndexesResult);
 
 
 
@@ -76,30 +43,31 @@ console.log(operatorIndexesResult);
     // console.log(tokenTypes.WordTokenType.isInstance(val))
 
 
-
+    const equation = "10 + sin( 5 * ( 6 / 2 ) - (3 + 5)) + (18 + 121) + (( -6 / 2 )"
+    
     //const equation = "10 * ( 5 + 3)";
-    //const equation = "10 + 4";
+    // const equation = "10 + 4";
     // const equation = "10 * (4)";
 
-    // const parseTokensDelegate = createTokenParser(tokenTypesAsArr, getTokenStringAtIndex)
+    const parseTokensDelegate = createTokenParser(tokenTypesAsArr, getTokenStringAtIndex)
 
-    // const alphaCounterNameGenerator = createAlphaCounter()
+    const alphaCounterNameGenerator = createAlphaCounter()
 
-    // const treeBuilderTriggers: TreeBuilderTriggerTypes = {
-    //   OpenBracket: tokenTypes.OpenBracketTokenType,
-    //   ClosedBracket: tokenTypes.ClosedBracketTokenType,
-    //   TypeUsedForAliases: tokenTypes.WordTokenType
-    // }
+    const treeBuilderTriggers: TreeBuilderTriggerTypes = {
+      OpenBracket: tokenTypes.OpenBracketTokenType,
+      ClosedBracket: tokenTypes.ClosedBracketTokenType,
+      TypeUsedForAliases: tokenTypes.WordTokenType
+    }
 
-    // const parseTreeResult = parseTree(equation, alphaCounterNameGenerator, treeBuilderTriggers, tokenTypesAsArr, parseTokensDelegate, getTokenStringAtIndex)
-    // console.log(parseTreeResult)
-    // if (!parseTreeResult.Success){
-    //   return
-    // }
+    const parseTreeResult = parseTree(equation, alphaCounterNameGenerator, treeBuilderTriggers, tokenTypesAsArr, parseTokensDelegate, getTokenStringAtIndex)
+    console.log(parseTreeResult)
+    if (!parseTreeResult.Success){
+      return
+    }
 
 
-    // const evaluateNodeResult = evaluateNode(parseTreeResult.Result.eqMap, parseTreeResult.Result.entryPointName, tokenTypes.NumberTokenType, calculateTokens);
-    // console.log(evaluateNodeResult);
+    const evaluateNodeResult = evaluateNode(parseTreeResult.Result.eqMap, parseTreeResult.Result.entryPointName, calculateTokens);
+    console.log(evaluateNodeResult);
   }
 
   return (
@@ -126,3 +94,39 @@ export default App
 //const result = evaluateTree(parseResult)
 //const result = calculateSimpleEquation("(-5.5+sin2*1.5-4.5/-1.5)", false)
 //console.log(result)
+
+
+// const tokens: Token[] =
+// [
+//     {
+//         type: tokenTypes.NumberTokenType,
+//         initStringIndex: 0,
+//         fromString: "10",
+//         value: 10
+//     },
+//     {
+//         type: tokenTypes.WhiteSpaceTokenType,
+//         initStringIndex: 2,
+//         fromString: " "
+//     },
+//     {
+//         type: tokenTypes.SpecSymbolTokenType,
+//         initStringIndex: 3,
+//         fromString: "*",
+//         value: "*"
+//     },
+//     {
+//         type: tokenTypes.WhiteSpaceTokenType,
+//         initStringIndex: 4,
+//         fromString: " "
+//     },
+//     {
+//         type: tokenTypes.WordTokenType,
+//         initStringIndex: 5,
+//         fromString: "@B",
+//         value: "@B"
+//     }
+// ]
+
+// const operatorIndexesResult = getIndexesOnPredicate(tokens, indexationCallback)
+// console.log(operatorIndexesResult);
