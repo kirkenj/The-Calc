@@ -150,7 +150,6 @@ export const calculateTokens = (
     return Result.Fail(msg)
   }
 
-
   const tokenToReturn: ValueToken<number> = {
     type: tokenTypes.NumberTokenType,
     value: calculationResult.Result.value,
