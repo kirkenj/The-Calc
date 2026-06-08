@@ -135,56 +135,11 @@ export class DoubleLinkedListClass<T> {
     }
 
 
-    // splice(start: number, deleteCount: number, ...items: T[]): T[] {
-    //     if (start < 0 || start >= this._length) {
-    //         throw Error("ArgumentOutOfIndex: start can not be less than 0 or bigger or equal to list's length")
-    //     }
-
-    //     if (deleteCount < 0 || start + deleteCount >= this._length) {
-    //         throw Error("ArgumentOutOfIndex: deleteCount can not be less than 0 or bigger or equal to list's length")
-    //     }
-
-    //     if (this.head === null) {
-    //         throw Error("The list is empty? (head is null)")
-    //     }
-
-    //     const isDeleteNeeded = deleteCount !== 0
-
-
-    //     if (isDeleteNeeded) {
-    //         let initNode: Node<T> | null = null
-    //         let isDeletingHead = false
-    //         if (start === 0) {
-    //             isDeletingHead = true
-    //             initNode = this.head
-    //         } else {
-    //             initNode = this.getNodeByIndex(start)
-    //         }
-
-
-    //         const toInsert = items.length !== 0
-    //             ? fromRange(items)
-    //             : null
-
-    //         const tailNodeToDelete = this.getNodeByIndex(start + deleteCount - 1)
-    //         if (!tailNodeToDelete){
-    //             throw Error("Couldn't get tailNodeToDelete")
-    //         }
-
-    //         const nextNodeAfterTail = tailNodeToDelete.next
-    //         if (nextNodeAfterTail !== null){
-    //             if ()
-    //         }
-
-
-
-
-
-    //     } else {
-
-    //     }
-
-    // }
+    splice(start: number, deleteCount: number, ...items: T[]): T[] {
+        const removed = this.removeRange(start, deleteCount);
+        this.insertRange(start, items);
+        return removed;
+    }
 
     removeRange(start: number, count: number): T[] {
         if (start < 0 || start >= this._length) {
@@ -228,33 +183,18 @@ export class DoubleLinkedListClass<T> {
         const isDeleteFromHead = start === 0
 
         if (isDeleteFromHead) {
-            const nextNodeAfterRight = rightBorderNodeToDrop.next
-            if (!nextNodeAfterRight) {
-                throw Error("Couldn't get the next node after next to the last node to delete")
-            }
-
+            const nextNodeAfterRight = nextNodePeeker(rightBorderNodeToDrop)
             nextNodeAfterRight.prev = null
             this.head = nextNodeAfterRight
             this.lastAccess = null
         } else if (isDeleteToTail) {
-            const prevNodeBeforeLeftBorder = leftBorderNodeToDrop.prev
-            if (!prevNodeBeforeLeftBorder) {
-                throw Error("Couldn't get the previous node before the first node to delete")
-            }
-
+            const prevNodeBeforeLeftBorder = prevValuePeeker(leftBorderNodeToDrop)
             prevNodeBeforeLeftBorder.next = null
             this.tail = prevNodeBeforeLeftBorder
             this.lastAccess = null
         } else {
-            const nextNodeAfterRight = rightBorderNodeToDrop.next
-            if (!nextNodeAfterRight) {
-                throw Error("Couldn't get the next node after next to the last node to delete")
-            }
-
-            const prevNodeBeforeLeftBorder = leftBorderNodeToDrop.prev
-            if (!prevNodeBeforeLeftBorder) {
-                throw Error("Couldn't get the previous node before the first node to delete")
-            }
+            const nextNodeAfterRight = nextNodePeeker(rightBorderNodeToDrop)
+            const prevNodeBeforeLeftBorder = prevValuePeeker(leftBorderNodeToDrop)
 
             nextNodeAfterRight.prev = prevNodeBeforeLeftBorder
             prevNodeBeforeLeftBorder.next = nextNodeAfterRight
@@ -271,11 +211,103 @@ export class DoubleLinkedListClass<T> {
 
         return arrToRet
     }
+
+
+    insertRange(index: number, range: T[]): number {
+        if (range.length === 0) {
+            return 0
+        }
+
+        const isListEmpty = this.head === null && this.tail === null && this.length === 0
+        if (isListEmpty) {
+            if (index !== 0) {
+                throw Error("ArgumentOutOfIndex: list initialization with from range command must be with index equal to 0")
+            }
+
+            const fromRangeResult = fromRange(range)
+            if (fromRangeResult === null) {
+                throw Error("Couldn't create sublist for the given range")
+            }
+            this.head = fromRangeResult.head
+            this._length = fromRangeResult.length
+            this.tail = fromRangeResult.tail
+            return fromRangeResult.length
+        }
+
+        if (index < 0 || index > this._length) {
+            throw Error("ArgumentOutOfIndex: index can not be less than 0 or bigger or equal to list's length")
+        }
+
+        if (this.head === null || this.tail === null) {
+            throw Error("The list is empty or in incosistent state")
+        }
+
+        const isInsertAtTail = index === this.length
+        const isInsertAtHead = index === 0
+
+        const fromRangeResult = fromRange(range)
+        if (fromRangeResult === null) {
+            throw Error("Couldn't create sublist for the given range")
+        }
+
+        if (isInsertAtHead) {
+            const exHead = this.head
+            this.head = fromRangeResult.head
+
+
+            fromRangeResult.tail.next = exHead
+            exHead.prev = fromRangeResult.tail
+
+            this._length += fromRangeResult.length
+
+            this.lastAccess = {
+                ref: exHead,
+                index: fromRangeResult.length
+            }
+
+            return fromRangeResult.length
+        } else if (isInsertAtTail) {
+            this.lastAccess = {
+                ref: this.tail,
+                index: this.length - 1
+            }
+
+            const exTail = this.tail
+            exTail.next = fromRangeResult.head
+            fromRangeResult.head.prev = exTail
+            this._length += fromRangeResult.length
+            this.tail = fromRangeResult.tail
+
+            return fromRangeResult.length
+        } else {
+            const targetNode = this.getNodeByIndex(index)
+            if (!targetNode) {
+                throw Error(`Couldn't get node at index ${index}`)
+            }
+
+            const nodeBeforeTargetNode = prevValuePeeker(targetNode)
+
+            nodeBeforeTargetNode.next = fromRangeResult.head
+            fromRangeResult.head.prev = nodeBeforeTargetNode
+
+            targetNode.prev = fromRangeResult.tail
+            fromRangeResult.tail.next = targetNode
+
+            this._length += fromRangeResult.length
+
+            this.lastAccess = {
+                ref: targetNode,
+                index: index + range.length
+            }
+
+            return fromRangeResult.length
+        }
+    }
 }
 
 const ToArray = <T>(
-    startNode: Node<T>, 
-    finishNode: Node<T>, 
+    startNode: Node<T>,
+    finishNode: Node<T>,
     maxItersCount: number = 100
 ): T[] => {
     const arr: T[] = []

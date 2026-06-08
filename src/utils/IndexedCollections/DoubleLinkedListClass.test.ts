@@ -1,34 +1,100 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { DoubleLinkedListClass } from './DoubleLinkedListClass'; // проверь путь
+import { DoubleLinkedListClass } from './DoubleLinkedListClass'; 
 
-describe('DoubleLinkedListClass - Тестирование личного состава', () => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const verifyIntegrity = <T>(list: any) => {
+    const forward: T[] = [];
+    let current = list.head; // Accessing protected members via 'any' is acceptable for testing
+    while (current) {
+        forward.push(current.value);
+        current = current.next;
+    }
+
+    const backward: T[] = [];
+    let backCurrent = list.tail;
+    while (backCurrent) {
+        backward.push(backCurrent.value);
+        backCurrent = backCurrent.prev;
+    }
+
+    return {
+        forward,
+        backward: backward.reverse(),
+        isHeadOk: list.head ? list.head.prev === null : true,
+        isTailOk: list.tail ? list.tail.next === null : true
+    };
+};
+
+describe('DoubleLinkedListClass - Integrity Checks', () => {
     let list: DoubleLinkedListClass<number>;
 
     beforeEach(() => {
         list = new DoubleLinkedListClass<number>();
     });
 
-    describe('Фаза 1: Развертывание (Push & Length)', () => {
-        it('Должен быть пустым при инициализации', () => {
+    it('Connections should be consistent after multiple insertions and removals', () => {
+        // 1. Setup base list
+        [10, 20, 30, 40, 50].forEach(v => list.push(v));
+        
+        // 2. Perform complex operation: removal from middle followed by insertion
+        list.removeRange(1, 2); // Removed 20, 30. [10, 40, 50] remains
+        list.insertRange(1, [25, 35]); // Inserted [25, 35]. Result: [10, 25, 35, 40, 50]
+        
+        const { forward, backward, isHeadOk, isTailOk } = verifyIntegrity<number>(list);
+
+        const expected = [10, 25, 35, 40, 50];
+
+        // Check forward traversal (next)
+        expect(forward).toEqual(expected);
+        
+        // Check backward traversal (prev)
+        expect(backward).toEqual(expected);
+        
+        // Check terminators (edges)
+        expect(isHeadOk).toBe(true); // Head has no previous node
+        expect(isTailOk).toBe(true); // Tail has no next node
+    });
+
+    it('Should maintain integrity during clear and refill operations', () => {
+        list.push(1);
+        list.removeRange(0, 1); // List is now empty
+        list.push(2);
+        list.insertRange(0, [0, 1]); // Result: [0, 1, 2]
+
+        const { forward, backward } = verifyIntegrity<number>(list);
+        expect(forward).toEqual([0, 1, 2]);
+        expect(backward).toEqual([0, 1, 2]);
+    });
+});
+
+describe('DoubleLinkedListClass - Personnel Testing (Core Methods)', () => {
+    let list: DoubleLinkedListClass<number>;
+
+    beforeEach(() => {
+        list = new DoubleLinkedListClass<number>();
+    });
+
+    describe('Phase 1: Deployment (Push & Length)', () => {
+        it('Should be empty upon initialization', () => {
             expect(list.length).toBe(0);
             expect(list.getByIndex(0)).toBeUndefined();
         });
 
-        it('Должен корректно добавлять элементы и обновлять длину', () => {
+        it('Should correctly add elements and update length', () => {
             list.push(10);
             list.push(20);
             list.push(30);
             expect(list.length).toBe(3);
         });
 
-        it('Должен возвращать правильный индекс при пуше', () => {
+        it('Should return correct index on push', () => {
             expect(list.push(100)).toBe(0);
             expect(list.push(200)).toBe(1);
         });
     });
 
-    describe('Фаза 2: Навигация (GetByIndex)', () => {
-        it('Должен находить элементы по краям (Head и Tail)', () => {
+    describe('Phase 2: Navigation (GetByIndex)', () => {
+        it('Should find elements at the edges (Head and Tail)', () => {
             list.push(1);
             list.push(2);
             list.push(3);
@@ -36,47 +102,47 @@ describe('DoubleLinkedListClass - Тестирование личного сос
             expect(list.getByIndex(2)).toBe(3); // Tail
         });
 
-        it('Должен корректно работать с отрицательными индексами и за границами', () => {
+        it('Should handle negative indices and out-of-bounds correctly', () => {
             list.push(1);
             expect(list.getByIndex(-1)).toBeUndefined();
             expect(list.getByIndex(10)).toBeUndefined();
         });
 
-        it('Должен находить элементы в середине (проверка логики поиска)', () => {
+        it('Should find elements in the middle (verifying search logic)', () => {
             [10, 20, 30, 40, 50].forEach(val => list.push(val));
             expect(list.getByIndex(2)).toBe(30);
         });
     });
 
-    describe('Фаза 3: Разведка (LastAccess Optimization)', () => {
-        it('Должен успешно выполнять последовательный доступ (Cursor logic)', () => {
+    describe('Phase 3: Reconnaissance (LastAccess Optimization)', () => {
+        it('Should successfully perform sequential access (Cursor logic)', () => {
             [10, 20, 30, 40, 50].forEach(val => list.push(val));
             
-            // Первый доступ (ставим курсор)
+            // First access (sets the cursor)
             expect(list.getByIndex(2)).toBe(30);
-            // Доступ к соседнему элементу (должен сработать minLen === fromLastAccessIndexDiffAbs)
+            // Accessing adjacent element (should trigger minLen === fromLastAccessIndexDiffAbs)
             expect(list.getByIndex(3)).toBe(40);
-            // Доступ назад через курсор
+            // Backward access via cursor
             expect(list.getByIndex(1)).toBe(20);
         });
 
-        it('Должен корректно переключаться между Head/Tail и LastAccess', () => {
+        it('Should correctly switch between Head/Tail and LastAccess', () => {
             for(let i = 0; i < 10; i++) list.push(i);
             
-            expect(list.getByIndex(5)).toBe(5); // Установили курсор в центр
-            expect(list.getByIndex(0)).toBe(0); // Прыгнули в Head (ближе чем курсор)
-            expect(list.getByIndex(9)).toBe(9); // Прыгнули в Tail (ближе чем курсор)
+            expect(list.getByIndex(5)).toBe(5); // Cursor set to center
+            expect(list.getByIndex(0)).toBe(0); // Jump to Head (closer than cursor)
+            expect(list.getByIndex(9)).toBe(9); // Jump to Tail (closer than cursor)
         });
     });
 
-    describe('Фаза 4: Особые условия (Edge Cases)', () => {
-        it('Должен выдержать один элемент в списке', () => {
+    describe('Phase 4: Special Operations (Edge Cases)', () => {
+        it('Should handle a single-element list correctly', () => {
             list.push(42);
             expect(list.getByIndex(0)).toBe(42);
             expect(list.length).toBe(1);
         });
 
-        it('Не должен падать при многократном запросе одного и того же индекса', () => {
+        it('Should not crash on repeated requests for the same index', () => {
             list.push(1);
             list.push(2);
             expect(list.getByIndex(1)).toBe(2);
@@ -86,31 +152,31 @@ describe('DoubleLinkedListClass - Тестирование личного сос
     });
 });
 
-describe('DoubleLinkedListClass - Операция removeRange', () => {
+describe('DoubleLinkedListClass - removeRange Operation', () => {
     let list: DoubleLinkedListClass<number>;
 
     beforeEach(() => {
         list = new DoubleLinkedListClass<number>();
     });
 
-    describe('1. Граничные условия (Guard Clauses)', () => {
-        it('Должен выбрасывать ошибку при неверном start', () => {
+    describe('1. Guard Clauses (Boundary Conditions)', () => {
+        it('Should throw error on invalid start index', () => {
             list.push(1);
             expect(() => list.removeRange(-1, 1)).toThrow("ArgumentOutOfIndex");
             expect(() => list.removeRange(1, 1)).toThrow("ArgumentOutOfIndex");
         });
 
-        it('Должен выбрасывать ошибку при неверном count', () => {
+        it('Should throw error on invalid count', () => {
             list.push(1);
             list.push(2);
-            // start + count (1 + 2) = 3, что больше длины (2). Должно упасть.
+            // start + count (1 + 2) = 3, which is greater than length (2). Should throw.
             expect(() => list.removeRange(1, 2)).toThrow("ArgumentOutOfIndex");
         });
 
-        it('Должен успешно удалять последний элемент (Fix Check)', () => {
+        it('Should successfully remove the last element (Fix Check)', () => {
             list.push(1);
             list.push(2);
-            // start=1, count=1. 1 + 1 = 2. 2 > 2 - False. Проходит!
+            // start=1, count=1. 1 + 1 = 2. 2 > 2 is False. Should pass.
             const removed = list.removeRange(1, 1);
             expect(removed).toEqual([2]);
             expect(list.length).toBe(1);
@@ -118,35 +184,35 @@ describe('DoubleLinkedListClass - Операция removeRange', () => {
         });
     });
 
-    describe('2. Удаление из разных позиций', () => {
+    describe('2. Removal from Various Positions', () => {
         beforeEach(() => {
             [10, 20, 30, 40].forEach(v => list.push(v));
         });
 
-        it('Удаление всей дистанции (Total Clear)', () => {
+        it('Total Clear (Wiping the range)', () => {
             const removed = list.removeRange(0, 4);
             expect(removed).toEqual([10, 20, 30, 40]);
             expect(list.length).toBe(0);
-            // Проверка сброса состояния
+            // Verify state reset
             expect(list.getByIndex(0)).toBeUndefined();
         });
 
-        it('Удаление с головы (Head Shift)', () => {
-            const removed = list.removeRange(0, 2); // Удаляем 10, 20
+        it('Removal from Head (Head Shift)', () => {
+            const removed = list.removeRange(0, 2); // Remove 10, 20
             expect(removed).toEqual([10, 20]);
             expect(list.length).toBe(2);
-            expect(list.getByIndex(0)).toBe(30); // 30 стала новой головой
+            expect(list.getByIndex(0)).toBe(30); // 30 becomes the new head
         });
 
-        it('Удаление с хвоста (Tail Shift)', () => {
-            const removed = list.removeRange(2, 2); // Удаляем 30, 40
+        it('Removal from Tail (Tail Shift)', () => {
+            const removed = list.removeRange(2, 2); // Remove 30, 40
             expect(removed).toEqual([30, 40]);
             expect(list.length).toBe(2);
-            expect(list.getByIndex(1)).toBe(20); // 20 стала новым хвостом
+            expect(list.getByIndex(1)).toBe(20); // 20 becomes the new tail
         });
 
-        it('Удаление из середины (Stitching)', () => {
-            const removed = list.removeRange(1, 2); // Удаляем 20, 30
+        it('Removal from Middle (Stitching)', () => {
+            const removed = list.removeRange(1, 2); // Remove 20, 30
             expect(removed).toEqual([20, 30]);
             expect(list.length).toBe(2);
             expect(list.getByIndex(0)).toBe(10);
@@ -154,137 +220,220 @@ describe('DoubleLinkedListClass - Операция removeRange', () => {
         });
     });
 
-    describe('3. Инвалидация курсора (lastAccess)', () => {
-        it('Должен ставить курсор на элемент ПЕРЕД удаленным при удалении из середины', () => {
+    describe('3. Cursor Invalidation (lastAccess)', () => {
+        it('Should place cursor on the element BEFORE the deleted range when removing from middle', () => {
             [1, 2, 3, 4, 5].forEach(v => list.push(v));
             
-            // Удаляем 3 и 4 (индексы 2, 3)
+            // Remove 3 and 4 (indices 2, 3)
             list.removeRange(2, 2); 
             
-            // Проверяем, что курсор выжил. Если он встал на индекс start-1 (индекс 1, значение 2),
-            // то доступ к индексу 1 должен быть мгновенным и вернуть 2.
+            // Verify cursor survival. If it stands at index start-1 (index 1, value 2),
+            // access to index 1 should be instantaneous and return 2.
             expect(list.getByIndex(1)).toBe(2);
-            // И следующий за ним индекс 2 должен быть 5
+            // And the following index 2 should be 5
             expect(list.getByIndex(2)).toBe(5);
         });
 
-        it('Должен сбрасывать курсор при удалении от головы', () => {
+        it('Should reset cursor when removing from Head', () => {
             [1, 2, 3].forEach(v => list.push(v));
-            list.getByIndex(1); // Поставили курсор
-            list.removeRange(0, 1); // Удалили голову
+            list.getByIndex(1); // Set the cursor
+            list.removeRange(0, 1); // Remove Head
             
-            // lastAccess должен быть null, getByIndex должен отработать штатно от новой головы
+            // lastAccess should be null, getByIndex should work normally starting from the new head
             expect(list.getByIndex(0)).toBe(2);
         });
     });
 });
 
 
-// describe('DoubleLinkedListClass - Операция Splice', () => {
-//     let list: DoubleLinkedListClass<number>;
+describe('DoubleLinkedListClass - insertRange Operation', () => {
+    let list: DoubleLinkedListClass<number>;
 
-//     beforeEach(() => {
-//         list = new DoubleLinkedListClass<number>();
-//     });
+    beforeEach(() => {
+        list = new DoubleLinkedListClass<number>();
+    });
 
-//     describe('Базовое удаление (Removal)', () => {
-//         it('Должен удалять элементы из середины', () => {
-//             [1, 2, 3, 4, 5].forEach(v => list.push(v));
-//             // Удаляем 2 и 3 (индексы 1, 2)
-//             const removed = list.splice(1, 2); 
+    describe('1. Basic Insertion (Empty & Edges)', () => {
+        it('Should insert into an absolutely empty list', () => {
+            list.insertRange(0, [10, 20]);
             
-//             expect(removed).toEqual([2, 3]);
-//             expect(list.length).toBe(3);
-//             expect(list.getByIndex(0)).toBe(1);
-//             expect(list.getByIndex(1)).toBe(4);
-//             expect(list.getByIndex(2)).toBe(5);
-//         });
+            expect(list.length).toBe(2);
+            expect(list.getByIndex(0)).toBe(10);
+            expect(list.getByIndex(1)).toBe(20);
+        });
 
-//         it('Должен удалять Head (индекс 0)', () => {
-//             [1, 2, 3].forEach(v => list.push(v));
-//             list.splice(0, 1);
+        it('Should insert at the beginning (Head) of an existing list', () => {
+            list.push(30);
+            list.insertRange(0, [10, 20]);
             
-//             expect(list.length).toBe(2);
-//             expect(list.getByIndex(0)).toBe(2);
-//             // Важно: проверить, что у нового head prev === null (это внутри, но getByIndex(0) должен работать)
-//         });
+            expect(list.length).toBe(3);
+            expect(list.getByIndex(0)).toBe(10);
+            expect(list.getByIndex(1)).toBe(20);
+            expect(list.getByIndex(2)).toBe(30);
+        });
 
-//         it('Должен удалять Tail', () => {
-//             [1, 2, 3].forEach(v => list.push(v));
-//             list.splice(2, 1);
+        it('Should insert at the end (Tail) of an existing list', () => {
+            list.push(10);
+            list.insertRange(1, [20, 30]); // Index equals current length
             
-//             expect(list.length).toBe(2);
-//             expect(list.getByIndex(1)).toBe(2);
-//         });
+            expect(list.length).toBe(3);
+            expect(list.getByIndex(1)).toBe(20);
+            expect(list.getByIndex(2)).toBe(30);
+        });
+    });
 
-//         it('Должен очистить весь список, если deleteCount >= length', () => {
-//             [1, 2, 3].forEach(v => list.push(v));
-//             list.splice(0, 5);
+    describe('2. Insertion into the Middle', () => {
+        it('Should expand the list and stitch in elements', () => {
+            [10, 40].forEach(v => list.push(v));
+            list.insertRange(1, [20, 30]);
             
-//             expect(list.length).toBe(0);
-//             expect(list.getByIndex(0)).toBeUndefined();
-//         });
-//     });
+            expect(list.length).toBe(4);
+            expect(list.getByIndex(0)).toBe(10);
+            expect(list.getByIndex(1)).toBe(20);
+            expect(list.getByIndex(2)).toBe(30);
+            expect(list.getByIndex(3)).toBe(40);
+        });
+    });
 
-//     describe('Базовая вставка (Insertion)', () => {
-//         it('Должен вставлять элементы в середину без удаления', () => {
-//             [1, 4].forEach(v => list.push(v));
-//             list.splice(1, 0, 2, 3);
+    describe('3. Cursor Management (lastAccess)', () => {
+        it('Should place cursor on the last inserted element', () => {
+            [1, 5].forEach(v => list.push(v));
+            list.insertRange(1, [2, 3, 4]); // Insert [2, 3, 4] at indices 1, 2, 3
             
-//             expect(list.length).toBe(4);
-//             expect(Array.from(list)).toEqual([1, 2, 3, 4]); // Если итератор готов
-//             // Если нет итератора, проверяем поштучно:
-//             expect(list.getByIndex(1)).toBe(2);
-//             expect(list.getByIndex(2)).toBe(3);
-//         });
+            // If the cursor is placed at index 3 (value 4), 
+            // access to index 3 should be instantaneous
+            expect(list.getByIndex(3)).toBe(4);
+            // And the following index 4 (value 5) should be one step away
+            expect(list.getByIndex(4)).toBe(5);
+        });
+    });
 
-//         it('Должен вставлять в пустой список', () => {
-//             list.splice(0, 0, 10, 20);
-//             expect(list.length).toBe(2);
-//             expect(list.getByIndex(0)).toBe(10);
-//             expect(list.getByIndex(1)).toBe(20);
-//         });
-//     });
+    describe('4. Errors & Edge Cases', () => {
+        it('Should ignore empty array insertion', () => {
+            list.push(1);
+            list.insertRange(0, []);
+            expect(list.length).toBe(1);
+            expect(list.getByIndex(0)).toBe(1);
+        });
 
-//     describe('Замена (Replacement - то что нужно калькулятору)', () => {
-//         it('Должен заменять несколько узлов одним (схлопывание)', () => {
-//             // "2 * 2 + 5" -> [2, *, 2, +, 5]
-//             [2, 100, 2, 200, 5].forEach(v => list.push(v)); 
-//             // Заменяем [2, 100, 2] на [4] (индексы 0, 1, 2)
-//             list.splice(0, 3, 4);
+        it('Should throw error on invalid index', () => {
+            list.push(1);
+            expect(() => list.insertRange(-1, [10])).toThrow();
+            expect(() => list.insertRange(5, [10])).toThrow();
+        });
+
+        it('Should correctly insert a single element', () => {
+            list.push(1);
+            list.push(3);
+            list.insertRange(1, [2]);
+            expect(list.length).toBe(3);
+            expect(list.getByIndex(1)).toBe(2);
+        });
+    });
+});
+
+describe('DoubleLinkedListClass - Splice Operation (Combined)', () => {
+    let list: DoubleLinkedListClass<number | string>;
+
+    beforeEach(() => {
+        list = new DoubleLinkedListClass<number | string>();
+    });
+
+    describe('1. Basic Scenarios (JS Standard Behavior)', () => {
+        it('Should replace one element with another (Simple Swap)', () => {
+            [1, 2, 3].forEach(v => list.push(v));
+            // splice(index 1, delete 1, insert 2.5)
+            const removed = list.splice(1, 1, 2.5);
+
+            expect(removed).toEqual([2]);
+            expect(list.length).toBe(3);
+            expect(list.getByIndex(0)).toBe(1);
+            expect(list.getByIndex(1)).toBe(2.5);
+            expect(list.getByIndex(2)).toBe(3);
+        });
+
+        it('Should only remove elements if items are not provided', () => {
+            [1, 2, 3, 4].forEach(v => list.push(v));
+            const removed = list.splice(1, 2); // Delete 2 and 3
+
+            expect(removed).toEqual([2, 3]);
+            expect(list.length).toBe(2);
+            expect(list.getByIndex(0)).toBe(1);
+            expect(list.getByIndex(1)).toBe(4);
+        });
+
+        it('Should only insert elements if deleteCount is zero', () => {
+            [1, 2].forEach(v => list.push(v));
+            const removed = list.splice(1, 0, 1.5);
+
+            expect(removed).toEqual([]);
+            expect(list.length).toBe(3);
+            expect(list.getByIndex(0)).toBe(1);
+            expect(list.getByIndex(1)).toBe(1.5);
+            expect(list.getByIndex(2)).toBe(2);
+        });
+    });
+
+    describe('2. Calculator Scenarios (Collapsing)', () => {
+        it('Should collapse an expression into a result', () => {
+            // "2 * 2 + 5"
+            [2, '*', 2, '+', 5].forEach(v => list.push(v));
             
-//             expect(list.length).toBe(3);
-//             expect(list.getByIndex(0)).toBe(4);
-//             expect(list.getByIndex(1)).toBe(200);
-//         });
-//     });
+            // Collapse [2, *, 2] (indices 0, 1, 2) into [4]
+            const removed = list.splice(0, 3, 4);
 
-//     describe('Работа с курсором (lastAccess Safety)', () => {
-//         it('Должен инвалидировать или корректировать курсор после мутации', () => {
-//             [1, 2, 3, 4, 5].forEach(v => list.push(v));
-//             list.getByIndex(4); // Установили курсор на конец
+            expect(removed).toEqual([2, '*', 2]);
+            expect(list.length).toBe(3);
+            expect(list.getByIndex(0)).toBe(4);
+            expect(list.getByIndex(1)).toBe('+');
+            expect(list.getByIndex(2)).toBe(5);
+        });
+    });
+
+    describe('3. Boundary Conditions and Exceptions', () => {
+        it('Should throw exception when start index is out of bounds', () => {
+            list.push(1);
+            expect(() => list.splice(-1, 1, 10)).toThrow("ArgumentOutOfIndex");
+            expect(() => list.splice(5, 1, 10)).toThrow("ArgumentOutOfIndex");
+        });
+
+        it('Should throw exception on invalid deleteCount', () => {
+            [1, 2, 3].forEach(v => list.push(v));
+            // 1 + 5 = 6, which is greater than length (3)
+            expect(() => list.splice(1, 5, 10)).toThrow("ArgumentOutOfIndex");
+        });
+
+        it('Should work correctly at the edges (Head & Tail)', () => {
+            [1, 2].forEach(v => list.push(v));
             
-//             list.splice(2, 2); // Удалили элементы 3 и 4. Курсор мог указывать на них!
+            // Replace Head
+            list.splice(0, 1, 0);
+            expect(list.getByIndex(0)).toBe(0);
+
+            // Replace Tail
+            list.splice(1, 1, 3);
+            expect(list.getByIndex(1)).toBe(3);
             
-//             // После splice доступ по индексу не должен приводить к ошибке
-//             expect(() => list.getByIndex(2)).not.toThrow();
-//             expect(list.getByIndex(2)).toBe(5);
-//         });
-//     });
+            expect(list.length).toBe(2);
+        });
+    });
 
-//     describe('Крайние случаи (Edge Cases)', () => {
-//         it('Если deleteCount 0 и items нет — ничего не должно меняться', () => {
-//             list.push(1);
-//             list.splice(0, 0);
-//             expect(list.length).toBe(1);
-//             expect(list.getByIndex(0)).toBe(1);
-//         });
+    describe('4. Integrity Check', () => {
+        it('Should maintain correct prev/next connections after splice', () => {
+            [1, 2, 3, 4, 5].forEach(v => list.push(v));
+            list.splice(1, 3, 99); // Should result in [1, 99, 5]
 
-//         it('Должен корректно работать, если start > length', () => {
-//             list.push(1);
-//             list.splice(10, 0, 2); // Должен просто добавить в конец, как push
-//             expect(list.length).toBe(2);
-//             expect(list.getByIndex(1)).toBe(2);
-//         });
-//     });
-//});
+            // Verification via forward iteration (next)
+            const forward: any[] = [];
+            let curr: any = (list as any).head;
+            while(curr) { forward.push(curr.value); curr = curr.next; }
+            expect(forward).toEqual([1, 99, 5]);
+
+            // Verification via backward iteration (prev)
+            const backward: any[] = [];
+            let backCurr: any = (list as any).tail;
+            while(backCurr) { backward.push(backCurr.value); backCurr = backCurr.prev; }
+            expect(backward.reverse()).toEqual([1, 99, 5]);
+        });
+    });
+});
