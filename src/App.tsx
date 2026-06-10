@@ -1,29 +1,91 @@
-//import './App.css'
-import { createTokenParser } from "./utils/Parsing/tokenParser";
-import { getTokenStringAtIndex } from "./utils/Parsing/tokenStringBuilder";
-import { parseTree } from "./utils/TreeBuilding/treeBuilder";
-import { createAlphaCounter } from "./utils/TreeBuilding/alphaCounter";
-import type { TreeBuilderTriggerTypes } from "./utils/Models/TreeBuilding/TreeBuilderTriggerTypes";
-import { tokenTypes, tokenTypesAsArr } from "./utils/Constants/Types/TokenTypes";
-import { evaluateNode } from "./utils/Calculation/evaluateTreeUtils";
-import { calculateTokens, indexationCallback } from "./utils/calculateSimpleEquation";
-import { getOperatorsForVariables } from "./utils/variableResolver";
-import type { Token, ValueToken } from "./utils/Models/Core/Token";
-import { getIndexesOnPredicate } from "./utils/indexUtils";
-import { DoubleLinkedList } from "./utils/IndexedCollections/DoubleLinkedList";
-import './utils/logOverrider'
+// import './App.css'
+// import { createTokenParser } from "./utils/Parsing/tokenParser";
+// import { getTokenStringAtIndex } from "./utils/Parsing/tokenStringBuilder";
+// import { parseTree } from "./utils/TreeBuilding/treeBuilder";
+// import { createAlphaCounter } from "./utils/TreeBuilding/alphaCounter";
+// import type { TreeBuilderTriggerTypes } from "./utils/Models/TreeBuilding/TreeBuilderTriggerTypes";
+// import { tokenTypesAsArr } from "./utils/Constants/Types/TokenTypes";
+// import { evaluateNode } from "./utils/Calculation/evaluateTreeUtils";
+// import { calculateTokens, indexationCallback } from "./utils/calculateSimpleEquation";
+// import { getOperatorsForVariables } from "./utils/variableResolver";
+// import type { ValueToken } from "./utils/Models/Core/Token";
+// import { getIndexesOnPredicate } from "./utils/indexUtils";
+// import './utils/logOverrider'
+import type { Token } from "./utils/Models/Core/Token";
+import { tokenTypes } from "./utils/Constants/Types/TokenTypes";
+import { DoubleLinkedListClass } from "./utils/IndexedCollections/DoubleLinkedListClass";
 
 
 function App() {
   const exec = () => {
-    const lst = DoubleLinkedList.Create<number>()
-    console.log(lst);
-    lst.push(12)
-    console.log(lst);
-    lst.push(3)
-    console.log(lst);
-    lst.push(23)
-    console.log(lst);
+    const tokens: Token[] =
+    [
+        {
+            type: tokenTypes.NumberTokenType,
+            initStringIndex: 0,
+            fromString: "10",
+            value: 10
+        },
+        {
+            type: tokenTypes.WhiteSpaceTokenType,
+            initStringIndex: 2,
+            fromString: " "
+        },
+        {
+            type: tokenTypes.SpecSymbolTokenType,
+            initStringIndex: 3,
+            fromString: "*",
+            value: "*"
+        },
+        {
+            type: tokenTypes.WhiteSpaceTokenType,
+            initStringIndex: 4,
+            fromString: " "
+        },
+        {
+            type: tokenTypes.WordTokenType,
+            initStringIndex: 5,
+            fromString: "@B",
+            value: "@B"
+        }
+    ]
+
+
+    const lst = new DoubleLinkedListClass<Token>()
+    lst.insertRange(0, tokens)
+    console.log(lst.toJSON());
+
+    const iter1 = lst.GetIteratorAtIndex(3)
+    const iter2 = lst.GetIteratorAtIndex(3)
+
+    while(true){
+      console.log(iter1?.GetValue());
+      if (!iter1?.MoveNext())
+      {
+        break
+      }
+    }
+
+    lst.insertRange(0, tokens)
+
+    
+    while(true){
+      console.log(iter2?.GetValue());
+      if (!iter2?.MovePrev())
+      {
+        break
+      }
+    }
+    
+
+
+    // console.log(lst);
+    // lst.push(12)
+    // console.log(lst);
+    // lst.push(3)
+    // console.log(lst);
+    // lst.push(23)
+    // console.log(lst.toJSON());
   }
 
 
