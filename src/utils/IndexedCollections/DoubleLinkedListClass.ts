@@ -1,17 +1,17 @@
-interface Node<T> {
-    next: Node<T> | null,
-    prev: Node<T> | null,
-    value: T
-}
-
 export interface Bidirectionalterator<T> {
     GetValue(): T;
     MoveNext(): boolean;
     MovePrev(): boolean;
 }
 
+interface Node<T> {
+    next: Node<T> | null,
+    prev: Node<T> | null,
+    isDeleted: boolean,
+    value: T
+}
+
 interface InternalBidirectionalterator<T> extends Bidirectionalterator<T> {
-    version: number,
     node: Node<T>,
 }
 
@@ -26,14 +26,11 @@ export class DoubleLinkedListClass<T> {
         ref: Node<T>
     } | null;
 
-    protected _version: number
-
     constructor() {
         this.head = null
         this.tail = null;
         this._length = 0;
         this.lastAccess = null;
-        this._version = 0;
     }
 
     public get length() { return this._length }
@@ -43,13 +40,13 @@ export class DoubleLinkedListClass<T> {
             this.head = {
                 next: null,
                 prev: null,
-                value: item
+                value: item,
+                isDeleted: false
             }
 
             this._length = 1
 
             this.tail = this.head
-            this._version++;
             return 0
         }
 
@@ -60,13 +57,13 @@ export class DoubleLinkedListClass<T> {
         const newValue = {
             next: null,
             prev: this.tail,
-            value: item
+            value: item,
+            isDeleted: false,
         }
 
         this._length++
         this.tail.next = newValue
         this.tail = newValue
-        this._version++;
         return this._length - 1
     }
 
@@ -100,12 +97,16 @@ export class DoubleLinkedListClass<T> {
         }
 
         if (start === 0 && count === this.length) {
-            const arrToRet = ToArray(this.head, this.tail, this.length)
+            const arrToRet: T[] = []
+            ForEach(this.head, this.tail, this.length, (node) => {
+                markNodeAsDeleted(node)
+                arrToRet.push(node.value)
+            })
+
             this.head = null
             this.tail = null
             this.lastAccess = null
             this._length = 0
-            this._version++;
             return arrToRet
         }
 
@@ -118,8 +119,6 @@ export class DoubleLinkedListClass<T> {
         if (!rightBorderNodeToDrop) {
             throw Error("Couldn't get the last node to delete")
         }
-
-        const arrToRet = ToArray(leftBorderNodeToDrop, rightBorderNodeToDrop, count)
 
         const isDeleteToTail = start + count === this.length
         const isDeleteFromHead = start === 0
@@ -146,11 +145,13 @@ export class DoubleLinkedListClass<T> {
             }
         }
 
-
-        rightBorderNodeToDrop.next = null
-        leftBorderNodeToDrop.prev = null
         this._length -= count
-        this._version++;
+
+        const arrToRet: T[] = []
+        ForEach(leftBorderNodeToDrop, rightBorderNodeToDrop, count, (node) => {
+            markNodeAsDeleted(node)
+            arrToRet.push(node.value)
+        })
 
         return arrToRet
     }
@@ -173,7 +174,6 @@ export class DoubleLinkedListClass<T> {
             this.head = fromRangeResult.head
             this._length = fromRangeResult.length
             this.tail = fromRangeResult.tail
-            this._version++
             return fromRangeResult.length
         }
 
@@ -197,7 +197,6 @@ export class DoubleLinkedListClass<T> {
             const exHead = this.head
             this.head = fromRangeResult.head
 
-
             fromRangeResult.tail.next = exHead
             exHead.prev = fromRangeResult.tail
 
@@ -208,7 +207,6 @@ export class DoubleLinkedListClass<T> {
                 index: fromRangeResult.length
             }
 
-            this._version++
             return fromRangeResult.length
         } else if (isInsertAtTail) {
             this.lastAccess = {
@@ -221,7 +219,6 @@ export class DoubleLinkedListClass<T> {
             fromRangeResult.head.prev = exTail
             this._length += fromRangeResult.length
             this.tail = fromRangeResult.tail
-            this._version++
 
             return fromRangeResult.length
         } else {
@@ -239,7 +236,6 @@ export class DoubleLinkedListClass<T> {
             fromRangeResult.tail.next = targetNode
 
             this._length += fromRangeResult.length
-            this._version++
 
             this.lastAccess = {
                 ref: targetNode,
@@ -260,20 +256,18 @@ export class DoubleLinkedListClass<T> {
 
         const iterToRet: InternalBidirectionalterator<T> = {
             GetValue: () => {
-                if (iterToRet.version !== this._version)
-                {
-                    throw Error("List version changed")
+                if (iterToRet.node.isDeleted) {
+                    throw Error("Refrenced Node has been removed")
                 }
 
                 return iterToRet.node.value
             },
             MoveNext: () => {
-                if (iterToRet.version !== this._version)
-                {
-                    throw Error("List version changed")
+                if (iterToRet.node.isDeleted) {
+                    throw Error("Refrenced Node has been removed")
                 }
 
-                if (iterToRet.node.next === null){
+                if (iterToRet.node.next === null) {
                     return false
                 }
 
@@ -281,19 +275,17 @@ export class DoubleLinkedListClass<T> {
                 return true
             },
             MovePrev: () => {
-                if (iterToRet.version !== this._version)
-                {
-                    throw Error("List version changed")
+                if (iterToRet.node.isDeleted) {
+                    throw Error("Refrenced Node has been removed")
                 }
 
-                if (iterToRet.node.prev === null){
+                if (iterToRet.node.prev === null) {
                     return false
                 }
 
-                iterToRet.node = iterToRet.node.prev 
+                iterToRet.node = iterToRet.node.prev
                 return true
             },
-            version: this._version,
             node: initNode,
         }
 
@@ -373,7 +365,6 @@ export class DoubleLinkedListClass<T> {
         return currenNode
     }
 
-
     public toJSON() {
         const isListEmpty = this.head === null && this.tail === null && this.length === 0
         if (isListEmpty) {
@@ -384,7 +375,7 @@ export class DoubleLinkedListClass<T> {
             throw Error("List is incosistent state")
         }
 
-        return ToArray(this.head, this.tail)
+        return ToArray(this.head, this.tail, this.length)
     }
 
     public toDebugJSON() {
@@ -397,20 +388,24 @@ export class DoubleLinkedListClass<T> {
             throw Error("List is incosistent state")
         }
 
-        let currenNode: Node<T> | null = this.head
-        const listOfElements = []
+        const listOfElements: {
+            index: number,
+            value: T,
+            next: T | null,
+            prev: T | null,
+        }[] = []
         let indexCounter = 0
-        while (currenNode !== null) {
-            listOfElements.push({
+
+        ForEach(this.head, this.tail, this.length, (node) =>{
+                listOfElements.push({
                 index: indexCounter,
-                value: currenNode.value,
-                next: currenNode.next?.value ?? null,
-                prev: currenNode.prev?.value ?? null,
+                value: node.value,
+                next: node.next?.value ?? null,
+                prev: node.prev?.value ?? null,
             })
 
             indexCounter++;
-            currenNode = currenNode.next
-        }
+        })
 
         const valToRet = {
             elements: listOfElements,
@@ -422,10 +417,33 @@ export class DoubleLinkedListClass<T> {
     }
 }
 
+const ForEach = <T>(
+    startNode: Node<T>,
+    finishNode: Node<T>,
+    maxItersCount: number = 100,
+    body: (arg: Node<T>) => void,
+): void => {
+    let node: Node<T> = startNode
+    let currentCount = 0
+    while (node !== finishNode) {
+        if (currentCount >= maxItersCount){
+            throw Error(`Iterations count hit the limit of ${maxItersCount} iterations`)
+        }
 
+        const next = nextNodePeeker(node)
 
+        body(node)
 
+        node = next
+        currentCount++
+    }
 
+    if (node !== finishNode) {
+        throw Error("Couldn't find the finish node")
+    }
+    
+    body(finishNode)
+}
 
 const ToArray = <T>(
     startNode: Node<T>,
@@ -433,23 +451,10 @@ const ToArray = <T>(
     maxItersCount: number = 100
 ): T[] => {
     const arr: T[] = []
-    let node = startNode
-    let currentCount = 0
-    while (node !== finishNode && currentCount < maxItersCount) {
+    ForEach(startNode, finishNode, maxItersCount, (node) => {
         arr.push(node.value)
-        if (node.next === null) {
-            throw Error("Found a gap in node refs while looking for finishNode")
-        }
+    })
 
-        node = node.next
-        currentCount++
-    }
-
-    if (node !== finishNode) {
-        throw Error("Couldn't find the finish node")
-    }
-
-    arr.push(node.value)
     return arr
 }
 
@@ -464,19 +469,20 @@ const fromRange = <T>(range: T[]): {
 
     let prevNode: Node<T> = {
         value: range[0],
+        isDeleted: false,
         next: null,
         prev: null
     }
 
     const headNode = prevNode
 
-
     for (let i: number = 1; i < range.length; i++) {
 
         prevNode.next = {
             value: range[i],
             next: null,
-            prev: prevNode
+            prev: prevNode,
+            isDeleted: false,
         };
 
         prevNode = prevNode.next
@@ -488,7 +494,6 @@ const fromRange = <T>(range: T[]): {
         length: range.length
     }
 }
-
 
 const prevValuePeeker = <T>(node: Node<T>) => {
     if (node.prev === null) {
@@ -508,3 +513,9 @@ const nextNodePeeker = <T>(node: Node<T>) => {
 
 const numberIncrementer = (num: number) => num + 1
 const numberDecrementer = (num: number) => num - 1
+
+const markNodeAsDeleted = <T>(node: Node<T>): void => {
+    node.isDeleted = true;
+    node.next = null
+    node.prev = null
+}
