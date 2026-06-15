@@ -1,3 +1,4 @@
+import type { DoubleLinkedListClass } from "../../IndexedCollections/DoubleLinkedListClass";
 import type { Result } from "../Core/Result";
 import type { Token } from "../Core/Token";
 import type { TokenType } from "../Core/TokenType";
@@ -8,4 +9,4 @@ export type EquationTokenParserDelegate = (
   onTokenParsedCallback: ((token: Token) => void) | null,
   tokenTypes: TokenType[],
   tokenStringCollectionDelegate: StringCollectionDelegate
-) => Result<Token[]>
+) => Result<DoubleLinkedListClass<Token>>

@@ -1,3 +1,4 @@
+import { DoubleLinkedListClass } from "../IndexedCollections/DoubleLinkedListClass"
 import { Result } from "../Models/Core/Result"
 import { type Token, type ValueToken } from "../Models/Core/Token"
 import { type TokenType } from "../Models/Core/TokenType"
@@ -45,12 +46,18 @@ export function parseTree(
   //#endregion
 
   const entryPointName = nameGenerator()
-  const stack: BracketInfo[] = [
-    BracketInfo.createBracketInfo(entryPointName, 0)
-  ]
+  const stack: DoubleLinkedListClass<BracketInfo> = new DoubleLinkedListClass<BracketInfo>()
+  stack.push(BracketInfo.createBracketInfo(entryPointName, 0))
+
 
   const eqMap = new Map<string, BracketInfo>()
-  eqMap.set(entryPointName, stack[stack.length - 1])
+  const topStackIndex = stack.length - 1
+  const stackGetByIndexResult = stack.getByIndex(topStackIndex)
+  if (!stackGetByIndexResult){
+    return Result.Fail(`Couldn't get stack value by index ${topStackIndex}`)
+  }
+
+  eqMap.set(entryPointName, stackGetByIndexResult)
 
   const treeBuildingError = { error: null }
   const onTokenParsed = createOnTokenParsedDelegate(stack, eqMap, nameGenerator, builderTriggers, treeBuildingError)
@@ -73,7 +80,7 @@ export function parseTree(
 }
 
 function createOnTokenParsedDelegate(
-  stack: BracketInfo[],
+  stack: DoubleLinkedListClass<BracketInfo>,
   eqMap: Map<string, BracketInfo>,
   nameGenerationCallback: () => string,
   builderTriggers: TreeBuilderTriggerTypes,
@@ -103,20 +110,30 @@ function createOnTokenParsedDelegate(
         value: newStackName 
       }
 
-      const parentStackValue = stack[stack.length - 2]
-
+      const parentStackIndex = stack.length - 2
+      const parentStackValue = stack.getByIndex(parentStackIndex)
+      if (!parentStackValue){
+        return errorContainer.error = `Couldn't get parent value from stack at index ${parentStackIndex}`
+      }
+      
       parentStackValue.content.push(tokenToPushIntoParent)
       parentStackValue.children.push(tokenToPushIntoParent.fromString)
     }
 
-    stack[stack.length - 1].content.push(token)
+    const topStackIndex = stack.length - 1
+    const topStackValue = stack.getByIndex(topStackIndex)
+    if (!topStackValue){
+      return errorContainer.error = `Couldn't get top stack value at index ${topStackIndex}`
+    }
+
+    topStackValue.content.push(token)
 
     if (!isOpenBracket && token.type === builderTriggers.ClosedBracket) {
       if (stack.length <= 1) {
         return errorContainer.error = `Bracket mismatch at index ${token.initStringIndex}`
       }
 
-      stack.pop()
+      stack.removeRange(stack.length - 1, 1)
     }
   }
 }

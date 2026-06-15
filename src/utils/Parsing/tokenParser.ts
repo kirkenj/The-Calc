@@ -1,3 +1,4 @@
+import {  DoubleLinkedListClass } from "../IndexedCollections/DoubleLinkedListClass"
 import { Result } from "../Models/Core/Result"
 import { type Token } from "../Models/Core/Token"
 import { type TokenType } from "../Models/Core/TokenType"
@@ -8,7 +9,7 @@ import { type EquationTokenParserDelegate } from "../Models/Parsing/TokenParserD
 
 export const parseTokens: EquationTokenParserDelegate = (
   equation, onTokenParsedCallback = null, tokenTypes, tokenStringCollectionDelegate
-): Result<Token[]> => {
+): Result<DoubleLinkedListClass<Token>> => {
   if (equation.length === 0) {
     return Result.Fail("InvalidArgument: equation")
   }
@@ -18,7 +19,7 @@ export const parseTokens: EquationTokenParserDelegate = (
   }
 
   let i = 0;
-  const tokens: Token[] = []
+  const tokens = new DoubleLinkedListClass<Token>()
   while (i < equation.length) {
     const tokenTypeForSymbol = tokenTypes.find(tt => tt.tokenStringRestriction.symbolMembershipCheckCallback(equation[i]))
     if (!tokenTypeForSymbol) {

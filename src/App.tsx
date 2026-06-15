@@ -1,16 +1,16 @@
-// import './App.css'
-// import { createTokenParser } from "./utils/Parsing/tokenParser";
-// import { getTokenStringAtIndex } from "./utils/Parsing/tokenStringBuilder";
-// import { parseTree } from "./utils/TreeBuilding/treeBuilder";
-// import { createAlphaCounter } from "./utils/TreeBuilding/alphaCounter";
-// import type { TreeBuilderTriggerTypes } from "./utils/Models/TreeBuilding/TreeBuilderTriggerTypes";
-// import { tokenTypesAsArr } from "./utils/Constants/Types/TokenTypes";
-// import { evaluateNode } from "./utils/Calculation/evaluateTreeUtils";
-// import { calculateTokens, indexationCallback } from "./utils/calculateSimpleEquation";
-// import { getOperatorsForVariables } from "./utils/variableResolver";
-// import type { ValueToken } from "./utils/Models/Core/Token";
-// import { getIndexesOnPredicate } from "./utils/indexUtils";
-// import './utils/logOverrider'
+import './App.css'
+import { createTokenParser } from "./utils/Parsing/tokenParser";
+import { getTokenStringAtIndex } from "./utils/Parsing/tokenStringBuilder";
+import { parseTree } from "./utils/TreeBuilding/treeBuilder";
+import { createAlphaCounter } from "./utils/TreeBuilding/alphaCounter";
+import type { TreeBuilderTriggerTypes } from "./utils/Models/TreeBuilding/TreeBuilderTriggerTypes";
+import { tokenTypesAsArr } from "./utils/Constants/Types/TokenTypes";
+import { evaluateNode } from "./utils/Calculation/evaluateTreeUtils";
+import { calculateTokens, indexationCallback } from "./utils/calculateSimpleEquation";
+import { getOperatorsForVariables } from "./utils/variableResolver";
+import type { ValueToken } from "./utils/Models/Core/Token";
+import { getIndexesOnPredicate } from "./utils/indexUtils";
+import './utils/logOverrider'
 import type { Token } from "./utils/Models/Core/Token";
 import { tokenTypes } from "./utils/Constants/Types/TokenTypes";
 import { DoubleLinkedListClass } from "./utils/IndexedCollections/DoubleLinkedListClass";
@@ -18,103 +18,47 @@ import { DoubleLinkedListClass } from "./utils/IndexedCollections/DoubleLinkedLi
 
 function App() {
   const exec = () => {
-    const tokens: Token[] =
-    [
-        {
-            type: tokenTypes.NumberTokenType,
-            initStringIndex: 0,
-            fromString: "10",
-            value: 10
-        },
-        {
-            type: tokenTypes.WhiteSpaceTokenType,
-            initStringIndex: 2,
-            fromString: " "
-        },
-        {
-            type: tokenTypes.SpecSymbolTokenType,
-            initStringIndex: 3,
-            fromString: "*",
-            value: "*"
-        },
-        {
-            type: tokenTypes.WhiteSpaceTokenType,
-            initStringIndex: 4,
-            fromString: " "
-        },
-        {
-            type: tokenTypes.WordTokenType,
-            initStringIndex: 5,
-            fromString: "@B",
-            value: "@B"
-        }
-    ]
+    
+    const parseTokensDelegate = createTokenParser(tokenTypesAsArr, getTokenStringAtIndex)
+    const equation = "10 + sin( 5 * ( 6 / 2 ) - (3 + 5)) + (18 + 121) + (( -6 / 2 )"
 
+    // const a = parseTokensDelegate(equation, null)
+    // console.log(a);
+    // if (a.Success){
+    //   console.log(a.Result.toJSON());
+    // }  
 
-    const lst = new DoubleLinkedListClass<Token>()
-    lst.insertRange(0, tokens)
-    console.log(lst.toJSON());
+    const alphaCounterNameGenerator = createAlphaCounter()
 
-    const iter1 = lst.GetIteratorAtIndex(3)
-    const iter2 = lst.GetIteratorAtIndex(3)
-
-    while(true){
-      console.log(iter1?.GetValue());
-      if (!iter1?.MoveNext())
-      {
-        break
-      }
+    const treeBuilderTriggers: TreeBuilderTriggerTypes = {
+      OpenBracket: tokenTypes.OpenBracketTokenType,
+      ClosedBracket: tokenTypes.ClosedBracketTokenType,
+      TypeUsedForAliases: tokenTypes.WordTokenType
     }
 
-    lst.insertRange(0, tokens)
-
-    
-    while(true){
-      console.log(iter2?.GetValue());
-      if (!iter2?.MovePrev())
-      {
-        break
-      }
+    const parseTreeResult = parseTree(equation, alphaCounterNameGenerator, treeBuilderTriggers, tokenTypesAsArr, parseTokensDelegate, getTokenStringAtIndex)
+    console.log(parseTreeResult)
+    if (!parseTreeResult.Success){
+      return
     }
-    
 
+    const map = parseTreeResult.Result.eqMap
+    for (const key of map.keys()) {
+      const mapVal = map.get(key)
+      const obj = {
+        name: mapVal?.name,
+        ind: mapVal?.index,
+        ch: mapVal?.children.toJSON(),
+        cont: mapVal?.content.toJSON(),
+      }
 
-    // console.log(lst);
-    // lst.push(12)
-    // console.log(lst);
-    // lst.push(3)
-    // console.log(lst);
-    // lst.push(23)
-    // console.log(lst.toJSON());
+      console.log(key, obj);
+    }
   }
-
-
-  // const someMap = new Map<string, ValueToken<number>>();
-  // const val:ValueToken<number> = {
-  //   type: tokenTypes.NumberTokenType,
-  //   value: 123,
-  //   fromString: "",
-  //   initStringIndex: 0,
-  // }
-
-  // someMap.set('a', val)
-
-  // const a = getOperatorsForVariables(someMap)
-  // console.log(a)
-
-  // const val:ValueToken<string> = {
-  //   type: tokenTypes.WordTokenType,
-  //   value: "@B",
-  //   fromString: "",
-  //   initStringIndex: 0,
-  // }
-
-  // console.log(tokenTypes.WordTokenType.isInstance(val))
-
 
   //   const equation = "10 + sin( 5 * ( 6 / 2 ) - (3 + 5)) + (18 + 121) + (( -6 / 2 )"
 
-  //   //const equation = "10 * ( 5 + 3)";
+  //   // const equation = "10 * ( 5 + 3)";
   //   // const equation = "10 + 4";
   //   // const equation = "10 * (4)";
 
@@ -149,7 +93,64 @@ function App() {
 
 export default App
 
+// const tokens: Token[] =
+    // [
+    //     {
+    //         type: tokenTypes.NumberTokenType,
+    //         initStringIndex: 0,
+    //         fromString: "10",
+    //         value: 10
+    //     },
+    //     {
+    //         type: tokenTypes.WhiteSpaceTokenType,
+    //         initStringIndex: 2,
+    //         fromString: " "
+    //     },
+    //     {
+    //         type: tokenTypes.SpecSymbolTokenType,
+    //         initStringIndex: 3,
+    //         fromString: "*",
+    //         value: "*"
+    //     },
+    //     {
+    //         type: tokenTypes.WhiteSpaceTokenType,
+    //         initStringIndex: 4,
+    //         fromString: " "
+    //     },
+    //     {
+    //         type: tokenTypes.WordTokenType,
+    //         initStringIndex: 5,
+    //         fromString: "@B",
+    //         value: "@B"
+    //     }
+    // ]
 
+
+    // const lst = new DoubleLinkedListClass<Token>()
+    // lst.insertRange(0, tokens)
+    // console.log(lst.toJSON());
+
+    // const iter1 = lst.GetIteratorAtIndex(3)
+    // const iter2 = lst.GetIteratorAtIndex(3)
+
+    // while(true){
+    //   console.log(iter1?.GetValue());
+    //   if (!iter1?.MoveNext())
+    //   {
+    //     break
+    //   }
+    // }
+
+    // lst.insertRange(0, tokens)
+
+    
+    // while(true){
+    //   console.log(iter2?.GetValue());
+    //   if (!iter2?.MovePrev())
+    //   {
+    //     break
+    //   }
+    // }
 
 
 //console.log("defaultDefinedNames:", defaultDefinedNames)
