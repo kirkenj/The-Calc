@@ -378,6 +378,10 @@ export class DoubleLinkedListClass<T> {
         return ToArray(this.head, this.tail, this.length)
     }
 
+    public toString(){
+        return JSON.stringify(this.toJSON())
+    }
+
     public toDebugJSON() {
         const isListEmpty = this.head === null && this.tail === null && this.length === 0
         if (isListEmpty) {

@@ -1,26 +1,3 @@
-const originalConsoleLog = console.log;
-
-console.log = (...args: Parameters<typeof console.log>): void => {
-    // Бежим по всем аргументам лога
-    const clonedArgs = args.map(arg => {
-        // Если это объект (массив, токен, мапа), пробуем его глубоко скопировать
-        if (typeof arg === 'object' && arg !== null) {
-            try {
-                return safeClone(arg);
-            } catch {
-                // Если внутри есть методы или функции, structuredClone выдаст ошибку.
-                // В этом случае просто возвращаем оригинальный объект, чтобы не ронять приложение.
-                return arg;
-            }
-        }
-        // Примитивы (числа, строки) копировать не нужно, возвращаем как есть
-        return arg;
-    });
-
-    // Выплевываем «замороженные» данные в реальную консоль
-    originalConsoleLog(...clonedArgs);
-};
-
 // Безопасный глубокий клон, защищенный от функций и циклических ссылок
 function safeClone(obj: any, seen = new WeakMap()): any {
     if (obj === null || typeof obj !== 'object') {
@@ -37,6 +14,28 @@ function safeClone(obj: any, seen = new WeakMap()): any {
         return '[Circular]';
     }
 
+    // Клонируем даты и регулярки (их не нужно прогонять через toJSON/toString)
+    if (obj instanceof Date) return new Date(obj.getTime());
+    if (obj instanceof RegExp) return new RegExp(obj);
+
+    // ==========================================
+    // ИСПРАВЛЕННАЯ МАГИЯ:
+    // ==========================================
+
+    // 1. Если у объекта есть кастомный метод toJSON (например, твой список)
+    if (typeof obj.toJSON === 'function') {
+        return safeClone(obj.toJSON(), seen);
+    }
+
+    // 2. Если у объекта есть кастомный toString, но это НЕ массив!
+    if (obj.toString && obj.toString !== Object.prototype.toString && !Array.isArray(obj)) {
+        return obj.toString();
+    }
+
+    // ==========================================
+
+    // ==========================================
+
     // Клонируем массивы
     if (Array.isArray(obj)) {
         const arrCopy: any[] = [];
@@ -46,10 +45,6 @@ function safeClone(obj: any, seen = new WeakMap()): any {
         }
         return arrCopy;
     }
-
-    // Клонируем даты и регулярки
-    if (obj instanceof Date) return new Date(obj.getTime());
-    if (obj instanceof RegExp) return new RegExp(obj);
 
     // Клонируем обычные объекты
     const objCopy: any = {};
