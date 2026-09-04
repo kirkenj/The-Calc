@@ -8,7 +8,16 @@ import { BracketInfo } from "../Models/TreeBuilding/BracketInfo"
 import { type ParseTreeResult } from "../Models/TreeBuilding/ParseTreeResult"
 import { type TreeBuilderTriggerTypes } from "../Models/TreeBuilding/TreeBuilderTriggerTypes"
 import { type TreeBuildingError } from "../Models/TreeBuilding/TreeBuildingError"
+import { tokenTypes } from "../Constants/Types/TokenTypes"
+import { getDefaultOperatorsAccordingToPriorities } from "../operatorsAccordingToPriorities"
 
+const operatorsPriorityMap = new Map<string, number>();
+const operatorsConfig = getDefaultOperatorsAccordingToPriorities();
+operatorsConfig.forEach((config, priority) => {
+  for (const op of config.operators.keys()) {
+    operatorsPriorityMap.set(op, priority);
+  }
+});
 
 export function parseTree(
   equation: string,
@@ -20,15 +29,6 @@ export function parseTree(
 ): Result<ParseTreeResult> {
   console.groupCollapsed(`ParseTree`, equation);
 
-  console.log(
-    "equation:", equation,
-    "nameGenerator:", nameGenerator,
-    "builderTriggers:", builderTriggers,
-    "parseEquationCallback:", parseEquationCallback,
-    "stringCollectionDelegate:", stringCollectionDelegate
-  )
-
-  //#region validations
   if (equation.length === 0) {
     return Result.Fail("Equation must not be empty")
   }
@@ -43,21 +43,14 @@ export function parseTree(
   if (notFoundTokenType) {
     return Result.Fail("Configuration error: Trigger types must be in tokenTypesToParse");
   }
-  //#endregion
 
   const entryPointName = nameGenerator()
-  const stack: DoubleLinkedListClass<BracketInfo> = new DoubleLinkedListClass<BracketInfo>()
-  stack.push(BracketInfo.createBracketInfo(entryPointName, 0))
-
+  const stack: BracketInfo[] = []
+  const initialBracket = BracketInfo.createBracketInfo(entryPointName, 0)
+  stack.push(initialBracket)
 
   const eqMap = new Map<string, BracketInfo>()
-  const topStackIndex = stack.length - 1
-  const stackGetByIndexResult = stack.getByIndex(topStackIndex)
-  if (!stackGetByIndexResult){
-    return Result.Fail(`Couldn't get stack value by index ${topStackIndex}`)
-  }
-
-  eqMap.set(entryPointName, stackGetByIndexResult)
+  eqMap.set(entryPointName, initialBracket)
 
   const treeBuildingError = { error: null }
   const onTokenParsed = createOnTokenParsedDelegate(stack, eqMap, nameGenerator, builderTriggers, treeBuildingError)
@@ -71,16 +64,12 @@ export function parseTree(
     return Result.Fail(treeBuildingError.error)
   }
 
-  console.log("parsedTokens:", parseTokensResult)
-  console.log("stack:", stack)
-  console.log("eqMap", eqMap)
-
   console.groupEnd()
   return Result.Success({ eqMap, entryPointName })
 }
 
 function createOnTokenParsedDelegate(
-  stack: DoubleLinkedListClass<BracketInfo>,
+  stack: BracketInfo[],
   eqMap: Map<string, BracketInfo>,
   nameGenerationCallback: () => string,
   builderTriggers: TreeBuilderTriggerTypes,
@@ -88,52 +77,69 @@ function createOnTokenParsedDelegate(
 ): (arg: Token) => void {
 
   return (token: Token) => {
-    console.log("Token parsed:", token)
-    if (errorContainer.error) {
+    if (errorContainer.error) return
+
+    const topBracket = stack[stack.length - 1]
+    if (!topBracket) {
+      errorContainer.error = "Stack is empty"
       return
     }
 
     const isOpenBracket = token.type === builderTriggers.OpenBracket
+    const isClosedBracket = token.type === builderTriggers.ClosedBracket
+
     if (isOpenBracket) {
       const newStackName = nameGenerationCallback()
-      const stackValueToPush = BracketInfo.createBracketInfo(newStackName, token.initStringIndex)
+      const newBracket = BracketInfo.createBracketInfo(newStackName, token.initStringIndex)
 
-      stack.push(stackValueToPush)
-      eqMap.set(newStackName, stackValueToPush)
+      eqMap.set(newStackName, newBracket)
 
-      console.log("Pushed stack value:", stackValueToPush)
-
-      const tokenToPushIntoParent: ValueToken<string> = {
+      const aliasToken: ValueToken<string> = {
         ...token,
         fromString: newStackName,
         type: builderTriggers.TypeUsedForAliases,
         value: newStackName 
       }
 
-      const parentStackIndex = stack.length - 2
-      const parentStackValue = stack.getByIndex(parentStackIndex)
-      if (!parentStackValue){
-        return errorContainer.error = `Couldn't get parent value from stack at index ${parentStackIndex}`
-      }
+      topBracket.content.push(aliasToken)
+      topBracket.children.push(newStackName)
       
-      parentStackValue.content.push(tokenToPushIntoParent)
-      parentStackValue.children.push(tokenToPushIntoParent.fromString)
+      stack.push(newBracket)
+      return 
     }
 
-    const topStackIndex = stack.length - 1
-    const topStackValue = stack.getByIndex(topStackIndex)
-    if (!topStackValue){
-      return errorContainer.error = `Couldn't get top stack value at index ${topStackIndex}`
-    }
-
-    topStackValue.content.push(token)
-
-    if (!isOpenBracket && token.type === builderTriggers.ClosedBracket) {
+    if (isClosedBracket) {
       if (stack.length <= 1) {
-        return errorContainer.error = `Bracket mismatch at index ${token.initStringIndex}`
+        errorContainer.error = `Bracket mismatch at index ${token.initStringIndex}`
+        return
       }
+      stack.pop()
+      return
+    }
 
-      stack.removeRange(stack.length - 1, 1)
+    let tokenToPush = token
+    
+    if (token.type === tokenTypes.SpecSymbolTokenType && token.value === "-") {
+      const lastToken = topBracket.content.tailValue
+      const isUnary = !lastToken || 
+                     lastToken.type === builderTriggers.OpenBracket || 
+                     operatorsPriorityMap.has((lastToken as any).value)
+
+      if (isUnary) {
+        tokenToPush = { ...token, type: tokenTypes.WordTokenType, value: "unary-" } as any
+      }
+    }
+
+    topBracket.content.push(tokenToPush)
+    
+    const priority = operatorsPriorityMap.get((tokenToPush as any).value)
+    if (priority !== undefined) {
+      const iter = topBracket.content.GetTailIterator()
+      if (iter) {
+        const list = topBracket.operators.get(priority) || []
+        list.push(iter)
+        topBracket.operators.set(priority, list)
+      }
     }
   }
 }

@@ -1,4 +1,4 @@
-import { DoubleLinkedListClass } from "../../IndexedCollections/DoubleLinkedListClass";
+import { DoubleLinkedListClass, type Bidirectionalterator } from "../../IndexedCollections/DoubleLinkedListClass";
 import type { Token } from "../Core/Token";
 
 export interface BracketInfo {
@@ -6,6 +6,7 @@ export interface BracketInfo {
   readonly name: string,
   readonly children: DoubleLinkedListClass<string>,
   readonly content: DoubleLinkedListClass<Token>,
+  readonly operators: Map<number, Bidirectionalterator<Token>[]>, // Priority -> Iterators
 }
 
 
@@ -15,7 +16,8 @@ export const BracketInfo = {
       index: index,
       name: name,
       children: new DoubleLinkedListClass<string>(),
-      content: new DoubleLinkedListClass<Token>,
+      content: new DoubleLinkedListClass<Token>(),
+      operators: new Map<number, Bidirectionalterator<Token>[]>(),
     }
   }
 }

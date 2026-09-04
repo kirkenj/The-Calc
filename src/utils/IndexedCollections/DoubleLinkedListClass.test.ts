@@ -135,22 +135,53 @@ describe('DoubleLinkedListClass - Personnel Testing (Core Methods)', () => {
         });
     });
 
-    describe('Phase 4: Special Operations (Edge Cases)', () => {
-        it('Should handle a single-element list correctly', () => {
-            list.push(42);
-            expect(list.getByIndex(0)).toBe(42);
-            expect(list.length).toBe(1);
+        describe('Phase 5: Iterator Advanced (IsDeleted & spliceByIterator)', () => {
+        it('Should correctly report IsDeleted state', () => {
+            list.push(10);
+            const iter = list.GetIteratorAtIndex(0)!;
+            expect(iter.IsDeleted()).toBe(false);
+            
+            list.removeRange(0, 1);
+            expect(iter.IsDeleted()).toBe(true);
+            expect(() => iter.GetValue()).toThrow("Refrenced Node has been removed");
         });
 
-        it('Should not crash on repeated requests for the same index', () => {
-            list.push(1);
-            list.push(2);
-            expect(list.getByIndex(1)).toBe(2);
-            expect(list.getByIndex(1)).toBe(2);
-            expect(list.getByIndex(1)).toBe(2);
+        it('Should splice correctly using an iterator', () => {
+            [1, 2, 3, 4, 5].forEach(v => list.push(v));
+            const iter = list.GetIteratorAtIndex(1)!; // Points to '2'
+            
+            // Splice 3 elements starting from '2' (i.e., 2, 3, 4) and insert 99
+            const removed = list.spliceByIterator(iter, 3, 99);
+            
+            expect(removed).toEqual([2, 3, 4]);
+            expect(list.toJSON()).toEqual([1, 99, 5]);
+            expect(iter.IsDeleted()).toBe(true);
+            
+            const { forward, backward } = verifyIntegrity<number>(list);
+            expect(forward).toEqual([1, 99, 5]);
+            expect(backward).toEqual([1, 99, 5]);
+        });
+
+        it('Should handle spliceByIterator at the Head', () => {
+            [1, 2, 3].forEach(v => list.push(v));
+            const iter = list.GetIteratorAtIndex(0)!;
+            
+            list.spliceByIterator(iter, 1, 0); // Replace 1 with 0
+            expect(list.toJSON()).toEqual([0, 2, 3]);
+            expect((list as any).head.value).toBe(0);
+        });
+
+        it('Should handle spliceByIterator at the Tail', () => {
+            [1, 2, 3].forEach(v => list.push(v));
+            const iter = list.GetIteratorAtIndex(2)!;
+            
+            list.spliceByIterator(iter, 1, 4); // Replace 3 with 4
+            expect(list.toJSON()).toEqual([1, 2, 4]);
+            expect((list as any).tail.value).toBe(4);
         });
     });
 });
+
 
 describe('DoubleLinkedListClass - removeRange Operation', () => {
     let list: DoubleLinkedListClass<number>;

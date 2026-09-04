@@ -2,7 +2,9 @@ export interface Bidirectionalterator<T> {
     GetValue(): T;
     MoveNext(): boolean;
     MovePrev(): boolean;
+    IsDeleted(): boolean;
 }
+
 
 interface Node<T> {
     next: Node<T> | null,
@@ -35,7 +37,12 @@ export class DoubleLinkedListClass<T> {
 
     public get length() { return this._length }
 
+    public get tailValue(): T | undefined {
+        return this.tail?.value;
+    }
+
     public push(item: T) {
+
         if (this.head === null) {
             this.head = {
                 next: null,
@@ -246,6 +253,13 @@ export class DoubleLinkedListClass<T> {
         }
     }
 
+        public GetTailIterator(): Bidirectionalterator<T> | null {
+        if (!this.tail) {
+            return null;
+        }
+        return this.createIterator(this.tail);
+    }
+
     public GetIteratorAtIndex(
         index: number
     ): Bidirectionalterator<T> | null {
@@ -254,6 +268,10 @@ export class DoubleLinkedListClass<T> {
             return null
         }
 
+        return this.createIterator(initNode);
+    }
+
+    protected createIterator(node: Node<T>): Bidirectionalterator<T> {
         const iterToRet: InternalBidirectionalterator<T> = {
             GetValue: () => {
                 if (iterToRet.node.isDeleted) {
@@ -262,7 +280,9 @@ export class DoubleLinkedListClass<T> {
 
                 return iterToRet.node.value
             },
+            IsDeleted: () => iterToRet.node.isDeleted,
             MoveNext: () => {
+
                 if (iterToRet.node.isDeleted) {
                     throw Error("Refrenced Node has been removed")
                 }
@@ -286,15 +306,76 @@ export class DoubleLinkedListClass<T> {
                 iterToRet.node = iterToRet.node.prev
                 return true
             },
-            node: initNode,
+            node: node,
         }
-
 
         return iterToRet
     }
 
 
+
+        public spliceByIterator(iterator: Bidirectionalterator<T>, deleteCount: number, ...items: T[]): T[] {
+        const internalIter = iterator as InternalBidirectionalterator<T>;
+        if (internalIter.node.isDeleted) {
+            throw Error("Iterator points to a deleted node");
+        }
+
+        const startNode = internalIter.node;
+        
+        let endNode = startNode;
+        let actualDeleteCount = 0;
+        for (let i = 0; i < deleteCount; i++) {
+            actualDeleteCount++;
+            if (i < deleteCount - 1) {
+                if (endNode.next) {
+                    endNode = endNode.next;
+                } else {
+                    break;
+                }
+            }
+        }
+
+        const prevNode = startNode.prev;
+        const nextNode = endNode.next;
+
+        const removed: T[] = [];
+        ForEach(startNode, endNode, actualDeleteCount, (n) => {
+            removed.push(n.value);
+            markNodeAsDeleted(n);
+        });
+
+        const newNodes = fromRange(items);
+
+        if (prevNode) {
+            if (newNodes) {
+                prevNode.next = newNodes.head;
+                newNodes.head.prev = prevNode;
+            } else {
+                prevNode.next = nextNode;
+            }
+        } else {
+            this.head = newNodes?.head ?? nextNode;
+        }
+
+        if (nextNode) {
+            if (newNodes) {
+                newNodes.tail.next = nextNode;
+                nextNode.prev = newNodes.tail;
+            } else {
+                nextNode.prev = prevNode;
+            }
+        } else {
+            this.tail = newNodes?.tail ?? prevNode;
+        }
+
+        this._length = this._length - actualDeleteCount + (newNodes?.length ?? 0);
+        this.lastAccess = null; 
+
+        return removed;
+    }
+
     protected getNodeByIndex(
+
         index: number
     ): Node<T> | undefined {
         if (this.head === null || this._length <= index || this.tail === null || index < 0) {

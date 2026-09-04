@@ -1,107 +1,79 @@
 import { tokenTypes } from "./Constants/Types/TokenTypes"
 import { getItemIndexToTheLeftByCallback, getItemIndexToTheRightByCallback } from "./Extensions/arrayUtils"
 import type { FunctionValidatorDelegate } from "./Models/EquationCalculation/FunctionValidatorDelegate"
-import type { PrevalidationResult } from "./Models/EquationCalculation/PrevalidationResult"
+import { Result } from "./Models/Core/Result"
+import { ValidationErrors } from "./Constants/ValidationErrors"
 
-export const validateUnarFunction: FunctionValidatorDelegate = (equation, index, notIgnoredTokenCheckCallback): PrevalidationResult | null => {
+export const validateUnarFunction: FunctionValidatorDelegate = (equation, index, notIgnoredTokenCheckCallback) => {
   if (equation.length === 0) {
-    throw Error("Invalid Argument: equation")
+    return Result.Fail(ValidationErrors.EquationEmpty)
   }
 
   if (index < 0 || index >= equation.length) {
-    throw Error("ArgumentOutOfRange: Invalid index")
+    return Result.Fail(ValidationErrors.IndexOutOfRange)
   }
 
   if (!notIgnoredTokenCheckCallback || notIgnoredTokenCheckCallback.length < 1) {
-    throw Error("InvalidArgument: notIgnoredTokenCheckCallback")
+    return Result.Fail(ValidationErrors.InvalidCallback)
   }
 
   const notIgnoredTokenIndexToTheRight = getItemIndexToTheRightByCallback(equation, index, notIgnoredTokenCheckCallback)
   if (notIgnoredTokenIndexToTheRight === null) {
-    return null
+    return Result.Fail(ValidationErrors.RightArgumentNotFound)
   }
 
-  console.log("notIgnoredTokenIndexToTheRight:", notIgnoredTokenIndexToTheRight)
   return equation[notIgnoredTokenIndexToTheRight].type === tokenTypes.NumberTokenType
-    ? {
+    ? Result.Success({
       argumentIndexes: [notIgnoredTokenIndexToTheRight],
       operationStartIndex: index,
       operationLength: notIgnoredTokenIndexToTheRight - index + 1,
-    }
-    : null
+    })
+    : Result.Fail(ValidationErrors.InvalidTokenTypes)
 }
-
-export const validateUnarMinus: FunctionValidatorDelegate = (equation, index, notIgnoredTokenCheckCallback): PrevalidationResult | null => {
+export const validateUnarMinus: FunctionValidatorDelegate = (equation, index, notIgnoredTokenCheckCallback) => {
   const rightArgumentValidationResult = validateUnarFunction(equation, index, notIgnoredTokenCheckCallback)
-  if (rightArgumentValidationResult === null) {
-    return null
+  if (!rightArgumentValidationResult.Success) {
+    return rightArgumentValidationResult
   }
 
-  const notIgnoredTokenIndexToTheRight = rightArgumentValidationResult.argumentIndexes[0]
+  const { argumentIndexes: [notIgnoredTokenIndexToTheRight] } = rightArgumentValidationResult.Result
   const notIgnoredTokenIndexToTheLeft = getItemIndexToTheLeftByCallback(equation, index, notIgnoredTokenCheckCallback)
   const notIgnoredTokenToTheLeft = notIgnoredTokenIndexToTheLeft === null ? null : equation[notIgnoredTokenIndexToTheLeft]
-  console.log(
-    "notIgnoredTokenIndexToTheLeft:", notIgnoredTokenIndexToTheLeft,
-    "notIgnoredTokenToTheLeft:", notIgnoredTokenToTheLeft,
-    "notIgnoredTokenIndexToTheRight:", notIgnoredTokenIndexToTheRight,
-  )
-
   return equation[notIgnoredTokenIndexToTheRight].type === tokenTypes.NumberTokenType
     && (notIgnoredTokenToTheLeft === null || notIgnoredTokenToTheLeft.type !== tokenTypes.NumberTokenType)
-    ? {
+    ? Result.Success({
       argumentIndexes: [notIgnoredTokenIndexToTheRight],
       operationStartIndex: index,
       operationLength: notIgnoredTokenIndexToTheRight - index + 1,
-    }
-    : null
+    })
+    : Result.Fail(ValidationErrors.InvalidOperatorContext)
 }
-
-export const validateBinarOperation : FunctionValidatorDelegate = (equation, index, notIgnoredTokenCheckCallback): PrevalidationResult | null => {
-  console.log("preHandleBinarOperation executed with arguments:",
-    "equation:", equation,
-    "index:", index,
-    "notIgnoredTokenCheckCallback:", notIgnoredTokenCheckCallback)
-
-
+export const validateBinarOperation : FunctionValidatorDelegate = (equation, index, notIgnoredTokenCheckCallback) => {
   if (equation.length === 0) {
-    throw Error("InvalidArgument: equation")
+    return Result.Fail(ValidationErrors.EquationEmpty)
   }
 
   if (index < 1 || index >= equation.length) {
-    throw Error("ArgumentOutOfRange: Invalid index")
+    return Result.Fail(ValidationErrors.IndexOutOfRange)
   }
 
   const notIgnoredTokenIndexToTheRight = getItemIndexToTheRightByCallback(equation, index, notIgnoredTokenCheckCallback)
-  console.log("notIgnoredTokenIndexToTheRight:", notIgnoredTokenIndexToTheRight);
   if (notIgnoredTokenIndexToTheRight === null) {
-    return null
+    return Result.Fail(ValidationErrors.RightArgumentNotFound)
   }
 
   const notIgnoredTokenIndexToTheLeft = getItemIndexToTheLeftByCallback(equation, index, notIgnoredTokenCheckCallback)
-  console.log("notIgnoredTokenIndexToTheLeft:", notIgnoredTokenIndexToTheLeft);
   if (notIgnoredTokenIndexToTheLeft === null) {
-    return null
+    return Result.Fail(ValidationErrors.LeftArgumentNotFound)
   }
-
-  console.log(
-    "notIgnoredTokenIndexToTheLeft:", notIgnoredTokenIndexToTheLeft,
-    "notIgnoredTokenIndexToTheRight:", notIgnoredTokenIndexToTheRight,
-  )
-
-  const valueToReturn = {
-    argumentIndexes: [notIgnoredTokenIndexToTheLeft, notIgnoredTokenIndexToTheRight],
-    operationStartIndex: notIgnoredTokenIndexToTheLeft,
-    operationLength: notIgnoredTokenIndexToTheRight - notIgnoredTokenIndexToTheLeft + 1
-  }
-
-  console.log(
-    "eq", equation,
-    valueToReturn
-  );
 
   return (
     equation[notIgnoredTokenIndexToTheRight].type === tokenTypes.NumberTokenType
     && equation[notIgnoredTokenIndexToTheLeft].type === tokenTypes.NumberTokenType)
-    ? valueToReturn
-    : null
+    ? Result.Success({
+      argumentIndexes: [notIgnoredTokenIndexToTheLeft, notIgnoredTokenIndexToTheRight],
+      operationStartIndex: notIgnoredTokenIndexToTheLeft,
+      operationLength: notIgnoredTokenIndexToTheRight - notIgnoredTokenIndexToTheLeft + 1
+    })
+    : Result.Fail(ValidationErrors.InvalidTokenTypes)
 }
