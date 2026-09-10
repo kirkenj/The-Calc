@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import './App.css'
 import './utils/logOverrider'
 import type { Token } from "./utils/Models/Core/Token";
@@ -38,12 +39,13 @@ function App() {
             fromString: "@B",
             value: "@B"
         }
-    ]
+    ] as any[]
 
 
     const lst = new DoubleLinkedListClass<Token>()
     lst.insertRange(0, tokens)
     console.log(lst);
+  }
 
   return (
     <>

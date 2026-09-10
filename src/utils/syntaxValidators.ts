@@ -22,7 +22,7 @@ export const validateUnarFunction: FunctionValidatorDelegate = (equation, index,
     return Result.Fail(ValidationErrors.RightArgumentNotFound)
   }
 
-  return equation[notIgnoredTokenIndexToTheRight].type === tokenTypes.NumberTokenType
+  return tokenTypes.NumberTokenType.isInstance(equation[notIgnoredTokenIndexToTheRight]).success
     ? Result.Success({
       argumentIndexes: [notIgnoredTokenIndexToTheRight],
       operationStartIndex: index,
@@ -39,8 +39,8 @@ export const validateUnarMinus: FunctionValidatorDelegate = (equation, index, no
   const { argumentIndexes: [notIgnoredTokenIndexToTheRight] } = rightArgumentValidationResult.Result
   const notIgnoredTokenIndexToTheLeft = getItemIndexToTheLeftByCallback(equation, index, notIgnoredTokenCheckCallback)
   const notIgnoredTokenToTheLeft = notIgnoredTokenIndexToTheLeft === null ? null : equation[notIgnoredTokenIndexToTheLeft]
-  return equation[notIgnoredTokenIndexToTheRight].type === tokenTypes.NumberTokenType
-    && (notIgnoredTokenToTheLeft === null || notIgnoredTokenToTheLeft.type !== tokenTypes.NumberTokenType)
+  return tokenTypes.NumberTokenType.isInstance(equation[notIgnoredTokenIndexToTheRight]).success
+    && (notIgnoredTokenToTheLeft === null || !tokenTypes.NumberTokenType.isInstance(notIgnoredTokenToTheLeft).success)
     ? Result.Success({
       argumentIndexes: [notIgnoredTokenIndexToTheRight],
       operationStartIndex: index,
@@ -68,8 +68,8 @@ export const validateBinarOperation : FunctionValidatorDelegate = (equation, ind
   }
 
   return (
-    equation[notIgnoredTokenIndexToTheRight].type === tokenTypes.NumberTokenType
-    && equation[notIgnoredTokenIndexToTheLeft].type === tokenTypes.NumberTokenType)
+    tokenTypes.NumberTokenType.isInstance(equation[notIgnoredTokenIndexToTheRight]).success
+    && tokenTypes.NumberTokenType.isInstance(equation[notIgnoredTokenIndexToTheLeft]).success)
     ? Result.Success({
       argumentIndexes: [notIgnoredTokenIndexToTheLeft, notIgnoredTokenIndexToTheRight],
       operationStartIndex: notIgnoredTokenIndexToTheLeft,

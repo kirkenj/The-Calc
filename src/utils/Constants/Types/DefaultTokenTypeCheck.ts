@@ -1,6 +1,6 @@
 import { getIndexOfFirst } from "../../Extensions/arrayUtils";
 import type { IsInstanceResult } from "../../Models/Core/IsInstanceResult";
-import type { Token, ValueToken } from "../../Models/Core/Token";
+import type { Token } from "../../Models/Core/Token";
 import type { TokenType } from "../../Models/Core/TokenType";
 
 export function DefaultTokenIsInstance<TToken extends Token<any>>(

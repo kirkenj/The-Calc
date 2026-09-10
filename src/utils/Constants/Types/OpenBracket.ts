@@ -4,7 +4,7 @@ import type { Token } from "../../Models/Core/Token"
 import type { TokenType } from "../../Models/Core/TokenType"
 import type { TokenTypeRestriction } from "../../Models/Core/TokenTypeRestrictions"
 import type { TokenStringCollectionResult } from "../../Models/Parsing/TokenStringCollectionResult"
-import { DefaultTokenIsInstance } from "./defaultTokenTypeCheck"
+import { DefaultTokenIsInstance } from "./DefaultTokenTypeCheck"
 
 
 const openBracketAllowedSymbols = new Set(['('])

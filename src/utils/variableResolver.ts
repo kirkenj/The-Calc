@@ -1,4 +1,5 @@
 import { tokenTypes } from "./Constants/Types/TokenTypes"
+import { Result } from "./Models/Core/Result"
 import type { Token } from "./Models/Core/Token"
 import type { FunctionValidatorDelegate } from "./Models/EquationCalculation/FunctionValidatorDelegate"
 import type { HandlerDelegate } from "./Models/EquationCalculation/HandleEquationrDelegate"
@@ -29,23 +30,23 @@ export const getOperatorsForVariables = (
         if (index < 0 || index >= equation.length) {
             console.log(executedFunc,
                 "index < 0 || index >= equation.length")
-            return null
+            return Result.Fail("Index out of range")
         }
 
         const isWordCheckResult = tokenTypes.WordTokenType.isInstance(equation[index])
         if (!isWordCheckResult.success) {
             console.log(executedFunc,
                 "typeof key !== 'string'")
-            return null
+            return Result.Fail("Not a word token")
         }
 
         return context.has(isWordCheckResult.result.value)
-            ? {
+            ? Result.Success({
                 argumentIndexes: [index],
                 operationStartIndex: index,
                 operationLength: 1,
-            }
-            : null
+            })
+            : Result.Fail("Variable not found in context")
     }
 
     const operators = new Map<string, HandlerDelegate>()
@@ -56,7 +57,7 @@ export const getOperatorsForVariables = (
             return null
         }
         
-        operators.set(variableName, () => isNumberCheckResult.result)
+        operators.set(variableName, () => Result.Success(isNumberCheckResult.result))
     }
 
     return {

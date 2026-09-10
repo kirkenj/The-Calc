@@ -12,7 +12,6 @@ const ignoredByDefaultTokenTypes: TokenType[] = [tokenTypes.WhiteSpaceTokenType,
 const notIgnoredTokenCheckCallback = (token: Token): boolean => getIndexOfFirst(ignoredByDefaultTokenTypes, type => type.isInstance(token).success) === null
 
 const operatorsTokenTypes: TokenType<ValueToken<string>>[] = [tokenTypes.WordTokenType, tokenTypes.SpecSymbolTokenType]
-//const isOperatorsTokenTypesCallback = (token: Token): boolean => getIndexOfFirst(operatorsTokenTypes, type => type.isInstance(token).success) !== null
 
 const getOperatorsForContext = (context: Map<string, Token> | null) => {
   const operatorsByPriority = getDefaultOperatorsAccordingToPriorities();
@@ -83,7 +82,20 @@ export const calculateTokens = (
       const operatorTokenIndex = operatorIndexes[i]
 
       const operatorToken = operatorTokenIndex.ref
-      const currentOperatorHandler = currenrPriorityOperators.operators.get(operatorToken.value)
+      let operatorValue: string | null = null
+      for (const opType of operatorsTokenTypes) {
+        const check = opType.isInstance(operatorToken)
+        if (check.success) {
+          operatorValue = check.result.value
+          break
+        }
+      }
+
+      if (!operatorValue) {
+        continue
+      }
+
+      const currentOperatorHandler = currenrPriorityOperators.operators.get(operatorValue)
       if (!currentOperatorHandler) {
         continue
       }
@@ -101,13 +113,16 @@ export const calculateTokens = (
       }
 
       const res = currentOperatorHandler(tokens, syntaxValidationResult.Result)
+      if (!res.Success) {
+        return res
+      }
 
       tokens.splice(
         syntaxValidationResult.Result.operationStartIndex,
         syntaxValidationResult.Result.operationLength,
-        res)
+        res.Result)
 
-      operatorIndexes.splice(i, 1)[0]
+      operatorIndexes.splice(i, 1)
       decrementValuesFromIndex(operatorIndexes, i, (syntaxValidationResult.Result.operationLength - 1))
       i--
     }

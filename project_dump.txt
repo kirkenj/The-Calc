@@ -1,0 +1,3005 @@
+====================
+FILE: ./src\App.tsx
+====================
+import './App.css'
+import './utils/logOverrider'
+import type { Token } from "./utils/Models/Core/Token";
+import { tokenTypes } from "./utils/Constants/Types/TokenTypes";
+import { DoubleLinkedListClass } from "./utils/IndexedCollections/DoubleLinkedListClass";
+
+
+function App() {
+  const exec = () => {
+
+    const tokens: Token[] =
+    [
+        {
+            type: tokenTypes.NumberTokenType,
+            initStringIndex: 0,
+            fromString: "10",
+            value: 10
+        },
+        {
+            type: tokenTypes.WhiteSpaceTokenType,
+            initStringIndex: 2,
+            fromString: " "
+        },
+        {
+            type: tokenTypes.SpecSymbolTokenType,
+            initStringIndex: 3,
+            fromString: "*",
+            value: "*"
+        },
+        {
+            type: tokenTypes.WhiteSpaceTokenType,
+            initStringIndex: 4,
+            fromString: " "
+        },
+        {
+            type: tokenTypes.WordTokenType,
+            initStringIndex: 5,
+            fromString: "@B",
+            value: "@B"
+        }
+    ]
+
+
+    const lst = new DoubleLinkedListClass<Token>()
+    lst.insertRange(0, tokens)
+    console.log(lst);
+
+  return (
+    <>
+      <div>Hello world</div>
+      <button onClick={exec}>Start</button>
+    </>)
+}
+
+
+export default App
+
+====================
+FILE: ./src\index.css
+====================
+/* :root {
+  --text: #6b6375;
+  --text-h: #08060d;
+  --bg: #fff;
+  --border: #e5e4e7;
+  --code-bg: #f4f3ec;
+  --accent: #aa3bff;
+  --accent-bg: rgba(170, 59, 255, 0.1);
+  --accent-border: rgba(170, 59, 255, 0.5);
+  --social-bg: rgba(244, 243, 236, 0.5);
+  --shadow:
+    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+
+  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+
+  font: 18px/145% var(--sans);
+  letter-spacing: 0.18px;
+  color-scheme: light dark;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  @media (max-width: 1024px) {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #9ca3af;
+    --text-h: #f3f4f6;
+    --bg: #16171d;
+    --border: #2e303a;
+    --code-bg: #1f2028;
+    --accent: #c084fc;
+    --accent-bg: rgba(192, 132, 252, 0.15);
+    --accent-border: rgba(192, 132, 252, 0.5);
+    --social-bg: rgba(47, 48, 58, 0.5);
+    --shadow:
+      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+  }
+
+  #social .button-icon {
+    filter: invert(1) brightness(2);
+  }
+}
+
+#root {
+  width: 1126px;
+  max-width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  border-inline: 1px solid var(--border);
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+h1,
+h2 {
+  font-family: var(--heading);
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+h1 {
+  font-size: 56px;
+  letter-spacing: -1.68px;
+  margin: 32px 0;
+  @media (max-width: 1024px) {
+    font-size: 36px;
+    margin: 20px 0;
+  }
+}
+h2 {
+  font-size: 24px;
+  line-height: 118%;
+  letter-spacing: -0.24px;
+  margin: 0 0 8px;
+  @media (max-width: 1024px) {
+    font-size: 20px;
+  }
+}
+p {
+  margin: 0;
+}
+
+code,
+.counter {
+  font-family: var(--mono);
+  display: inline-flex;
+  border-radius: 4px;
+  color: var(--text-h);
+}
+
+code {
+  font-size: 15px;
+  line-height: 135%;
+  padding: 4px 8px;
+  background: var(--code-bg);
+} */
+
+
+====================
+FILE: ./src\main.tsx
+====================
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App.tsx'
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)
+
+
+====================
+FILE: ./src\assets\react.svg
+====================
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--logos" width="35.93" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 228"><path fill="#00D8FF" d="M210.483 73.824a171.49 171.49 0 0 0-8.24-2.597c.465-1.9.893-3.777 1.273-5.621c6.238-30.281 2.16-54.676-11.769-62.708c-13.355-7.7-35.196.329-57.254 19.526a171.23 171.23 0 0 0-6.375 5.848a155.866 155.866 0 0 0-4.241-3.917C100.759 3.829 77.587-4.822 63.673 3.233C50.33 10.957 46.379 33.89 51.995 62.588a170.974 170.974 0 0 0 1.892 8.48c-3.28.932-6.445 1.924-9.474 2.98C17.309 83.498 0 98.307 0 113.668c0 15.865 18.582 31.778 46.812 41.427a145.52 145.52 0 0 0 6.921 2.165a167.467 167.467 0 0 0-2.01 9.138c-5.354 28.2-1.173 50.591 12.134 58.266c13.744 7.926 36.812-.22 59.273-19.855a145.567 145.567 0 0 0 5.342-4.923a168.064 168.064 0 0 0 6.92 6.314c21.758 18.722 43.246 26.282 56.54 18.586c13.731-7.949 18.194-32.003 12.4-61.268a145.016 145.016 0 0 0-1.535-6.842c1.62-.48 3.21-.974 4.76-1.488c29.348-9.723 48.443-25.443 48.443-41.52c0-15.417-17.868-30.326-45.517-39.844Zm-6.365 70.984c-1.4.463-2.836.91-4.3 1.345c-3.24-10.257-7.612-21.163-12.963-32.432c5.106-11 9.31-21.767 12.459-31.957c2.619.758 5.16 1.557 7.61 2.4c23.69 8.156 38.14 20.213 38.14 29.504c0 9.896-15.606 22.743-40.946 31.14Zm-10.514 20.834c2.562 12.94 2.927 24.64 1.23 33.787c-1.524 8.219-4.59 13.698-8.382 15.893c-8.067 4.67-25.32-1.4-43.927-17.412a156.726 156.726 0 0 1-6.437-5.87c7.214-7.889 14.423-17.06 21.459-27.246c12.376-1.098 24.068-2.894 34.671-5.345a134.17 134.17 0 0 1 1.386 6.193ZM87.276 214.515c-7.882 2.783-14.16 2.863-17.955.675c-8.075-4.657-11.432-22.636-6.853-46.752a156.923 156.923 0 0 1 1.869-8.499c10.486 2.32 22.093 3.988 34.498 4.994c7.084 9.967 14.501 19.128 21.976 27.15a134.668 134.668 0 0 1-4.877 4.492c-9.933 8.682-19.886 14.842-28.658 17.94ZM50.35 144.747c-12.483-4.267-22.792-9.812-29.858-15.863c-6.35-5.437-9.555-10.836-9.555-15.216c0-9.322 13.897-21.212 37.076-29.293c2.813-.98 5.757-1.905 8.812-2.773c3.204 10.42 7.406 21.315 12.477 32.332c-5.137 11.18-9.399 22.249-12.634 32.792a134.718 134.718 0 0 1-6.318-1.979Zm12.378-84.26c-4.811-24.587-1.616-43.134 6.425-47.789c8.564-4.958 27.502 2.111 47.463 19.835a144.318 144.318 0 0 1 3.841 3.545c-7.438 7.987-14.787 17.08-21.808 26.988c-12.04 1.116-23.565 2.908-34.161 5.309a160.342 160.342 0 0 1-1.76-7.887Zm110.427 27.268a347.8 347.8 0 0 0-7.785-12.803c8.168 1.033 15.994 2.404 23.343 4.08c-2.206 7.072-4.956 14.465-8.193 22.045a381.151 381.151 0 0 0-7.365-13.322Zm-45.032-43.861c5.044 5.465 10.096 11.566 15.065 18.186a322.04 322.04 0 0 0-30.257-.006c4.974-6.559 10.069-12.652 15.192-18.18ZM82.802 87.83a323.167 323.167 0 0 0-7.227 13.238c-3.184-7.553-5.909-14.98-8.134-22.152c7.304-1.634 15.093-2.97 23.209-3.984a321.524 321.524 0 0 0-7.848 12.897Zm8.081 65.352c-8.385-.936-16.291-2.203-23.593-3.793c2.26-7.3 5.045-14.885 8.298-22.6a321.187 321.187 0 0 0 7.257 13.246c2.594 4.48 5.28 8.868 8.038 13.147Zm37.542 31.03c-5.184-5.592-10.354-11.779-15.403-18.433c4.902.192 9.899.29 14.978.29c5.218 0 10.376-.117 15.453-.343c-4.985 6.774-10.018 12.97-15.028 18.486Zm52.198-57.817c3.422 7.8 6.306 15.345 8.596 22.52c-7.422 1.694-15.436 3.058-23.88 4.071a382.417 382.417 0 0 0 7.859-13.026a347.403 347.403 0 0 0 7.425-13.565Zm-16.898 8.101a358.557 358.557 0 0 1-12.281 19.815a329.4 329.4 0 0 1-23.444.823c-7.967 0-15.716-.248-23.178-.732a310.202 310.202 0 0 1-12.513-19.846h.001a307.41 307.41 0 0 1-10.923-20.627a310.278 310.278 0 0 1 10.89-20.637l-.001.001a307.318 307.318 0 0 1 12.413-19.761c7.613-.576 15.42-.876 23.31-.876H128c7.926 0 15.743.303 23.354.883a329.357 329.357 0 0 1 12.335 19.695a358.489 358.489 0 0 1 11.036 20.54a329.472 329.472 0 0 1-11 20.722Zm22.56-122.124c8.572 4.944 11.906 24.881 6.52 51.026c-.344 1.668-.73 3.367-1.15 5.09c-10.622-2.452-22.155-4.275-34.23-5.408c-7.034-10.017-14.323-19.124-21.64-27.008a160.789 160.789 0 0 1 5.888-5.4c18.9-16.447 36.564-22.941 44.612-18.3ZM128 90.808c12.625 0 22.86 10.235 22.86 22.86s-10.235 22.86-22.86 22.86s-22.86-10.235-22.86-22.86s10.235-22.86 22.86-22.86Z"></path></svg>
+
+====================
+FILE: ./src\assets\vite.svg
+====================
+<svg xmlns="http://www.w3.org/2000/svg" width="77" height="47" fill="none" aria-labelledby="vite-logo-title" viewBox="0 0 77 47"><title id="vite-logo-title">Vite</title><style>.parenthesis{fill:#000}@media (prefers-color-scheme:dark){.parenthesis{fill:#fff}}</style><path fill="#9135ff" d="M40.151 45.71c-.663.844-2.02.374-2.02-.699V34.708a2.26 2.26 0 0 0-2.262-2.262H24.493c-.92 0-1.457-1.04-.92-1.788l7.479-10.471c1.07-1.498 0-3.578-1.842-3.578H15.443c-.92 0-1.456-1.04-.92-1.788l9.696-13.576c.213-.297.556-.474.92-.474h28.894c.92 0 1.456 1.04.92 1.788l-7.48 10.472c-1.07 1.497 0 3.578 1.842 3.578h11.376c.944 0 1.474 1.087.89 1.83L40.153 45.712z"/><mask id="a" width="48" height="47" x="14" y="0" maskUnits="userSpaceOnUse" style="mask-type:alpha"><path fill="#000" d="M40.047 45.71c-.663.843-2.02.374-2.02-.699V34.708a2.26 2.26 0 0 0-2.262-2.262H24.389c-.92 0-1.457-1.04-.92-1.788l7.479-10.472c1.07-1.497 0-3.578-1.842-3.578H15.34c-.92 0-1.456-1.04-.92-1.788l9.696-13.575c.213-.297.556-.474.92-.474H53.93c.92 0 1.456 1.04.92 1.788L47.37 13.03c-1.07 1.498 0 3.578 1.842 3.578h11.376c.944 0 1.474 1.088.89 1.831L40.049 45.712z"/></mask><g mask="url(#a)"><g filter="url(#b)"><ellipse cx="5.508" cy="14.704" fill="#eee6ff" rx="5.508" ry="14.704" transform="rotate(269.814 20.96 11.29)scale(-1 1)"/></g><g filter="url(#c)"><ellipse cx="10.399" cy="29.851" fill="#eee6ff" rx="10.399" ry="29.851" transform="rotate(89.814 -16.902 -8.275)scale(1 -1)"/></g><g filter="url(#d)"><ellipse cx="5.508" cy="30.487" fill="#8900ff" rx="5.508" ry="30.487" transform="rotate(89.814 -19.197 -7.127)scale(1 -1)"/></g><g filter="url(#e)"><ellipse cx="5.508" cy="30.599" fill="#8900ff" rx="5.508" ry="30.599" transform="rotate(89.814 -25.928 4.177)scale(1 -1)"/></g><g filter="url(#f)"><ellipse cx="5.508" cy="30.599" fill="#8900ff" rx="5.508" ry="30.599" transform="rotate(89.814 -25.738 5.52)scale(1 -1)"/></g><g filter="url(#g)"><ellipse cx="14.072" cy="22.078" fill="#eee6ff" rx="14.072" ry="22.078" transform="rotate(93.35 31.245 55.578)scale(-1 1)"/></g><g filter="url(#h)"><ellipse cx="3.47" cy="21.501" fill="#8900ff" rx="3.47" ry="21.501" transform="rotate(89.009 35.419 55.202)scale(-1 1)"/></g><g filter="url(#i)"><ellipse cx="3.47" cy="21.501" fill="#8900ff" rx="3.47" ry="21.501" transform="rotate(89.009 35.419 55.202)scale(-1 1)"/></g><g filter="url(#j)"><ellipse cx="14.592" cy="9.743" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(39.51 14.592 9.743)"/></g><g filter="url(#k)"><ellipse cx="61.728" cy="-5.321" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(37.892 61.728 -5.32)"/></g><g filter="url(#l)"><ellipse cx="55.618" cy="7.104" fill="#00c2ff" rx="5.971" ry="9.665" transform="rotate(37.892 55.618 7.104)"/></g><g filter="url(#m)"><ellipse cx="12.326" cy="39.103" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(37.892 12.326 39.103)"/></g><g filter="url(#n)"><ellipse cx="12.326" cy="39.103" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(37.892 12.326 39.103)"/></g><g filter="url(#o)"><ellipse cx="49.857" cy="30.678" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(37.892 49.857 30.678)"/></g><g filter="url(#p)"><ellipse cx="52.623" cy="33.171" fill="#00c2ff" rx="5.971" ry="15.297" transform="rotate(37.892 52.623 33.17)"/></g></g><path d="M6.919 0c-9.198 13.166-9.252 33.575 0 46.789h6.215c-9.25-13.214-9.196-33.623 0-46.789zm62.424 0h-6.215c9.198 13.166 9.252 33.575 0 46.789h6.215c9.25-13.214 9.196-33.623 0-46.789" class="parenthesis"/><defs><filter id="b" width="60.045" height="41.654" x="-5.564" y="16.92" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="7.659"/></filter><filter id="c" width="90.34" height="51.437" x="-40.407" y="-6.762" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="7.659"/></filter><filter id="d" width="79.355" height="29.4" x="-35.435" y="2.801" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="e" width="79.579" height="29.4" x="-30.84" y="20.8" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="f" width="79.579" height="29.4" x="-29.307" y="21.949" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="g" width="74.749" height="58.852" x="29.961" y="-17.13" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="7.659"/></filter><filter id="h" width="61.377" height="25.362" x="37.754" y="3.055" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="i" width="61.377" height="25.362" x="37.754" y="3.055" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="j" width="56.045" height="63.649" x="-13.43" y="-22.082" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="k" width="54.814" height="64.646" x="34.321" y="-37.644" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="l" width="33.541" height="35.313" x="38.847" y="-10.552" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="m" width="54.814" height="64.646" x="-15.081" y="6.78" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="n" width="54.814" height="64.646" x="-15.081" y="6.78" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="o" width="54.814" height="64.646" x="22.45" y="-1.645" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="p" width="39.409" height="43.623" x="32.919" y="11.36" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter></defs></svg>
+
+
+====================
+FILE: ./src\utils\calculateSimpleEquation.ts
+====================
+import { tokenTypes } from './Constants/Types/TokenTypes';
+import { getIndexOfFirst, getItemIndexToTheRightByCallback } from './Extensions/arrayUtils';
+import { decrementValuesFromIndex, getIndexesOnPredicate } from './indexUtils';
+import { Result } from './Models/Core/Result';
+import { type Token, type ValueToken } from './Models/Core/Token';
+import { type TokenType } from './Models/Core/TokenType';
+import { getDefaultOperatorsAccordingToPriorities } from './operatorsAccordingToPriorities';
+import { getOperatorsForVariables } from './variableResolver';
+
+const ignoredByDefaultTokenTypes: TokenType[] = [tokenTypes.WhiteSpaceTokenType, tokenTypes.ClosedBracketTokenType, tokenTypes.OpenBracketTokenType]
+const notIgnoredTokenCheckCallback = (token: Token): boolean => getIndexOfFirst(ignoredByDefaultTokenTypes, type => type.isInstance(token).success) === null
+
+const operatorsTokenTypes: TokenType<ValueToken<string>>[] = [tokenTypes.WordTokenType, tokenTypes.SpecSymbolTokenType]
+//const isOperatorsTokenTypesCallback = (token: Token): boolean => getIndexOfFirst(operatorsTokenTypes, type => type.isInstance(token).success) !== null
+
+const getOperatorsForContext = (context: Map<string, Token> | null) => {
+  const operatorsByPriority = getDefaultOperatorsAccordingToPriorities();
+  const variables = getOperatorsForVariables(context)
+  console.log("variables as handlers: ", variables)
+  
+  if (variables) {
+    operatorsByPriority.unshift(variables)
+    console.log("Pushed variables into operators");
+  }
+
+  return operatorsByPriority
+}
+
+const getCalculationResult = (
+  tokens: Token[]
+): Result<ValueToken<number>> => {
+  const firstNotIgnoredTokenIndex = getIndexOfFirst(tokens, notIgnoredTokenCheckCallback)
+  if (firstNotIgnoredTokenIndex === null) {
+    return Result.Fail("not ignored tokens not found")
+  }
+
+  const secondNotIgnoredTokenIndex = getItemIndexToTheRightByCallback(tokens, firstNotIgnoredTokenIndex, notIgnoredTokenCheckCallback)
+  if (secondNotIgnoredTokenIndex !== null) {
+    return Result.Fail("not ignored tokens count > 1")
+  }
+
+  const isNumberCheckResult = tokenTypes.NumberTokenType.isInstance(tokens[firstNotIgnoredTokenIndex])
+  if (!isNumberCheckResult.success) {
+    return Result.Fail("Invalid not ignored token type")
+  }
+
+  return Result.Success(isNumberCheckResult.result)
+}
+
+
+export const indexationCallback = (token: Token) => {
+  console.log("indexationCallback: token: ", token)
+  
+  let valToRet: ValueToken<string> | null = null
+  for (const type of operatorsTokenTypes) {
+    const typeCheckResult = type.isInstance(token)
+    if (typeCheckResult.success) {
+      valToRet = typeCheckResult.result
+      break
+    }
+  }
+
+  console.log("indexationCallback: created index", valToRet)
+  return valToRet === null
+    ? Result.Fail("")
+    : Result.Success(valToRet)
+}
+
+
+export const calculateTokens = (
+  tokens: Token[],
+  context: Map<string, Token> | null = null
+): Result<ValueToken<number>> => {
+  console.groupCollapsed(`calculateTokens`, tokens, context);
+
+  const operatorsByPriority = getOperatorsForContext(context)
+  console.log("operatorsByPriority:", operatorsByPriority)
+
+
+  const operatorIndexesResult = getIndexesOnPredicate(tokens, indexationCallback)
+  if (!operatorIndexesResult.Success){
+    throw Error("Something went wrong with indexation!!")
+  }
+
+  const operatorIndexes = operatorIndexesResult.Result
+
+  console.log("handlersIndexes:", operatorIndexes)
+
+  for (let k = 0; k < operatorsByPriority.length; k++) {
+    const currenrPriorityOperators = operatorsByPriority[k]
+    console.log("Operators from current priority", currenrPriorityOperators)
+
+    for (let i = 0; i < operatorIndexes.length; i++) {
+      const operatorTokenIndex = operatorIndexes[i]
+
+      const operatorToken = operatorTokenIndex.ref
+      const currentOperatorHandler = currenrPriorityOperators.operators.get(operatorToken.value)
+      if (!currentOperatorHandler) {
+        console.log("Handler not found at current operators priority. " +
+          `operator:${operatorToken.value} at index ${operatorTokenIndex.index}`)
+        continue
+      }
+
+      const syntaxValidationResult = currenrPriorityOperators.syntaxValidator(
+        tokens, operatorTokenIndex.index, notIgnoredTokenCheckCallback)
+
+      console.log("syntaxValidationResult", syntaxValidationResult,
+        "fallIfPreHandleFailed", currenrPriorityOperators.fallIfSyntaxValidationFailed);
+
+      if (!syntaxValidationResult) {
+        if (currenrPriorityOperators.fallIfSyntaxValidationFailed) {
+          const msg = `Invalid syntax for token at index ${operatorTokenIndex.index}`;
+          console.log(msg, operatorToken)
+          return Result.Fail(msg)
+        }
+        else {
+          console.log(`Operator of function is not applicable at init index: ${operatorToken.initStringIndex}`)
+          continue
+        }
+      }
+
+      const res = currentOperatorHandler(tokens, syntaxValidationResult)
+      console.log(
+        "prevalidationResult:", syntaxValidationResult,
+        "func:", currentOperatorHandler,
+        "res:", res)
+
+      const popped = tokens.splice(
+        syntaxValidationResult.operationStartIndex,
+        syntaxValidationResult.operationLength,
+        res)
+
+      console.log("arr", tokens, "popped", popped)
+
+      console.log("Not ignored token indexes before pop:", operatorIndexes,
+        "Index to pop index:", i, "Index pair to pop:", operatorIndexes[i]
+      )
+      const poppedNotIgnoredToken = operatorIndexes.splice(i, 1)[0]
+      console.log("poppedNotIgnoredToken", poppedNotIgnoredToken, "at index(i)", i)
+
+      decrementValuesFromIndex(operatorIndexes, i, (syntaxValidationResult.operationLength - 1))
+      i--
+    }
+  }
+
+  const calculationResult = getCalculationResult(tokens)
+  if (!calculationResult.Success) {
+    const msg = "Couldn't handle equation properly. " + calculationResult.Message;
+    console.log(msg)
+    return Result.Fail(msg)
+  }
+
+  const tokenToReturn: ValueToken<number> = {
+    type: tokenTypes.NumberTokenType,
+    value: calculationResult.Result.value,
+    initStringIndex: tokens[0].initStringIndex,
+    fromString: tokens.map(t => t.fromString).join("")
+  }
+
+  console.log("Calculation finished. result:", tokenToReturn);
+  console.groupEnd();
+  return Result.Success(tokenToReturn)
+}
+
+====================
+FILE: ./src\utils\calculatorInputUtils.ts
+====================
+import { numberRestrictions } from "./Constants/Types/Number";
+import { getTokenStringAtIndex } from "./Parsing/tokenStringBuilder";
+
+export function appendNumber(
+    num: string, 
+    equation: string
+) : string {
+    if (!numberRestrictions.symbolMembershipCheckCallback(num)) {
+        console.log("num !E [0,9]")
+        return equation
+    }
+
+    return equation === "0"
+        ? num.toString()
+        : equation + num.toString()
+}
+
+export function appendDot(
+    equation: string
+) : string {
+    const getCurrentNumberResult = getTokenStringAtIndex(
+        equation,
+        equation.length - 1,
+        numberRestrictions.symbolMembershipCheckCallback);
+
+    if (!getCurrentNumberResult.Success){
+        console.log(`Couldn't get a number`, getCurrentNumberResult);
+        return equation
+    }
+
+    const getCurrentNumber = getCurrentNumberResult.Result;
+
+    if (getCurrentNumber.tokenString === "0" || getCurrentNumber.tokenString === "") {
+        return "0."
+    }
+
+    if (getCurrentNumber.tokenString.includes(".")) {
+        console.log(`Number already has dot`, getCurrentNumberResult);
+        return equation
+    }
+
+    return equation + '.'
+}
+
+====================
+FILE: ./src\utils\indexUtils.ts
+====================
+import { Result } from "./Models/Core/Result"
+
+export function decrementValuesFromIndex<T>(
+  indexes: IndexKeyValuePair<T>[], 
+  startIndex: number, 
+  offset: number
+): void {
+  for (let q = startIndex; q < indexes.length; q++) {
+    indexes[q].index -= offset
+  }
+}
+
+export interface IndexKeyValuePair<T>{
+  index: number,
+  ref: T
+}
+
+export function getIndexesOnPredicate<TI,TT>(
+  arr: TI[], 
+  transformCallback: (arg: TI) => Result<TT>,
+  stopOnFail: boolean = false
+): Result<IndexKeyValuePair<TT>[]> {
+  
+  const arrToRet: IndexKeyValuePair<TT>[] = []
+
+  for (let i = 0; i < arr.length; i++) {
+    const transformResult = transformCallback(arr[i])
+    if (transformResult.Success){
+      arrToRet.push({
+        index: i,
+        ref: transformResult.Result
+      })
+    }
+    else if (stopOnFail){
+      return Result.Fail(`Couldn't transform at index ${i}`)
+    }
+  }
+
+  return Result.Success(arrToRet)
+}
+
+====================
+FILE: ./src\utils\logOverrider.ts
+====================
+// Безопасный глубокий клон, защищенный от функций и циклических ссылок
+function safeClone(obj: any, seen = new WeakMap()): any {
+    if (obj === null || typeof obj !== 'object') {
+        return obj;
+    }
+
+    // Если это функция — возвращаем её текстовое описание
+    if (typeof obj === 'function') {
+        return '[Function]';
+    }
+
+    // Защита от бесконечной рекурсии (циклических ссылок)
+    if (seen.has(obj)) {
+        return '[Circular]';
+    }
+
+    // Клонируем даты и регулярки (их не нужно прогонять через toJSON/toString)
+    if (obj instanceof Date) return new Date(obj.getTime());
+    if (obj instanceof RegExp) return new RegExp(obj);
+
+    // ==========================================
+    // ИСПРАВЛЕННАЯ МАГИЯ:
+    // ==========================================
+
+    // 1. Если у объекта есть кастомный метод toJSON (например, твой список)
+    if (typeof obj.toJSON === 'function') {
+        return safeClone(obj.toJSON(), seen);
+    }
+
+    // 2. Если у объекта есть кастомный toString, но это НЕ массив!
+    if (obj.toString && obj.toString !== Object.prototype.toString && !Array.isArray(obj)) {
+        return obj.toString();
+    }
+
+    // ==========================================
+
+    // ==========================================
+
+    // Клонируем массивы
+    if (Array.isArray(obj)) {
+        const arrCopy: any[] = [];
+        seen.set(obj, arrCopy);
+        for (const item of obj) {
+            arrCopy.push(safeClone(item, seen));
+        }
+        return arrCopy;
+    }
+
+    // Клонируем обычные объекты
+    const objCopy: any = {};
+    seen.set(obj, objCopy);
+    for (const key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            const val = obj[key];
+            if (typeof val === 'function') {
+                objCopy[key] = '[Function]';
+            } else {
+                objCopy[key] = safeClone(val, seen);
+            }
+        }
+    }
+    return objCopy;
+}
+
+// Защита от двойного переопределения при Hot Module Replacement в Vite
+if (!(console.log as any).__isPatched) {
+    const originalConsoleLog = console.log;
+
+    const patchedLog = (...args: any[]): void => {
+        // Безопасно клонируем аргументы перед выводом
+        const clonedArgs = args.map(arg => safeClone(arg));
+        originalConsoleLog(...clonedArgs);
+    };
+
+    // Вешаем метку, что консоль уже пропатчена
+    (patchedLog as any).__isPatched = true;
+    console.log = patchedLog;
+}
+
+====================
+FILE: ./src\utils\operationHandlersUtils.ts
+====================
+import { tokenTypes } from "./Constants/Types/TokenTypes"
+import type { Token, ValueToken } from "./Models/Core/Token"
+import type { PrevalidationResult } from "./Models/EquationCalculation/PrevalidationResult"
+
+export const getTokensRangeViaPrevalidationResult = (
+  equation: Token[],
+  prevalidationResult: PrevalidationResult
+): Token[] =>
+  equation.slice(
+    prevalidationResult.operationStartIndex,
+    prevalidationResult.operationStartIndex + prevalidationResult.operationLength)
+
+export const handleUnarOperation = (
+  equation: Token[],
+  prevalidationResult: PrevalidationResult,
+  handler: (arg: number) => number
+): ValueToken<number> => {
+  console.log("handleFunction", "equation", equation, "prevalidationResult", prevalidationResult, "handler:", handler)
+
+  if (!prevalidationResult || !equation
+    || prevalidationResult.argumentIndexes.length !== 1
+    || equation.length <= prevalidationResult.argumentIndexes[0]) {
+    throw Error("Couldn't handle operation", { cause: { equation, prevalidationResult } })
+  }
+
+  const argument = equation[prevalidationResult.argumentIndexes[0]]
+
+  console.log("Argument for handleFunc:", argument);
+
+  if (!argument) {
+    throw Error("Couldn't handle operation", { cause: { equation, prevalidationResult } })
+  }
+
+  const isInstanceResult = tokenTypes.NumberTokenType.isInstance(argument)
+  if (!isInstanceResult.success) {
+    throw Error("Couldn't handle operation", { cause: { equation, prevalidationResult } })
+  }
+
+  const calculationResult = handler(isInstanceResult.result.value)
+
+  const fromSlice = getTokensRangeViaPrevalidationResult(equation, prevalidationResult)
+
+  return {
+    type: tokenTypes.NumberTokenType,
+    value: calculationResult,
+    initStringIndex: prevalidationResult.operationStartIndex,
+    fromString: fromSlice.map(s => s.fromString).join("")
+  }
+}
+
+export const handleBinarOperation = (
+  equation: Token[],
+  prevalidationResult: PrevalidationResult,
+  handler: (arg1: number, arg2: number) => number
+): ValueToken<number> => {
+  console.log("handleBinarOperation", "equation", equation, "prevalidationResult", prevalidationResult)
+
+  if (!handler || handler.length !== 2) {
+    throw Error("Invalid handler")
+  }
+
+  if (!prevalidationResult || !equation
+    || prevalidationResult.argumentIndexes.length !== 2
+    || equation.length <= prevalidationResult.argumentIndexes[1]) {
+    throw Error("Invalid location of operator or arguments")
+  }
+
+  const argsAsValueTokens: ValueToken<number>[] = []
+  for (const index of prevalidationResult.argumentIndexes) {
+    const argument = equation[index]
+
+    if (!argument) {
+      console.log("Couldn't handle operation", argument, prevalidationResult.argumentIndexes, index)
+      throw Error("Invalid arguments")
+    }
+
+    const isInstanceResult = tokenTypes.NumberTokenType.isInstance(argument)
+    if (!isInstanceResult.success) {
+      console.log("Couldn't handle operation", argument, prevalidationResult.argumentIndexes, index)
+      throw Error("Invalid arguments")
+    }
+
+    argsAsValueTokens.push(isInstanceResult.result)
+  }
+
+  const calculationResult = handler(argsAsValueTokens[0].value, argsAsValueTokens[1].value)
+
+  const fromSlice = getTokensRangeViaPrevalidationResult(equation, prevalidationResult)
+
+  return {
+    type: tokenTypes.NumberTokenType,
+    value: calculationResult,
+    initStringIndex: prevalidationResult.operationStartIndex,
+    fromString: fromSlice.map(s => s.fromString).join("")
+  }
+}
+
+====================
+FILE: ./src\utils\operatorsAccordingToPriorities.ts
+====================
+import { validateBinarOperation, validateUnarFunction, validateUnarMinus } from './syntaxValidators'
+import type { HandlerDelegate } from './Models/EquationCalculation/HandleEquationrDelegate'
+import type { OperationHandlerDelegate } from './Models/EquationCalculation/OperationHandlerDelegate'
+import { handleBinarOperation, handleUnarOperation } from './operationHandlersUtils'
+import type { OperatorsForPriorityConfiguration } from './Models/EquationCalculation/OperatorsForPriorityConfiguration'
+
+
+const handleMultiplication: OperationHandlerDelegate = (equation, prevalidationResult) => handleBinarOperation(equation, prevalidationResult, (a, b) => a * b)
+const handleDivision: OperationHandlerDelegate = (equation, prevalidationResult) => handleBinarOperation(equation, prevalidationResult, (a, b) => a / b)
+
+const handleSum: OperationHandlerDelegate = (equation, prevalidationResult) => handleBinarOperation(equation, prevalidationResult, (a, b) => a + b)
+const handleDiff: OperationHandlerDelegate = (equation, prevalidationResult) => handleBinarOperation(equation, prevalidationResult, (a, b) => a - b)
+
+const handleSin: OperationHandlerDelegate = (equation, prevalidationResult) => handleUnarOperation(equation, prevalidationResult, (a) => Math.sin(a))
+const handleUnaryMinus: OperationHandlerDelegate = (equation, prevalidationResult) => handleUnarOperation(equation, prevalidationResult, (a) => -a)
+
+
+export const getDefaultOperatorsAccordingToPriorities: () => OperatorsForPriorityConfiguration[] = () => [
+  {
+    operators: new Map<string, HandlerDelegate>([
+      ["sin", handleSin]
+    ]),
+    syntaxValidator: validateUnarFunction,
+    fallIfSyntaxValidationFailed: true
+  },
+  {
+    operators: new Map<string, HandlerDelegate>([
+      ["-", handleUnaryMinus]
+    ]),
+    syntaxValidator: validateUnarMinus,
+    fallIfSyntaxValidationFailed: false
+  },
+  {
+    operators: new Map<string, HandlerDelegate>([
+      ["*", handleMultiplication],
+      [":", handleDivision],
+      ["/", handleDivision],
+      ["\\", handleDivision]
+    ]),
+    syntaxValidator: validateBinarOperation,
+    fallIfSyntaxValidationFailed: true
+  },
+  {
+    operators: new Map<string, HandlerDelegate>([
+      ["+", handleSum],
+      ["-", handleDiff]
+    ]),
+    syntaxValidator: validateBinarOperation,
+    fallIfSyntaxValidationFailed: true
+  }
+]
+
+export const defaultDefinedNames = [...new Set(
+  getDefaultOperatorsAccordingToPriorities().flatMap(item => Array.from(item.operators.keys()))
+)]
+
+
+
+
+====================
+FILE: ./src\utils\syntaxValidators.ts
+====================
+import { tokenTypes } from "./Constants/Types/TokenTypes"
+import { getItemIndexToTheLeftByCallback, getItemIndexToTheRightByCallback } from "./Extensions/arrayUtils"
+import type { FunctionValidatorDelegate } from "./Models/EquationCalculation/FunctionValidatorDelegate"
+import type { PrevalidationResult } from "./Models/EquationCalculation/PrevalidationResult"
+
+export const validateUnarFunction: FunctionValidatorDelegate = (equation, index, notIgnoredTokenCheckCallback): PrevalidationResult | null => {
+  if (equation.length === 0) {
+    throw Error("Invalid Argument: equation")
+  }
+
+  if (index < 0 || index >= equation.length) {
+    throw Error("ArgumentOutOfRange: Invalid index")
+  }
+
+  if (!notIgnoredTokenCheckCallback || notIgnoredTokenCheckCallback.length < 1) {
+    throw Error("InvalidArgument: notIgnoredTokenCheckCallback")
+  }
+
+  const notIgnoredTokenIndexToTheRight = getItemIndexToTheRightByCallback(equation, index, notIgnoredTokenCheckCallback)
+  if (notIgnoredTokenIndexToTheRight === null) {
+    return null
+  }
+
+  console.log("notIgnoredTokenIndexToTheRight:", notIgnoredTokenIndexToTheRight)
+  return equation[notIgnoredTokenIndexToTheRight].type === tokenTypes.NumberTokenType
+    ? {
+      argumentIndexes: [notIgnoredTokenIndexToTheRight],
+      operationStartIndex: index,
+      operationLength: notIgnoredTokenIndexToTheRight - index + 1,
+    }
+    : null
+}
+
+export const validateUnarMinus: FunctionValidatorDelegate = (equation, index, notIgnoredTokenCheckCallback): PrevalidationResult | null => {
+  const rightArgumentValidationResult = validateUnarFunction(equation, index, notIgnoredTokenCheckCallback)
+  if (rightArgumentValidationResult === null) {
+    return null
+  }
+
+  const notIgnoredTokenIndexToTheRight = rightArgumentValidationResult.argumentIndexes[0]
+  const notIgnoredTokenIndexToTheLeft = getItemIndexToTheLeftByCallback(equation, index, notIgnoredTokenCheckCallback)
+  const notIgnoredTokenToTheLeft = notIgnoredTokenIndexToTheLeft === null ? null : equation[notIgnoredTokenIndexToTheLeft]
+  console.log(
+    "notIgnoredTokenIndexToTheLeft:", notIgnoredTokenIndexToTheLeft,
+    "notIgnoredTokenToTheLeft:", notIgnoredTokenToTheLeft,
+    "notIgnoredTokenIndexToTheRight:", notIgnoredTokenIndexToTheRight,
+  )
+
+  return equation[notIgnoredTokenIndexToTheRight].type === tokenTypes.NumberTokenType
+    && (notIgnoredTokenToTheLeft === null || notIgnoredTokenToTheLeft.type !== tokenTypes.NumberTokenType)
+    ? {
+      argumentIndexes: [notIgnoredTokenIndexToTheRight],
+      operationStartIndex: index,
+      operationLength: notIgnoredTokenIndexToTheRight - index + 1,
+    }
+    : null
+}
+
+export const validateBinarOperation : FunctionValidatorDelegate = (equation, index, notIgnoredTokenCheckCallback): PrevalidationResult | null => {
+  console.log("preHandleBinarOperation executed with arguments:",
+    "equation:", equation,
+    "index:", index,
+    "notIgnoredTokenCheckCallback:", notIgnoredTokenCheckCallback)
+
+
+  if (equation.length === 0) {
+    throw Error("InvalidArgument: equation")
+  }
+
+  if (index < 1 || index >= equation.length) {
+    throw Error("ArgumentOutOfRange: Invalid index")
+  }
+
+  const notIgnoredTokenIndexToTheRight = getItemIndexToTheRightByCallback(equation, index, notIgnoredTokenCheckCallback)
+  console.log("notIgnoredTokenIndexToTheRight:", notIgnoredTokenIndexToTheRight);
+  if (notIgnoredTokenIndexToTheRight === null) {
+    return null
+  }
+
+  const notIgnoredTokenIndexToTheLeft = getItemIndexToTheLeftByCallback(equation, index, notIgnoredTokenCheckCallback)
+  console.log("notIgnoredTokenIndexToTheLeft:", notIgnoredTokenIndexToTheLeft);
+  if (notIgnoredTokenIndexToTheLeft === null) {
+    return null
+  }
+
+  console.log(
+    "notIgnoredTokenIndexToTheLeft:", notIgnoredTokenIndexToTheLeft,
+    "notIgnoredTokenIndexToTheRight:", notIgnoredTokenIndexToTheRight,
+  )
+
+  const valueToReturn = {
+    argumentIndexes: [notIgnoredTokenIndexToTheLeft, notIgnoredTokenIndexToTheRight],
+    operationStartIndex: notIgnoredTokenIndexToTheLeft,
+    operationLength: notIgnoredTokenIndexToTheRight - notIgnoredTokenIndexToTheLeft + 1
+  }
+
+  console.log(
+    "eq", equation,
+    valueToReturn
+  );
+
+  return (
+    equation[notIgnoredTokenIndexToTheRight].type === tokenTypes.NumberTokenType
+    && equation[notIgnoredTokenIndexToTheLeft].type === tokenTypes.NumberTokenType)
+    ? valueToReturn
+    : null
+}
+
+====================
+FILE: ./src\utils\variableResolver.ts
+====================
+import { tokenTypes } from "./Constants/Types/TokenTypes"
+import type { Token } from "./Models/Core/Token"
+import type { FunctionValidatorDelegate } from "./Models/EquationCalculation/FunctionValidatorDelegate"
+import type { HandlerDelegate } from "./Models/EquationCalculation/HandleEquationrDelegate"
+import type { OperatorsForPriorityConfiguration } from "./Models/EquationCalculation/OperatorsForPriorityConfiguration"
+
+export const getOperatorsForVariables = (
+    context: Map<string, Token> | null
+): OperatorsForPriorityConfiguration | null => {
+    console.log("getOperatorsForVariables executed",
+        "context:", context
+    )
+
+    if (context === null) {
+        console.log("Context is null")
+        return null
+    }
+
+    const size = context.size
+    if (!size || size <= 0) {
+        console.log("Invalid context size")
+        return null
+    }
+
+    const preHandleVariable: FunctionValidatorDelegate = (equation, index) => {
+        const executedFunc = "preHandleVariable"
+        console.log(`${executedFunc} executed`, "equation:", equation, "index", index)
+
+        if (index < 0 || index >= equation.length) {
+            console.log(executedFunc,
+                "index < 0 || index >= equation.length")
+            return null
+        }
+
+        const isWordCheckResult = tokenTypes.WordTokenType.isInstance(equation[index])
+        if (!isWordCheckResult.success) {
+            console.log(executedFunc,
+                "typeof key !== 'string'")
+            return null
+        }
+
+        return context.has(isWordCheckResult.result.value)
+            ? {
+                argumentIndexes: [index],
+                operationStartIndex: index,
+                operationLength: 1,
+            }
+            : null
+    }
+
+    const operators = new Map<string, HandlerDelegate>()
+    for (const [variableName, variableValue] of context.entries()) {
+        const isNumberCheckResult = tokenTypes.NumberTokenType.isInstance(variableValue)
+        if (!isNumberCheckResult.success){
+            console.log("Context value is not a NumberTokenTypeInstance")
+            return null
+        }
+        
+        operators.set(variableName, () => isNumberCheckResult.result)
+    }
+
+    return {
+        operators: operators,
+        syntaxValidator: preHandleVariable,
+        fallIfSyntaxValidationFailed: true
+    }
+}
+
+====================
+FILE: ./src\utils\Calculation\evaluateTreeUtils.ts
+====================
+import { type NodeCalculationResult } from "../Models/NodeCalculation/NodeCalculationResult";
+import { Result } from "../Models/Core/Result";
+import { type Token, type ValueToken } from "../Models/Core/Token";
+import { type BracketInfo } from "../Models/TreeBuilding/BracketInfo";
+import { type DoubleLinkedListClass } from "../IndexedCollections/DoubleLinkedListClass";
+
+
+export const evaluateNode = (
+    tree: Map<string, BracketInfo>,
+    nodeName: string,
+    calculateSimpleEquationCallback: (tokensToCalculate: DoubleLinkedListClass<Token>, context: Map<string, ValueToken<number>>) => Result<ValueToken<number>>
+): Result<NodeCalculationResult> => {
+    const node = tree.get(nodeName)
+    if (!node) {
+        return Result.Fail("node is null")
+    }
+
+    const evaluationToCalculate = node.content;
+    const map = new Map<string, ValueToken<number>>();
+    if (node.children.length > 0) {
+        const iterator = node.children.GetIteratorAtIndex(0)
+        if (iterator === null){
+            throw Error("Couldn't get an iterator for not empty list")
+        }
+
+        do {
+            const childName = iterator.GetValue()
+            const nodeCalculationResult = evaluateNode(tree, childName, calculateSimpleEquationCallback)
+            if (!nodeCalculationResult.Success) {
+                return nodeCalculationResult
+            }
+
+            console.log("Child:", childName, "Child result token:", nodeCalculationResult)
+            map.set(childName, nodeCalculationResult.Result.result)
+        } while (iterator.MoveNext())
+    }
+
+    console.log("evaluationToCalculate:", evaluationToCalculate,
+        "node:", node,
+        "map:", map)
+
+    const calculationResult = calculateSimpleEquationCallback(evaluationToCalculate, map)
+    if (!calculationResult.Success) {
+        return calculationResult
+    }
+
+    const valueToReturn: NodeCalculationResult = {
+        name: nodeName,
+        content: node.content,
+        map,
+        result: calculationResult.Result
+    }
+
+    console.log("valueToReturn", valueToReturn);
+
+    return Result.Success(valueToReturn)
+}
+
+====================
+FILE: ./src\utils\Constants\Types\ClosedBracket.ts
+====================
+import { getIndexOfFirst } from "../../Extensions/arrayUtils"
+import { Result } from "../../Models/Core/Result"
+import type { Token } from "../../Models/Core/Token"
+import type { TokenType } from "../../Models/Core/TokenType"
+import type { TokenTypeRestriction } from "../../Models/Core/TokenTypeRestrictions"
+import type { TokenStringCollectionResult } from "../../Models/Parsing/TokenStringCollectionResult"
+import { DefaultTokenIsInstance } from "./defaultTokenTypeCheck"
+
+
+const closedBracketAllowedSymbols = new Set([')'])
+Object.freeze(closedBracketAllowedSymbols)
+
+export const closedBracketRestrictions: TokenTypeRestriction = {
+  allowedSymbols: closedBracketAllowedSymbols,
+  symbolMembershipCheckCallback: (symbol) => closedBracketAllowedSymbols.has(symbol),
+  maxLength: 1
+}
+Object.freeze(closedBracketRestrictions)
+
+export const closedBracketTokenType: TokenType<Token> = {
+  name: "closedBracket",
+  tokenStringRestriction: closedBracketRestrictions,
+  tokenParser: (
+    stringCollectionResult: TokenStringCollectionResult
+  ): Result<Token> => {
+    if (stringCollectionResult.tokenString.length === 0) {
+      return Result.Fail("ArgumentException: length of tokenString can not be 0")
+    }
+
+    if (closedBracketRestrictions.maxLength
+      && stringCollectionResult.tokenString.length > closedBracketRestrictions.maxLength) {
+      return Result.Fail(`ArgumentException: length of tokenString can not be more than ${closedBracketRestrictions.maxLength}`)
+    }
+
+    const invalidSymbolIndex = getIndexOfFirst(
+      stringCollectionResult.tokenString,
+      (s: string) => !closedBracketRestrictions.symbolMembershipCheckCallback(s))
+
+    if (invalidSymbolIndex !== null) {
+      return Result.Fail(`ArgumentException: invalid symbol '${stringCollectionResult.tokenString[invalidSymbolIndex]}' at index: ${invalidSymbolIndex}`)
+    }
+
+    return Result.Success<Token>({
+      type: closedBracketTokenType,
+      initStringIndex: stringCollectionResult.absoluteStartIndex,
+      fromString: stringCollectionResult.tokenString,
+    })
+  },
+
+  isInstance: (arg) => DefaultTokenIsInstance(arg, closedBracketTokenType)
+}
+
+Object.freeze(closedBracketTokenType)
+
+====================
+FILE: ./src\utils\Constants\Types\DefaultTokenTypeCheck.ts
+====================
+import { getIndexOfFirst } from "../../Extensions/arrayUtils";
+import type { IsInstanceResult } from "../../Models/Core/IsInstanceResult";
+import type { Token, ValueToken } from "../../Models/Core/Token";
+import type { TokenType } from "../../Models/Core/TokenType";
+
+export function DefaultTokenIsInstance<TToken extends Token<any>>(
+    token: TToken,
+    tokenType: TokenType<TToken>,
+): IsInstanceResult<TToken> {
+    const typeRestriction = tokenType.tokenStringRestriction
+    if (token.type !== tokenType
+        || (typeRestriction.maxLength && token.fromString.length > typeRestriction.maxLength)
+        || getIndexOfFirst(token.fromString, (s) => !typeRestriction.symbolMembershipCheckCallback(s)) !== null
+    ) {
+        return { success: false };
+    }
+
+    return { success: true, result: token as TToken }
+}
+
+====================
+FILE: ./src\utils\Constants\Types\Number.ts
+====================
+import { getIndexOfFirst } from "../../Extensions/arrayUtils"
+import { Result } from "../../Models/Core/Result"
+import type { ValueToken } from "../../Models/Core/Token"
+import type { TokenType } from "../../Models/Core/TokenType"
+import type { TokenTypeRestriction } from "../../Models/Core/TokenTypeRestrictions"
+import type { TokenStringCollectionResult } from "../../Models/Parsing/TokenStringCollectionResult"
+
+
+const numberAllowedSymbols = new Set(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."])
+Object.freeze(numberAllowedSymbols)
+
+
+export const numberRestrictions: TokenTypeRestriction = {
+  allowedSymbols: numberAllowedSymbols,
+  symbolMembershipCheckCallback: (symbol) => numberAllowedSymbols.has(symbol),
+  maxLength: null
+}
+Object.freeze(numberRestrictions)
+
+
+export const numberTokenType: TokenType<ValueToken<number>> = {
+  name: "Number",
+  tokenStringRestriction: numberRestrictions,
+  tokenParser: (
+    stringCollectionResult: TokenStringCollectionResult
+  ): Result<ValueToken<number>> => {
+    if (stringCollectionResult.tokenString.length === 0) {
+      return Result.Fail("ArgumentException: length of tokenString can not be 0")
+    }
+
+    if (numberRestrictions.maxLength
+      && stringCollectionResult.tokenString.length > numberRestrictions.maxLength) {
+      return Result.Fail(`ArgumentException: length of tokenString can not be more than ${numberRestrictions.maxLength}`)
+    }
+
+    const invalidSymbolIndex = getIndexOfFirst(
+      stringCollectionResult.tokenString,
+      (s: string) => !numberRestrictions.symbolMembershipCheckCallback(s))
+
+    if (invalidSymbolIndex !== null) {
+      return Result.Fail(`ArgumentException: invalid symbol '${stringCollectionResult.tokenString[invalidSymbolIndex]}' at index: ${invalidSymbolIndex}`)
+    }
+
+    const number = parseFloat(stringCollectionResult.tokenString)
+
+    if (isNaN(number)) {
+      throw Error(`Couldn't parse number properly at index ${stringCollectionResult.absoluteStartIndex}`)
+    }
+
+    return Result.Success({
+      type: numberTokenType,
+      initStringIndex: stringCollectionResult.absoluteStartIndex,
+      fromString: stringCollectionResult.tokenString,
+      value: number
+    })
+  },
+  
+  isInstance: (
+    token
+  ) =>  {
+    const vToken = token as ValueToken<unknown>
+    if (
+      vToken.type !== numberTokenType 
+      || !('value' in vToken) 
+      || typeof vToken.value !== 'number'
+      || isNaN(vToken.value)) {
+      return { success: false };
+    }
+
+    return {success: true, result: vToken as ValueToken<number>}
+  }  
+}
+
+Object.freeze(numberTokenType)
+
+
+====================
+FILE: ./src\utils\Constants\Types\OpenBracket.ts
+====================
+import { getIndexOfFirst } from "../../Extensions/arrayUtils"
+import { Result } from "../../Models/Core/Result"
+import type { Token } from "../../Models/Core/Token"
+import type { TokenType } from "../../Models/Core/TokenType"
+import type { TokenTypeRestriction } from "../../Models/Core/TokenTypeRestrictions"
+import type { TokenStringCollectionResult } from "../../Models/Parsing/TokenStringCollectionResult"
+import { DefaultTokenIsInstance } from "./defaultTokenTypeCheck"
+
+
+const openBracketAllowedSymbols = new Set(['('])
+Object.freeze(openBracketAllowedSymbols)
+
+
+export const openBracketRestrictions: TokenTypeRestriction = {
+  allowedSymbols: openBracketAllowedSymbols,
+  symbolMembershipCheckCallback: (symbol) => openBracketAllowedSymbols.has(symbol),
+  maxLength: 1
+}
+Object.freeze(openBracketRestrictions)
+
+export const openBracketTokenType: TokenType<Token> = {
+  name: "openBracket",
+  tokenStringRestriction: openBracketRestrictions,
+  tokenParser: (
+    stringCollectionResult: TokenStringCollectionResult
+  ): Result<Token> => {
+    if (stringCollectionResult.tokenString.length === 0) {
+      return Result.Fail("ArgumentException: length of tokenString can not be 0")
+    }
+
+    if (openBracketRestrictions.maxLength
+      && stringCollectionResult.tokenString.length > openBracketRestrictions.maxLength) {
+      return Result.Fail(`ArgumentException: length of tokenString can not be more than ${openBracketRestrictions.maxLength}`)
+    }
+
+    const invalidSymbolIndex = getIndexOfFirst(
+      stringCollectionResult.tokenString,
+      (s: string) => !openBracketRestrictions.symbolMembershipCheckCallback(s))
+
+    if (invalidSymbolIndex !== null) {
+      return Result.Fail(`ArgumentException: invalid symbol '${stringCollectionResult.tokenString[invalidSymbolIndex]}' at index: ${invalidSymbolIndex}`)
+    }
+
+    return Result.Success({
+      type: openBracketTokenType,
+      initStringIndex: stringCollectionResult.absoluteStartIndex,
+      fromString: stringCollectionResult.tokenString,
+    })
+  },
+
+  isInstance: (arg) => DefaultTokenIsInstance(arg, openBracketTokenType)
+}
+
+Object.freeze(openBracketTokenType)
+
+====================
+FILE: ./src\utils\Constants\Types\SpecSymbol.ts
+====================
+import { getIndexOfFirst } from "../../Extensions/arrayUtils"
+import { Result } from "../../Models/Core/Result"
+import type { ValueToken } from "../../Models/Core/Token"
+import type { TokenType } from "../../Models/Core/TokenType"
+import type { TokenTypeRestriction } from "../../Models/Core/TokenTypeRestrictions"
+import type { TokenStringCollectionResult } from "../../Models/Parsing/TokenStringCollectionResult"
+
+
+
+const specSymbolAllowedSymbols = new Set(['*', "/", "\\", "+", "-", ":", "^"])
+Object.freeze(specSymbolAllowedSymbols)
+
+export const specSymbolRestrictions: TokenTypeRestriction = {
+  allowedSymbols: specSymbolAllowedSymbols,
+  symbolMembershipCheckCallback: (symbol) => specSymbolAllowedSymbols.has(symbol),
+  maxLength: 1
+}
+Object.freeze(specSymbolRestrictions)
+
+const isValidSpecSymbolValue = (
+  val: string
+): Result<string> => {
+  if (val.length === 0) {
+    return Result.Fail("ArgumentException: length of tokenString can not be 0")
+  }
+
+  if (specSymbolRestrictions.maxLength
+    && val.length > specSymbolRestrictions.maxLength) {
+    return Result.Fail(`ArgumentException: length of tokenString can not be more than ${specSymbolRestrictions.maxLength}`)
+  }
+
+  const invalidSymbolIndex = getIndexOfFirst(
+    val,
+    (s) => !specSymbolRestrictions.symbolMembershipCheckCallback(s))
+
+  if (invalidSymbolIndex !== null) {
+    return Result.Fail(`ArgumentException: invalid symbol '${val[invalidSymbolIndex]}' at index: ${invalidSymbolIndex}`)
+  }
+
+  return Result.Success(val)
+}
+
+export const specSymbolTokenType: TokenType<ValueToken<string>> = {
+  name: "Special symbol",
+  tokenStringRestriction: specSymbolRestrictions,
+  tokenParser: (
+    stringCollectionResult: TokenStringCollectionResult
+  ): Result<ValueToken<string>> => {
+
+    const isValidSpecSymbolValueResult = isValidSpecSymbolValue(stringCollectionResult.tokenString)
+    if (!isValidSpecSymbolValueResult.Success) {
+      return isValidSpecSymbolValueResult
+    }
+
+    return Result.Success({
+      type: specSymbolTokenType,
+      initStringIndex: stringCollectionResult.absoluteStartIndex,
+      fromString: stringCollectionResult.tokenString,
+      value: stringCollectionResult.tokenString
+    })
+  },
+
+  isInstance: (
+    token
+  ) => {
+    const vToken = token as ValueToken<unknown>
+    if (
+      vToken.type !== specSymbolTokenType
+      || !('value' in vToken)
+      || typeof vToken.value !== 'string') {
+      return { success: false }
+    }
+
+    const isValidSpecSymbolValueResult = isValidSpecSymbolValue(vToken.value)
+    if (!isValidSpecSymbolValueResult.Success) {
+      return { success: false }
+    }
+
+    return { success: true, result: vToken as ValueToken<string> }
+  }
+}
+
+Object.freeze(specSymbolTokenType)
+
+
+====================
+FILE: ./src\utils\Constants\Types\TokenTypes.ts
+====================
+import { closedBracketTokenType } from "./ClosedBracket"
+import { openBracketTokenType } from "./OpenBracket"
+import { numberTokenType } from "./Number"
+import { specSymbolTokenType } from "./SpecSymbol"
+import { whiteSpaceTokenType } from "./Whitespace"
+import { wordTokenType } from "./Word"
+
+
+export const tokenTypes = {
+  ClosedBracketTokenType: closedBracketTokenType,
+  OpenBracketTokenType: openBracketTokenType,
+  NumberTokenType: numberTokenType,
+  SpecSymbolTokenType: specSymbolTokenType,
+  WhiteSpaceTokenType: whiteSpaceTokenType,
+  WordTokenType: wordTokenType
+}
+
+export const tokenTypesAsArr = Object.values(tokenTypes)
+
+====================
+FILE: ./src\utils\Constants\Types\Whitespace.ts
+====================
+import { getIndexOfFirst } from "../../Extensions/arrayUtils"
+import { Result } from "../../Models/Core/Result"
+import type { Token } from "../../Models/Core/Token"
+import type { TokenType } from "../../Models/Core/TokenType"
+import type { TokenTypeRestriction } from "../../Models/Core/TokenTypeRestrictions"
+import type { TokenStringCollectionResult } from "../../Models/Parsing/TokenStringCollectionResult"
+import { DefaultTokenIsInstance } from "./defaultTokenTypeCheck"
+
+
+const whiteSpaceAllowedSymbols = new Set([' '])
+Object.freeze(whiteSpaceAllowedSymbols)
+
+export const whiteSpaceRestrictions: TokenTypeRestriction = {
+  allowedSymbols: whiteSpaceAllowedSymbols,
+  symbolMembershipCheckCallback: (symbol) => whiteSpaceAllowedSymbols.has(symbol),
+  maxLength: null
+}
+Object.freeze(whiteSpaceRestrictions)
+
+
+export const whiteSpaceTokenType: TokenType<Token> = {
+  name: "whiteSpace",
+  tokenStringRestriction: whiteSpaceRestrictions,
+  tokenParser: (
+    stringCollectionResult: TokenStringCollectionResult
+  ): Result<Token> => {
+    if (stringCollectionResult.tokenString.length === 0) {
+      return Result.Fail("ArgumentException: length of tokenString can not be 0")
+    }
+
+    if (whiteSpaceRestrictions.maxLength
+      && stringCollectionResult.tokenString.length > whiteSpaceRestrictions.maxLength) {
+      return Result.Fail(`ArgumentException: length of tokenString can not be more than ${whiteSpaceRestrictions.maxLength}`)
+    }
+
+    const invalidSymbolIndex = getIndexOfFirst(
+      stringCollectionResult.tokenString,
+      (s: string) => !whiteSpaceRestrictions.symbolMembershipCheckCallback(s))
+
+    if (invalidSymbolIndex !== null) {
+      return Result.Fail(`ArgumentException: invalid symbol '${stringCollectionResult.tokenString[invalidSymbolIndex]}' at index: ${invalidSymbolIndex}`)
+    }
+
+
+    return Result.Success({
+      type: whiteSpaceTokenType,
+      initStringIndex: stringCollectionResult.absoluteStartIndex,
+      fromString: stringCollectionResult.tokenString,
+    })
+  },
+
+  isInstance: (arg) => DefaultTokenIsInstance(arg, whiteSpaceTokenType)
+}
+
+Object.freeze(whiteSpaceTokenType)
+
+
+====================
+FILE: ./src\utils\Constants\Types\Word.ts
+====================
+import { getIndexOfFirst } from "../../Extensions/arrayUtils"
+import { Result } from "../../Models/Core/Result"
+import type { ValueToken } from "../../Models/Core/Token"
+import type { TokenType } from "../../Models/Core/TokenType"
+import type { TokenTypeRestriction } from "../../Models/Core/TokenTypeRestrictions"
+import type { TokenStringCollectionResult } from "../../Models/Parsing/TokenStringCollectionResult"
+
+
+const wordAllowedSymbols = new Set(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'])
+Object.freeze(wordAllowedSymbols)
+
+export const wordRestrictions: TokenTypeRestriction = {
+  allowedSymbols: wordAllowedSymbols,
+  symbolMembershipCheckCallback: (symbol) => wordAllowedSymbols.has(symbol),
+  maxLength: null
+}
+Object.freeze(wordRestrictions)
+
+export const wordTokenType: TokenType<ValueToken<string>> = {
+  name: "Word",
+  tokenStringRestriction: wordRestrictions,
+  tokenParser: (
+    stringCollectionResult: TokenStringCollectionResult
+  ): Result<ValueToken<string>> => {
+
+    if (stringCollectionResult.tokenString.length === 0) {
+      return Result.Fail("ArgumentException: length of tokenString can not be 0")
+    }
+
+    if (wordRestrictions.maxLength
+      && stringCollectionResult.tokenString.length > wordRestrictions.maxLength) {
+      return Result.Fail(`ArgumentException: length of tokenString can not be more than ${wordRestrictions.maxLength}`)
+    }
+
+    const invalidSymbolIndex = getIndexOfFirst(
+      stringCollectionResult.tokenString,
+      (s: string) => !wordRestrictions.symbolMembershipCheckCallback(s))
+
+    if (invalidSymbolIndex !== null) {
+      return Result.Fail(`ArgumentException: invalid symbol '${stringCollectionResult.tokenString[invalidSymbolIndex]}' at index: ${invalidSymbolIndex}`)
+    }
+
+
+    return Result.Success({
+      type: wordTokenType,
+      initStringIndex: stringCollectionResult.absoluteStartIndex,
+      fromString: stringCollectionResult.tokenString,
+      value: stringCollectionResult.tokenString
+    })
+  },
+
+  isInstance: (
+    token
+  ) => {
+    const vToken = token as ValueToken<unknown>
+    if (
+      vToken.type !== wordTokenType
+      || !('value' in vToken)
+      || typeof vToken.value !== 'string') {
+      return { success: false };
+    }
+
+    return { success: true, result: vToken as ValueToken<string> }
+  }
+}
+
+Object.freeze(wordTokenType)
+
+====================
+FILE: ./src\utils\Extensions\arrayUtils.ts
+====================
+export function getIndexOfFirst<T>(
+  equation: ArrayLike<T>,
+  сheckCallback: (val: T) => boolean
+): number | null {
+  for (let i = 0; i < equation.length; i++) {
+    if (сheckCallback(equation[i])) {
+      return i
+    }
+  }
+
+  return null
+}
+
+export function getItemIndexToTheRightByCallback<T>(
+  equation: ArrayLike<T>,
+  index: number,
+  сheckCallback: (val: T) => boolean
+): number | null {
+  if (index < 0 || index >= equation.length) {
+    throw Error("ArgumentOutOfRange: Invalid index")
+  }
+
+  for (let i = index + 1; i < equation.length; i++) {
+    if (сheckCallback(equation[i])) {
+      return i
+    }
+  }
+
+  return null
+}
+
+export function getItemIndexToTheLeftByCallback<T>(
+  equation: ArrayLike<T>,
+  index: number,
+  сheckCallback: (val: T) => boolean
+): number | null {
+  if (!equation || equation.length === 0) {
+    throw Error("InvalidArgument: equation")
+  }
+
+  if (index < 0 || index >= equation.length) {
+    throw Error("ArgumentOutOfRange: Invalid index")
+  }
+
+  for (let i = index - 1; i >= 0; i--) {
+    if (сheckCallback(equation[i])) {
+      return i
+    }
+  }
+
+  return null
+}
+
+====================
+FILE: ./src\utils\IndexedCollections\DoubleLinkedListClass.test.ts
+====================
+import { describe, it, expect, beforeEach } from 'vitest';
+import { DoubleLinkedListClass } from './DoubleLinkedListClass'; 
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const verifyIntegrity = <T>(list: any) => {
+    const forward: T[] = [];
+    let current = list.head; // Accessing protected members via 'any' is acceptable for testing
+    while (current) {
+        forward.push(current.value);
+        current = current.next;
+    }
+
+    const backward: T[] = [];
+    let backCurrent = list.tail;
+    while (backCurrent) {
+        backward.push(backCurrent.value);
+        backCurrent = backCurrent.prev;
+    }
+
+    return {
+        forward,
+        backward: backward.reverse(),
+        isHeadOk: list.head ? list.head.prev === null : true,
+        isTailOk: list.tail ? list.tail.next === null : true
+    };
+};
+
+describe('DoubleLinkedListClass - Integrity Checks', () => {
+    let list: DoubleLinkedListClass<number>;
+
+    beforeEach(() => {
+        list = new DoubleLinkedListClass<number>();
+    });
+
+    it('Connections should be consistent after multiple insertions and removals', () => {
+        // 1. Setup base list
+        [10, 20, 30, 40, 50].forEach(v => list.push(v));
+        
+        // 2. Perform complex operation: removal from middle followed by insertion
+        list.removeRange(1, 2); // Removed 20, 30. [10, 40, 50] remains
+        list.insertRange(1, [25, 35]); // Inserted [25, 35]. Result: [10, 25, 35, 40, 50]
+        
+        const { forward, backward, isHeadOk, isTailOk } = verifyIntegrity<number>(list);
+
+        const expected = [10, 25, 35, 40, 50];
+
+        // Check forward traversal (next)
+        expect(forward).toEqual(expected);
+        
+        // Check backward traversal (prev)
+        expect(backward).toEqual(expected);
+        
+        // Check terminators (edges)
+        expect(isHeadOk).toBe(true); // Head has no previous node
+        expect(isTailOk).toBe(true); // Tail has no next node
+    });
+
+    it('Should maintain integrity during clear and refill operations', () => {
+        list.push(1);
+        list.removeRange(0, 1); // List is now empty
+        list.push(2);
+        list.insertRange(0, [0, 1]); // Result: [0, 1, 2]
+
+        const { forward, backward } = verifyIntegrity<number>(list);
+        expect(forward).toEqual([0, 1, 2]);
+        expect(backward).toEqual([0, 1, 2]);
+    });
+});
+
+describe('DoubleLinkedListClass - Personnel Testing (Core Methods)', () => {
+    let list: DoubleLinkedListClass<number>;
+
+    beforeEach(() => {
+        list = new DoubleLinkedListClass<number>();
+    });
+
+    describe('Phase 1: Deployment (Push & Length)', () => {
+        it('Should be empty upon initialization', () => {
+            expect(list.length).toBe(0);
+            expect(list.getByIndex(0)).toBeUndefined();
+        });
+
+        it('Should correctly add elements and update length', () => {
+            list.push(10);
+            list.push(20);
+            list.push(30);
+            expect(list.length).toBe(3);
+        });
+
+        it('Should return correct index on push', () => {
+            expect(list.push(100)).toBe(0);
+            expect(list.push(200)).toBe(1);
+        });
+    });
+
+    describe('Phase 2: Navigation (GetByIndex)', () => {
+        it('Should find elements at the edges (Head and Tail)', () => {
+            list.push(1);
+            list.push(2);
+            list.push(3);
+            expect(list.getByIndex(0)).toBe(1); // Head
+            expect(list.getByIndex(2)).toBe(3); // Tail
+        });
+
+        it('Should handle negative indices and out-of-bounds correctly', () => {
+            list.push(1);
+            expect(list.getByIndex(-1)).toBeUndefined();
+            expect(list.getByIndex(10)).toBeUndefined();
+        });
+
+        it('Should find elements in the middle (verifying search logic)', () => {
+            [10, 20, 30, 40, 50].forEach(val => list.push(val));
+            expect(list.getByIndex(2)).toBe(30);
+        });
+    });
+
+    describe('Phase 3: Reconnaissance (LastAccess Optimization)', () => {
+        it('Should successfully perform sequential access (Cursor logic)', () => {
+            [10, 20, 30, 40, 50].forEach(val => list.push(val));
+            
+            // First access (sets the cursor)
+            expect(list.getByIndex(2)).toBe(30);
+            // Accessing adjacent element (should trigger minLen === fromLastAccessIndexDiffAbs)
+            expect(list.getByIndex(3)).toBe(40);
+            // Backward access via cursor
+            expect(list.getByIndex(1)).toBe(20);
+        });
+
+        it('Should correctly switch between Head/Tail and LastAccess', () => {
+            for(let i = 0; i < 10; i++) list.push(i);
+            
+            expect(list.getByIndex(5)).toBe(5); // Cursor set to center
+            expect(list.getByIndex(0)).toBe(0); // Jump to Head (closer than cursor)
+            expect(list.getByIndex(9)).toBe(9); // Jump to Tail (closer than cursor)
+        });
+    });
+
+    describe('Phase 4: Special Operations (Edge Cases)', () => {
+        it('Should handle a single-element list correctly', () => {
+            list.push(42);
+            expect(list.getByIndex(0)).toBe(42);
+            expect(list.length).toBe(1);
+        });
+
+        it('Should not crash on repeated requests for the same index', () => {
+            list.push(1);
+            list.push(2);
+            expect(list.getByIndex(1)).toBe(2);
+            expect(list.getByIndex(1)).toBe(2);
+            expect(list.getByIndex(1)).toBe(2);
+        });
+    });
+});
+
+describe('DoubleLinkedListClass - removeRange Operation', () => {
+    let list: DoubleLinkedListClass<number>;
+
+    beforeEach(() => {
+        list = new DoubleLinkedListClass<number>();
+    });
+
+    describe('1. Guard Clauses (Boundary Conditions)', () => {
+        it('Should throw error on invalid start index', () => {
+            list.push(1);
+            expect(() => list.removeRange(-1, 1)).toThrow("ArgumentOutOfIndex");
+            expect(() => list.removeRange(1, 1)).toThrow("ArgumentOutOfIndex");
+        });
+
+        it('Should throw error on invalid count', () => {
+            list.push(1);
+            list.push(2);
+            // start + count (1 + 2) = 3, which is greater than length (2). Should throw.
+            expect(() => list.removeRange(1, 2)).toThrow("ArgumentOutOfIndex");
+        });
+
+        it('Should successfully remove the last element (Fix Check)', () => {
+            list.push(1);
+            list.push(2);
+            // start=1, count=1. 1 + 1 = 2. 2 > 2 is False. Should pass.
+            const removed = list.removeRange(1, 1);
+            expect(removed).toEqual([2]);
+            expect(list.length).toBe(1);
+            expect(list.getByIndex(0)).toBe(1);
+        });
+    });
+
+    describe('2. Removal from Various Positions', () => {
+        beforeEach(() => {
+            [10, 20, 30, 40].forEach(v => list.push(v));
+        });
+
+        it('Total Clear (Wiping the range)', () => {
+            const removed = list.removeRange(0, 4);
+            expect(removed).toEqual([10, 20, 30, 40]);
+            expect(list.length).toBe(0);
+            // Verify state reset
+            expect(list.getByIndex(0)).toBeUndefined();
+        });
+
+        it('Removal from Head (Head Shift)', () => {
+            const removed = list.removeRange(0, 2); // Remove 10, 20
+            expect(removed).toEqual([10, 20]);
+            expect(list.length).toBe(2);
+            expect(list.getByIndex(0)).toBe(30); // 30 becomes the new head
+        });
+
+        it('Removal from Tail (Tail Shift)', () => {
+            const removed = list.removeRange(2, 2); // Remove 30, 40
+            expect(removed).toEqual([30, 40]);
+            expect(list.length).toBe(2);
+            expect(list.getByIndex(1)).toBe(20); // 20 becomes the new tail
+        });
+
+        it('Removal from Middle (Stitching)', () => {
+            const removed = list.removeRange(1, 2); // Remove 20, 30
+            expect(removed).toEqual([20, 30]);
+            expect(list.length).toBe(2);
+            expect(list.getByIndex(0)).toBe(10);
+            expect(list.getByIndex(1)).toBe(40);
+        });
+    });
+
+    describe('3. Cursor Invalidation (lastAccess)', () => {
+        it('Should place cursor on the element BEFORE the deleted range when removing from middle', () => {
+            [1, 2, 3, 4, 5].forEach(v => list.push(v));
+            
+            // Remove 3 and 4 (indices 2, 3)
+            list.removeRange(2, 2); 
+            
+            // Verify cursor survival. If it stands at index start-1 (index 1, value 2),
+            // access to index 1 should be instantaneous and return 2.
+            expect(list.getByIndex(1)).toBe(2);
+            // And the following index 2 should be 5
+            expect(list.getByIndex(2)).toBe(5);
+        });
+
+        it('Should reset cursor when removing from Head', () => {
+            [1, 2, 3].forEach(v => list.push(v));
+            list.getByIndex(1); // Set the cursor
+            list.removeRange(0, 1); // Remove Head
+            
+            // lastAccess should be null, getByIndex should work normally starting from the new head
+            expect(list.getByIndex(0)).toBe(2);
+        });
+    });
+});
+
+
+describe('DoubleLinkedListClass - insertRange Operation', () => {
+    let list: DoubleLinkedListClass<number>;
+
+    beforeEach(() => {
+        list = new DoubleLinkedListClass<number>();
+    });
+
+    describe('1. Basic Insertion (Empty & Edges)', () => {
+        it('Should insert into an absolutely empty list', () => {
+            list.insertRange(0, [10, 20]);
+            
+            expect(list.length).toBe(2);
+            expect(list.getByIndex(0)).toBe(10);
+            expect(list.getByIndex(1)).toBe(20);
+        });
+
+        it('Should insert at the beginning (Head) of an existing list', () => {
+            list.push(30);
+            list.insertRange(0, [10, 20]);
+            
+            expect(list.length).toBe(3);
+            expect(list.getByIndex(0)).toBe(10);
+            expect(list.getByIndex(1)).toBe(20);
+            expect(list.getByIndex(2)).toBe(30);
+        });
+
+        it('Should insert at the end (Tail) of an existing list', () => {
+            list.push(10);
+            list.insertRange(1, [20, 30]); // Index equals current length
+            
+            expect(list.length).toBe(3);
+            expect(list.getByIndex(1)).toBe(20);
+            expect(list.getByIndex(2)).toBe(30);
+        });
+    });
+
+    describe('2. Insertion into the Middle', () => {
+        it('Should expand the list and stitch in elements', () => {
+            [10, 40].forEach(v => list.push(v));
+            list.insertRange(1, [20, 30]);
+            
+            expect(list.length).toBe(4);
+            expect(list.getByIndex(0)).toBe(10);
+            expect(list.getByIndex(1)).toBe(20);
+            expect(list.getByIndex(2)).toBe(30);
+            expect(list.getByIndex(3)).toBe(40);
+        });
+    });
+
+    describe('3. Cursor Management (lastAccess)', () => {
+        it('Should place cursor on the last inserted element', () => {
+            [1, 5].forEach(v => list.push(v));
+            list.insertRange(1, [2, 3, 4]); // Insert [2, 3, 4] at indices 1, 2, 3
+            
+            // If the cursor is placed at index 3 (value 4), 
+            // access to index 3 should be instantaneous
+            expect(list.getByIndex(3)).toBe(4);
+            // And the following index 4 (value 5) should be one step away
+            expect(list.getByIndex(4)).toBe(5);
+        });
+    });
+
+    describe('4. Errors & Edge Cases', () => {
+        it('Should ignore empty array insertion', () => {
+            list.push(1);
+            list.insertRange(0, []);
+            expect(list.length).toBe(1);
+            expect(list.getByIndex(0)).toBe(1);
+        });
+
+        it('Should throw error on invalid index', () => {
+            list.push(1);
+            expect(() => list.insertRange(-1, [10])).toThrow();
+            expect(() => list.insertRange(5, [10])).toThrow();
+        });
+
+        it('Should correctly insert a single element', () => {
+            list.push(1);
+            list.push(3);
+            list.insertRange(1, [2]);
+            expect(list.length).toBe(3);
+            expect(list.getByIndex(1)).toBe(2);
+        });
+    });
+});
+
+describe('DoubleLinkedListClass - Splice Operation (Combined)', () => {
+    let list: DoubleLinkedListClass<number | string>;
+
+    beforeEach(() => {
+        list = new DoubleLinkedListClass<number | string>();
+    });
+
+    describe('1. Basic Scenarios (JS Standard Behavior)', () => {
+        it('Should replace one element with another (Simple Swap)', () => {
+            [1, 2, 3].forEach(v => list.push(v));
+            // splice(index 1, delete 1, insert 2.5)
+            const removed = list.splice(1, 1, 2.5);
+
+            expect(removed).toEqual([2]);
+            expect(list.length).toBe(3);
+            expect(list.getByIndex(0)).toBe(1);
+            expect(list.getByIndex(1)).toBe(2.5);
+            expect(list.getByIndex(2)).toBe(3);
+        });
+
+        it('Should only remove elements if items are not provided', () => {
+            [1, 2, 3, 4].forEach(v => list.push(v));
+            const removed = list.splice(1, 2); // Delete 2 and 3
+
+            expect(removed).toEqual([2, 3]);
+            expect(list.length).toBe(2);
+            expect(list.getByIndex(0)).toBe(1);
+            expect(list.getByIndex(1)).toBe(4);
+        });
+
+        it('Should only insert elements if deleteCount is zero', () => {
+            [1, 2].forEach(v => list.push(v));
+            const removed = list.splice(1, 0, 1.5);
+
+            expect(removed).toEqual([]);
+            expect(list.length).toBe(3);
+            expect(list.getByIndex(0)).toBe(1);
+            expect(list.getByIndex(1)).toBe(1.5);
+            expect(list.getByIndex(2)).toBe(2);
+        });
+    });
+
+    describe('2. Calculator Scenarios (Collapsing)', () => {
+        it('Should collapse an expression into a result', () => {
+            // "2 * 2 + 5"
+            [2, '*', 2, '+', 5].forEach(v => list.push(v));
+            
+            // Collapse [2, *, 2] (indices 0, 1, 2) into [4]
+            const removed = list.splice(0, 3, 4);
+
+            expect(removed).toEqual([2, '*', 2]);
+            expect(list.length).toBe(3);
+            expect(list.getByIndex(0)).toBe(4);
+            expect(list.getByIndex(1)).toBe('+');
+            expect(list.getByIndex(2)).toBe(5);
+        });
+    });
+
+    describe('3. Boundary Conditions and Exceptions', () => {
+        it('Should throw exception when start index is out of bounds', () => {
+            list.push(1);
+            expect(() => list.splice(-1, 1, 10)).toThrow("ArgumentOutOfIndex");
+            expect(() => list.splice(5, 1, 10)).toThrow("ArgumentOutOfIndex");
+        });
+
+        it('Should throw exception on invalid deleteCount', () => {
+            [1, 2, 3].forEach(v => list.push(v));
+            // 1 + 5 = 6, which is greater than length (3)
+            expect(() => list.splice(1, 5, 10)).toThrow("ArgumentOutOfIndex");
+        });
+
+        it('Should work correctly at the edges (Head & Tail)', () => {
+            [1, 2].forEach(v => list.push(v));
+            
+            // Replace Head
+            list.splice(0, 1, 0);
+            expect(list.getByIndex(0)).toBe(0);
+
+            // Replace Tail
+            list.splice(1, 1, 3);
+            expect(list.getByIndex(1)).toBe(3);
+            
+            expect(list.length).toBe(2);
+        });
+    });
+
+    describe('4. Integrity Check', () => {
+        it('Should maintain correct prev/next connections after splice', () => {
+            [1, 2, 3, 4, 5].forEach(v => list.push(v));
+            list.splice(1, 3, 99); // Should result in [1, 99, 5]
+
+            // Verification via forward iteration (next)
+            const forward: any[] = [];
+            let curr: any = (list as any).head;
+            while(curr) { forward.push(curr.value); curr = curr.next; }
+            expect(forward).toEqual([1, 99, 5]);
+
+            // Verification via backward iteration (prev)
+            const backward: any[] = [];
+            let backCurr: any = (list as any).tail;
+            while(backCurr) { backward.push(backCurr.value); backCurr = backCurr.prev; }
+            expect(backward.reverse()).toEqual([1, 99, 5]);
+        });
+    });
+});
+
+====================
+FILE: ./src\utils\IndexedCollections\DoubleLinkedListClass.ts
+====================
+export interface Bidirectionalterator<T> {
+    GetValue(): T;
+    MoveNext(): boolean;
+    MovePrev(): boolean;
+}
+
+interface Node<T> {
+    next: Node<T> | null,
+    prev: Node<T> | null,
+    isDeleted: boolean,
+    value: T
+}
+
+interface InternalBidirectionalterator<T> extends Bidirectionalterator<T> {
+    node: Node<T>,
+}
+
+export class DoubleLinkedListClass<T> {
+    protected head: Node<T> | null;
+    protected tail: Node<T> | null;
+
+    protected _length: number;
+
+    protected lastAccess: {
+        index: number,
+        ref: Node<T>
+    } | null;
+
+    constructor() {
+        this.head = null
+        this.tail = null;
+        this._length = 0;
+        this.lastAccess = null;
+    }
+
+    public get length() { return this._length }
+
+    public push(item: T) {
+        if (this.head === null) {
+            this.head = {
+                next: null,
+                prev: null,
+                value: item,
+                isDeleted: false
+            }
+
+            this._length = 1
+
+            this.tail = this.head
+            return 0
+        }
+
+        if (!this.tail) {
+            throw Error("Tail can not be null while the list has the head")
+        }
+
+        const newValue = {
+            next: null,
+            prev: this.tail,
+            value: item,
+            isDeleted: false,
+        }
+
+        this._length++
+        this.tail.next = newValue
+        this.tail = newValue
+        return this._length - 1
+    }
+
+    public getByIndex(
+        index: number
+    ): T | undefined {
+        return this.getNodeByIndex(index)?.value ?? undefined
+    }
+
+    public splice(start: number, deleteCount: number, ...items: T[]): T[] {
+        const removed = this.removeRange(start, deleteCount);
+        this.insertRange(start, items);
+        return removed;
+    }
+
+    public removeRange(start: number, count: number): T[] {
+        if (start < 0 || start >= this._length) {
+            throw Error("ArgumentOutOfIndex: start can not be less than 0 or bigger or equal to list's length")
+        }
+
+        if (count < 0 || start + count > this._length) {
+            throw Error("ArgumentOutOfIndex: count can not be less than 0 or its sum with start parameter be bigger or equal to list's length")
+        }
+
+        if (this.head === null || this.tail === null) {
+            throw Error("The list is empty or in incosistent state")
+        }
+
+        if (count === 0) {
+            return []
+        }
+
+        if (start === 0 && count === this.length) {
+            const arrToRet: T[] = []
+            ForEach(this.head, this.tail, this.length, (node) => {
+                markNodeAsDeleted(node)
+                arrToRet.push(node.value)
+            })
+
+            this.head = null
+            this.tail = null
+            this.lastAccess = null
+            this._length = 0
+            return arrToRet
+        }
+
+        const leftBorderNodeToDrop = this.getNodeByIndex(start)
+        if (!leftBorderNodeToDrop) {
+            throw Error("Couldn't get the first node to delete")
+        }
+
+        const rightBorderNodeToDrop = this.getNodeByIndex(start + count - 1)
+        if (!rightBorderNodeToDrop) {
+            throw Error("Couldn't get the last node to delete")
+        }
+
+        const isDeleteToTail = start + count === this.length
+        const isDeleteFromHead = start === 0
+
+        if (isDeleteFromHead) {
+            const nextNodeAfterRight = nextNodePeeker(rightBorderNodeToDrop)
+            nextNodeAfterRight.prev = null
+            this.head = nextNodeAfterRight
+            this.lastAccess = null
+        } else if (isDeleteToTail) {
+            const prevNodeBeforeLeftBorder = prevValuePeeker(leftBorderNodeToDrop)
+            prevNodeBeforeLeftBorder.next = null
+            this.tail = prevNodeBeforeLeftBorder
+            this.lastAccess = null
+        } else {
+            const nextNodeAfterRight = nextNodePeeker(rightBorderNodeToDrop)
+            const prevNodeBeforeLeftBorder = prevValuePeeker(leftBorderNodeToDrop)
+
+            nextNodeAfterRight.prev = prevNodeBeforeLeftBorder
+            prevNodeBeforeLeftBorder.next = nextNodeAfterRight
+            this.lastAccess = {
+                index: start - 1,
+                ref: prevNodeBeforeLeftBorder
+            }
+        }
+
+        this._length -= count
+
+        const arrToRet: T[] = []
+        ForEach(leftBorderNodeToDrop, rightBorderNodeToDrop, count, (node) => {
+            markNodeAsDeleted(node)
+            arrToRet.push(node.value)
+        })
+
+        return arrToRet
+    }
+
+    public insertRange(index: number, range: T[]): number {
+        if (range.length === 0) {
+            return 0
+        }
+
+        const isListEmpty = this.head === null && this.tail === null && this.length === 0
+        if (isListEmpty) {
+            if (index !== 0) {
+                throw Error("ArgumentOutOfIndex: list initialization with from range command must be with index equal to 0")
+            }
+
+            const fromRangeResult = fromRange(range)
+            if (fromRangeResult === null) {
+                throw Error("Couldn't create sublist for the given range")
+            }
+            this.head = fromRangeResult.head
+            this._length = fromRangeResult.length
+            this.tail = fromRangeResult.tail
+            return fromRangeResult.length
+        }
+
+        if (index < 0 || index > this._length) {
+            throw Error("ArgumentOutOfIndex: index can not be less than 0 or bigger or equal to list's length")
+        }
+
+        if (this.head === null || this.tail === null) {
+            throw Error("The list is empty or in incosistent state")
+        }
+
+        const isInsertAtTail = index === this.length
+        const isInsertAtHead = index === 0
+
+        const fromRangeResult = fromRange(range)
+        if (fromRangeResult === null) {
+            throw Error("Couldn't create sublist for the given range")
+        }
+
+        if (isInsertAtHead) {
+            const exHead = this.head
+            this.head = fromRangeResult.head
+
+            fromRangeResult.tail.next = exHead
+            exHead.prev = fromRangeResult.tail
+
+            this._length += fromRangeResult.length
+
+            this.lastAccess = {
+                ref: exHead,
+                index: fromRangeResult.length
+            }
+
+            return fromRangeResult.length
+        } else if (isInsertAtTail) {
+            this.lastAccess = {
+                ref: this.tail,
+                index: this.length - 1
+            }
+
+            const exTail = this.tail
+            exTail.next = fromRangeResult.head
+            fromRangeResult.head.prev = exTail
+            this._length += fromRangeResult.length
+            this.tail = fromRangeResult.tail
+
+            return fromRangeResult.length
+        } else {
+            const targetNode = this.getNodeByIndex(index)
+            if (!targetNode) {
+                throw Error(`Couldn't get node at index ${index}`)
+            }
+
+            const nodeBeforeTargetNode = prevValuePeeker(targetNode)
+
+            nodeBeforeTargetNode.next = fromRangeResult.head
+            fromRangeResult.head.prev = nodeBeforeTargetNode
+
+            targetNode.prev = fromRangeResult.tail
+            fromRangeResult.tail.next = targetNode
+
+            this._length += fromRangeResult.length
+
+            this.lastAccess = {
+                ref: targetNode,
+                index: index + range.length
+            }
+
+            return fromRangeResult.length
+        }
+    }
+
+    public GetIteratorAtIndex(
+        index: number
+    ): Bidirectionalterator<T> | null {
+        const initNode = this.getNodeByIndex(index)
+        if (!initNode) {
+            return null
+        }
+
+        const iterToRet: InternalBidirectionalterator<T> = {
+            GetValue: () => {
+                if (iterToRet.node.isDeleted) {
+                    throw Error("Refrenced Node has been removed")
+                }
+
+                return iterToRet.node.value
+            },
+            MoveNext: () => {
+                if (iterToRet.node.isDeleted) {
+                    throw Error("Refrenced Node has been removed")
+                }
+
+                if (iterToRet.node.next === null) {
+                    return false
+                }
+
+                iterToRet.node = iterToRet.node.next
+                return true
+            },
+            MovePrev: () => {
+                if (iterToRet.node.isDeleted) {
+                    throw Error("Refrenced Node has been removed")
+                }
+
+                if (iterToRet.node.prev === null) {
+                    return false
+                }
+
+                iterToRet.node = iterToRet.node.prev
+                return true
+            },
+            node: initNode,
+        }
+
+
+        return iterToRet
+    }
+
+
+    protected getNodeByIndex(
+        index: number
+    ): Node<T> | undefined {
+        if (this.head === null || this._length <= index || this.tail === null || index < 0) {
+            return undefined
+        }
+
+        if (index === 0) {
+            return this.head
+        }
+
+        if (index === this._length - 1) {
+            return this.tail
+        }
+
+        const fromTailIndexDiff = (this._length - 1) - index
+        const fromLastAccessIndexDiff = this.lastAccess === null
+            ? fromTailIndexDiff + 1
+            : this.lastAccess.index - index
+
+        const fromLastAccessIndexDiffAbs = Math.abs(fromLastAccessIndexDiff)
+        const minLen = Math.min(index, fromLastAccessIndexDiffAbs, fromTailIndexDiff)
+
+        let currentIndex: number
+        let currenNode: Node<T>
+        let nodePeeker: (node: Node<T>) => Node<T>
+        let indexCounterIncrementer: (currentIndex: number) => number
+
+        if (minLen === index) {
+            currentIndex = 0
+            currenNode = this.head
+            nodePeeker = nextNodePeeker
+            indexCounterIncrementer = numberIncrementer
+        }
+        else if (minLen === fromLastAccessIndexDiffAbs) {
+            if (this.lastAccess === null) {
+                throw Error("this.lastAccess somehow is null here")
+            }
+
+            currentIndex = this.lastAccess.index
+            currenNode = this.lastAccess.ref
+
+            if (fromLastAccessIndexDiff < 0) {
+                nodePeeker = nextNodePeeker
+                indexCounterIncrementer = numberIncrementer
+            }
+            else {
+                nodePeeker = prevValuePeeker
+                indexCounterIncrementer = numberDecrementer
+            }
+        }
+        else { //else if (minLen === fromTailIndexDiff) {
+            currentIndex = this._length - 1
+            currenNode = this.tail
+            nodePeeker = prevValuePeeker
+            indexCounterIncrementer = numberDecrementer
+        }
+
+        while (index != currentIndex) {
+            currenNode = nodePeeker(currenNode)
+            currentIndex = indexCounterIncrementer(currentIndex)
+        }
+
+        this.lastAccess = {
+            index: currentIndex,
+            ref: currenNode
+        }
+
+        return currenNode
+    }
+
+    public toJSON() {
+        const isListEmpty = this.head === null && this.tail === null && this.length === 0
+        if (isListEmpty) {
+            return []
+        }
+
+        if (this.head === null || this.tail === null) {
+            throw Error("List is incosistent state")
+        }
+
+        return ToArray(this.head, this.tail, this.length)
+    }
+
+    public toString(){
+        return JSON.stringify(this.toJSON())
+    }
+
+    public toDebugJSON() {
+        const isListEmpty = this.head === null && this.tail === null && this.length === 0
+        if (isListEmpty) {
+            return []
+        }
+
+        if (this.head === null || this.tail === null) {
+            throw Error("List is incosistent state")
+        }
+
+        const listOfElements: {
+            index: number,
+            value: T,
+            next: T | null,
+            prev: T | null,
+        }[] = []
+        let indexCounter = 0
+
+        ForEach(this.head, this.tail, this.length, (node) =>{
+                listOfElements.push({
+                index: indexCounter,
+                value: node.value,
+                next: node.next?.value ?? null,
+                prev: node.prev?.value ?? null,
+            })
+
+            indexCounter++;
+        })
+
+        const valToRet = {
+            elements: listOfElements,
+            length: this.length,
+            lastAccess: this.lastAccess?.index ?? null
+        }
+
+        return valToRet
+    }
+}
+
+const ForEach = <T>(
+    startNode: Node<T>,
+    finishNode: Node<T>,
+    maxItersCount: number = 100,
+    body: (arg: Node<T>) => void,
+): void => {
+    let node: Node<T> = startNode
+    let currentCount = 0
+    while (node !== finishNode) {
+        if (currentCount >= maxItersCount){
+            throw Error(`Iterations count hit the limit of ${maxItersCount} iterations`)
+        }
+
+        const next = nextNodePeeker(node)
+
+        body(node)
+
+        node = next
+        currentCount++
+    }
+
+    if (node !== finishNode) {
+        throw Error("Couldn't find the finish node")
+    }
+    
+    body(finishNode)
+}
+
+const ToArray = <T>(
+    startNode: Node<T>,
+    finishNode: Node<T>,
+    maxItersCount: number = 100
+): T[] => {
+    const arr: T[] = []
+    ForEach(startNode, finishNode, maxItersCount, (node) => {
+        arr.push(node.value)
+    })
+
+    return arr
+}
+
+const fromRange = <T>(range: T[]): {
+    head: Node<T>,
+    tail: Node<T>,
+    length: number
+} | null => {
+    if (range.length === 0) {
+        return null
+    }
+
+    let prevNode: Node<T> = {
+        value: range[0],
+        isDeleted: false,
+        next: null,
+        prev: null
+    }
+
+    const headNode = prevNode
+
+    for (let i: number = 1; i < range.length; i++) {
+
+        prevNode.next = {
+            value: range[i],
+            next: null,
+            prev: prevNode,
+            isDeleted: false,
+        };
+
+        prevNode = prevNode.next
+    }
+
+    return {
+        head: headNode,
+        tail: prevNode,
+        length: range.length
+    }
+}
+
+const prevValuePeeker = <T>(node: Node<T>) => {
+    if (node.prev === null) {
+        throw Error("Prev node is null")
+    }
+
+    return node.prev
+}
+
+const nextNodePeeker = <T>(node: Node<T>) => {
+    if (node.next === null) {
+        throw Error("Next node is null")
+    }
+
+    return node.next
+}
+
+const numberIncrementer = (num: number) => num + 1
+const numberDecrementer = (num: number) => num - 1
+
+const markNodeAsDeleted = <T>(node: Node<T>): void => {
+    node.isDeleted = true;
+    node.next = null
+    node.prev = null
+}
+
+====================
+FILE: ./src\utils\Models\Core\IsInstanceResult.ts
+====================
+import type { Token } from "./Token";
+
+export type IsInstanceResult<TToken extends Token> =
+  | { success: true, result: TToken }
+  | { success: false };
+
+
+====================
+FILE: ./src\utils\Models\Core\Result.ts
+====================
+export type Result<T> =
+    | { readonly Success: true; readonly Result: T;  }
+    | { readonly Success: false; readonly Message: string }; 
+
+
+// 2. AKA static methods
+export const Result = {
+  Success: <T>(value: T): Result<T> => ({
+    Success: true,
+    Result: value,
+  }),
+  
+  Fail: (message: string): Result<never> => ({
+    Success: false,
+    Message: message
+  })
+};
+
+====================
+FILE: ./src\utils\Models\Core\Token.ts
+====================
+import { type TokenType } from "./TokenType"
+
+export interface Token<Tself extends Token<any> = any> {
+  readonly type: TokenType<Tself>,
+  readonly initStringIndex: number,
+  readonly fromString: string
+}
+
+export interface ValueToken<T> extends Token<ValueToken<T>> {
+  value: T
+}
+
+====================
+FILE: ./src\utils\Models\Core\TokenType.ts
+====================
+import { type Token } from "./Token"
+import { type TokenStringCollectionResult } from "../Parsing/TokenStringCollectionResult";
+import { type Result } from "./Result";
+import { type TokenTypeRestriction } from "./TokenTypeRestrictions";
+import type { IsInstanceResult } from "./IsInstanceResult";
+
+export interface TokenType<TToken extends Token = any> {
+  readonly name: string,
+  readonly tokenParser: (stringCollectionResult: TokenStringCollectionResult) => Result<Token>,
+  readonly tokenStringRestriction: TokenTypeRestriction
+  readonly isInstance: (token: Token) => IsInstanceResult<TToken>;
+}
+
+====================
+FILE: ./src\utils\Models\Core\TokenTypeRestrictions.ts
+====================
+export interface TokenTypeRestriction {
+    readonly allowedSymbols: Set<string>,
+    readonly symbolMembershipCheckCallback: (symbol: string) => boolean,
+    readonly maxLength: number | null
+}
+
+====================
+FILE: ./src\utils\Models\EquationCalculation\FunctionValidatorDelegate.ts
+====================
+import type { Token } from "../Core/Token";
+import type { PrevalidationResult } from "./PrevalidationResult";
+
+export type FunctionValidatorDelegate = (equation: Token<any>[], index: number, notIgnoredTokenCheckCallback: (arg: Token) => boolean) => PrevalidationResult | null
+
+
+====================
+FILE: ./src\utils\Models\EquationCalculation\HandleEquationrDelegate.ts
+====================
+import type { Token, ValueToken } from "../Core/Token";
+import type { PrevalidationResult } from "./PrevalidationResult";
+
+export type HandlerDelegate = (equation: Token[], prevalidationResult: PrevalidationResult) => ValueToken<number>
+
+
+====================
+FILE: ./src\utils\Models\EquationCalculation\OperationHandlerDelegate.ts
+====================
+import type { Token, ValueToken } from "../Core/Token";
+import type { PrevalidationResult } from "./PrevalidationResult";
+
+export type OperationHandlerDelegate = (equation: Token[], prevalidationResult: PrevalidationResult) => ValueToken<number>
+
+
+====================
+FILE: ./src\utils\Models\EquationCalculation\OperatorsForPriorityConfiguration.ts
+====================
+import type { FunctionValidatorDelegate } from "./FunctionValidatorDelegate";
+import type { HandlerDelegate } from "./HandleEquationrDelegate";
+
+export interface OperatorsForPriorityConfiguration {
+  operators: Map<string, HandlerDelegate>,
+  syntaxValidator: FunctionValidatorDelegate,
+  fallIfSyntaxValidationFailed: boolean
+}
+
+====================
+FILE: ./src\utils\Models\EquationCalculation\PrevalidationResult.ts
+====================
+export interface PrevalidationResult {
+  argumentIndexes: number[]
+  operationStartIndex: number,
+  operationLength: number,
+}
+
+====================
+FILE: ./src\utils\Models\NodeCalculation\NodeCalculationResult.ts
+====================
+import type { DoubleLinkedListClass } from "../../IndexedCollections/DoubleLinkedListClass";
+import { type Token, type ValueToken } from "../Core/Token";
+
+export interface NodeCalculationResult {
+    name: string,
+    content: DoubleLinkedListClass<Token>,
+    map: Map<string, Token>,
+    result: ValueToken<number>
+}
+
+
+====================
+FILE: ./src\utils\Models\Parsing\StringCollectionDelegate.ts
+====================
+import type { Result } from "../Core/Result";
+import type { TokenStringCollectionResult } from "./TokenStringCollectionResult";
+
+export type StringCollectionDelegate = (equation: string, index: number, symbolMembershipCheckCallback: (arg: string) => boolean, maxLength?: number | null) => Result<TokenStringCollectionResult>
+
+
+====================
+FILE: ./src\utils\Models\Parsing\TokenParserDelegate.ts
+====================
+import type { DoubleLinkedListClass } from "../../IndexedCollections/DoubleLinkedListClass";
+import type { Result } from "../Core/Result";
+import type { Token } from "../Core/Token";
+import type { TokenType } from "../Core/TokenType";
+import type { StringCollectionDelegate } from "./StringCollectionDelegate";
+
+export type EquationTokenParserDelegate = (
+  equation: string,
+  onTokenParsedCallback: ((token: Token) => void) | null,
+  tokenTypes: TokenType[],
+  tokenStringCollectionDelegate: StringCollectionDelegate
+) => Result<DoubleLinkedListClass<Token>>
+
+
+====================
+FILE: ./src\utils\Models\Parsing\TokenStringCollectionResult.ts
+====================
+export interface TokenStringCollectionResult {
+    readonly tokenString: string,
+    readonly absoluteStartIndex: number,
+    readonly relativeCaretIndex: number
+}
+
+====================
+FILE: ./src\utils\Models\TreeBuilding\BracketInfo.ts
+====================
+import { DoubleLinkedListClass } from "../../IndexedCollections/DoubleLinkedListClass";
+import type { Token } from "../Core/Token";
+
+export interface BracketInfo {
+  readonly index: number,
+  readonly name: string,
+  readonly children: DoubleLinkedListClass<string>,
+  readonly content: DoubleLinkedListClass<Token>,
+}
+
+
+export const BracketInfo = {
+  createBracketInfo: (name: string, index: number): BracketInfo => {
+    return {
+      index: index,
+      name: name,
+      children: new DoubleLinkedListClass<string>(),
+      content: new DoubleLinkedListClass<Token>,
+    }
+  }
+}
+
+====================
+FILE: ./src\utils\Models\TreeBuilding\ParseTreeResult.ts
+====================
+import type { BracketInfo } from "./BracketInfo";
+
+export interface ParseTreeResult {
+  readonly eqMap: Map<string, BracketInfo>,
+  readonly entryPointName: string
+}
+
+====================
+FILE: ./src\utils\Models\TreeBuilding\TreeBuilderTriggerTypes.ts
+====================
+import type { ValueToken } from "../Core/Token";
+import type { TokenType } from "../Core/TokenType";
+
+export interface TreeBuilderTriggerTypes {
+  OpenBracket: TokenType,
+  ClosedBracket: TokenType,
+  TypeUsedForAliases: TokenType<ValueToken<string>>,
+}
+
+====================
+FILE: ./src\utils\Models\TreeBuilding\TreeBuildingError.ts
+====================
+export interface TreeBuildingError {
+    error: string | null
+}
+
+====================
+FILE: ./src\utils\Parsing\tokenParser.ts
+====================
+import {  DoubleLinkedListClass } from "../IndexedCollections/DoubleLinkedListClass"
+import { Result } from "../Models/Core/Result"
+import { type Token } from "../Models/Core/Token"
+import { type TokenType } from "../Models/Core/TokenType"
+import { type StringCollectionDelegate } from "../Models/Parsing/StringCollectionDelegate"
+import { type EquationTokenParserDelegate } from "../Models/Parsing/TokenParserDelegate"
+
+
+
+export const parseTokens: EquationTokenParserDelegate = (
+  equation, onTokenParsedCallback = null, tokenTypes, tokenStringCollectionDelegate
+): Result<DoubleLinkedListClass<Token>> => {
+  if (equation.length === 0) {
+    return Result.Fail("InvalidArgument: equation")
+  }
+
+  if (tokenTypes.length === 0) {
+    return Result.Fail("InvalidArgument: tokenTypes")
+  }
+
+  let i = 0;
+  const tokens = new DoubleLinkedListClass<Token>()
+  while (i < equation.length) {
+    const tokenTypeForSymbol = tokenTypes.find(tt => tt.tokenStringRestriction.symbolMembershipCheckCallback(equation[i]))
+    if (!tokenTypeForSymbol) {
+      return Result.Fail(`Unknown token '${equation[i]}' at index ${i}`)
+    }
+
+    console.log(`Found ${tokenTypeForSymbol.name} at index`, i, equation[i])
+
+    const tokenStringCollectionResult = tokenStringCollectionDelegate(
+      equation,
+      i,
+      tokenTypeForSymbol.tokenStringRestriction.symbolMembershipCheckCallback,
+      tokenTypeForSymbol.tokenStringRestriction.maxLength)
+
+    if (!tokenStringCollectionResult.Success) {
+      return tokenStringCollectionResult
+    }
+
+    const tokenParseResult = tokenTypeForSymbol.tokenParser(tokenStringCollectionResult.Result)
+    if (!tokenParseResult.Success) {
+      return tokenParseResult
+    }
+
+    const parsedToken = tokenParseResult.Result
+    console.log("Token parse result:", tokenParseResult)
+
+    onTokenParsedCallback?.(parsedToken)
+
+    tokens.push(parsedToken)
+
+    i += parsedToken.fromString.length
+  }
+
+  return Result.Success(tokens)
+}
+
+
+export const createTokenParser = (
+  tokenTypes: TokenType[],
+  tokenStringCollectionDelegate: StringCollectionDelegate
+) => {
+  return (
+    equation: string,
+    onTokenParsedCallback: ((stringCollectionResult: Token) => void) | null = null,
+  ) => parseTokens(equation, onTokenParsedCallback, tokenTypes, tokenStringCollectionDelegate)
+}
+
+====================
+FILE: ./src\utils\Parsing\tokenStringBuilder.ts
+====================
+import { Result } from "../Models/Core/Result"
+import type { StringCollectionDelegate } from "../Models/Parsing/StringCollectionDelegate"
+
+
+export const getTokenStringAtIndex: StringCollectionDelegate = (equation, index, symbolMembershipCheckCallback, maxLength = null) => {
+    console.log("getTokenStringAtIndex executed with arguments:",
+        "equation", equation,
+        "index", index,
+        "symbolMembershipCheckCallback", symbolMembershipCheckCallback,
+        "maxLength", maxLength === null ? "[null]" : maxLength)
+
+    if (equation.length === 0) {
+        return Result.Fail("InvalidArgument: equation")
+    }
+
+    if (index < 0 || index >= equation.length) {
+        return Result.Fail("ArgumentOutOfRange: Invalid index")
+    }
+
+    if (maxLength !== null && !isNaN(maxLength) && maxLength <= 0) {
+        return Result.Fail("InvalidArgument: maxLength")
+    }
+
+    let leftIndex = index
+    let rightIndex = index
+    let moveRight = true
+    let moveLeft = true
+    let edgeRight = false
+
+    if (!symbolMembershipCheckCallback(equation[index])) {
+        if (index > 0 && symbolMembershipCheckCallback(equation[index - 1])) {
+            index--;
+            leftIndex = index;
+            rightIndex = index;
+            edgeRight = true;
+        }
+        else if (index < equation.length - 1 && symbolMembershipCheckCallback(equation[index + 1])) {
+            index++;
+            leftIndex = index;
+            rightIndex = index;
+        }
+        else {
+            return Result.Success({ tokenString: "", absoluteStartIndex: index, relativeCaretIndex: 0 });
+        }
+    }
+
+    let length = rightIndex - leftIndex + 1
+
+    const lengthCanBeExpanded = maxLength === null
+        ? () => true
+        : (length: number) => length + 1 <= maxLength
+
+    do {
+        if (moveLeft) {
+            const leftIndexToCheck = leftIndex - 1
+            const leftSymbolToCheck = leftIndexToCheck >= 0
+                ? equation[leftIndexToCheck]
+                : null
+
+            const isLeftSymbolAllowed = leftSymbolToCheck
+                ? symbolMembershipCheckCallback(leftSymbolToCheck) && lengthCanBeExpanded(length)
+                : false
+
+            console.log("Left!",
+                "Index:", leftIndexToCheck,
+                "Symbol:", leftSymbolToCheck,
+                "Allowed:", isLeftSymbolAllowed)
+
+            if (isLeftSymbolAllowed) {
+                leftIndex--;
+                length++
+            } else {
+                moveLeft = false
+            }
+        }
+
+        if (moveRight) {
+            const rightIndexToCheck = rightIndex + 1
+            const rightSymbolToCheck = rightIndexToCheck < equation.length
+                ? equation[rightIndexToCheck]
+                : null
+
+            const isRightSymbolAllowed = rightSymbolToCheck
+                ? symbolMembershipCheckCallback(rightSymbolToCheck) && lengthCanBeExpanded(length)
+                : false
+
+            console.log("Right!",
+                "Index:", rightIndexToCheck,
+                "Symbol:", rightSymbolToCheck,
+                "Allowed:", isRightSymbolAllowed)
+
+            if (isRightSymbolAllowed) {
+                rightIndex++;
+                length++
+            } else {
+                moveRight = false
+            }
+        }
+    }
+    while (moveLeft || moveRight)
+
+    const valStr = equation.slice(leftIndex, rightIndex + 1)
+    console.log('valStr to return:', valStr, "leftIndex:", leftIndex, "rightIndex:", rightIndex)
+
+    return Result.Success({
+        tokenString: valStr,
+        absoluteStartIndex: leftIndex,
+        relativeCaretIndex: index - leftIndex + (edgeRight ? 1 : 0)
+    })
+}
+
+====================
+FILE: ./src\utils\TreeBuilding\alphaCounter.ts
+====================
+export function createAlphaCounter(  
+) : () => string {
+  let count = 0;
+
+  return () => {
+    count++;
+    let num = count;
+    let result = '';
+
+    while (num > 0) {
+      let remainder = (num - 1) % 26;
+      result = String.fromCharCode(65 + remainder) + result;
+      num = Math.floor((num - 1) / 26);
+    }
+
+    return '@' + result;
+  };
+};
+
+====================
+FILE: ./src\utils\TreeBuilding\treeBuilder.ts
+====================
+import { DoubleLinkedListClass } from "../IndexedCollections/DoubleLinkedListClass"
+import { Result } from "../Models/Core/Result"
+import { type Token, type ValueToken } from "../Models/Core/Token"
+import { type TokenType } from "../Models/Core/TokenType"
+import { type StringCollectionDelegate } from "../Models/Parsing/StringCollectionDelegate"
+import { type EquationTokenParserDelegate } from "../Models/Parsing/TokenParserDelegate"
+import { BracketInfo } from "../Models/TreeBuilding/BracketInfo"
+import { type ParseTreeResult } from "../Models/TreeBuilding/ParseTreeResult"
+import { type TreeBuilderTriggerTypes } from "../Models/TreeBuilding/TreeBuilderTriggerTypes"
+import { type TreeBuildingError } from "../Models/TreeBuilding/TreeBuildingError"
+
+
+export function parseTree(
+  equation: string,
+  nameGenerator: () => string,
+  builderTriggers: TreeBuilderTriggerTypes,
+  tokenTypesToParse: TokenType[],
+  parseEquationCallback: EquationTokenParserDelegate,
+  stringCollectionDelegate: StringCollectionDelegate
+): Result<ParseTreeResult> {
+  console.groupCollapsed(`ParseTree`, equation);
+
+  console.log(
+    "equation:", equation,
+    "nameGenerator:", nameGenerator,
+    "builderTriggers:", builderTriggers,
+    "parseEquationCallback:", parseEquationCallback,
+    "stringCollectionDelegate:", stringCollectionDelegate
+  )
+
+  //#region validations
+  if (equation.length === 0) {
+    return Result.Fail("Equation must not be empty")
+  }
+
+  const triggerTypes = Object.values(builderTriggers)
+  const uniqueTypes = new Set(triggerTypes);
+  if (triggerTypes.length !== uniqueTypes.size) {
+    return Result.Fail("Configuration error: Trigger types must be distinct (not the same object)");
+  }
+
+  const notFoundTokenType = triggerTypes.find(trigger => !tokenTypesToParse.includes(trigger))
+  if (notFoundTokenType) {
+    return Result.Fail("Configuration error: Trigger types must be in tokenTypesToParse");
+  }
+  //#endregion
+
+  const entryPointName = nameGenerator()
+  const stack: DoubleLinkedListClass<BracketInfo> = new DoubleLinkedListClass<BracketInfo>()
+  stack.push(BracketInfo.createBracketInfo(entryPointName, 0))
+
+
+  const eqMap = new Map<string, BracketInfo>()
+  const topStackIndex = stack.length - 1
+  const stackGetByIndexResult = stack.getByIndex(topStackIndex)
+  if (!stackGetByIndexResult){
+    return Result.Fail(`Couldn't get stack value by index ${topStackIndex}`)
+  }
+
+  eqMap.set(entryPointName, stackGetByIndexResult)
+
+  const treeBuildingError = { error: null }
+  const onTokenParsed = createOnTokenParsedDelegate(stack, eqMap, nameGenerator, builderTriggers, treeBuildingError)
+
+  const parseTokensResult = parseEquationCallback(equation, onTokenParsed, tokenTypesToParse, stringCollectionDelegate)
+  if (!parseTokensResult.Success) {
+    return parseTokensResult
+  }
+
+  if (treeBuildingError.error){
+    return Result.Fail(treeBuildingError.error)
+  }
+
+  console.log("parsedTokens:", parseTokensResult)
+  console.log("stack:", stack)
+  console.log("eqMap", eqMap)
+
+  console.groupEnd()
+  return Result.Success({ eqMap, entryPointName })
+}
+
+function createOnTokenParsedDelegate(
+  stack: DoubleLinkedListClass<BracketInfo>,
+  eqMap: Map<string, BracketInfo>,
+  nameGenerationCallback: () => string,
+  builderTriggers: TreeBuilderTriggerTypes,
+  errorContainer: TreeBuildingError
+): (arg: Token) => void {
+
+  return (token: Token) => {
+    console.log("Token parsed:", token)
+    if (errorContainer.error) {
+      return
+    }
+
+    const isOpenBracket = token.type === builderTriggers.OpenBracket
+    if (isOpenBracket) {
+      const newStackName = nameGenerationCallback()
+      const stackValueToPush = BracketInfo.createBracketInfo(newStackName, token.initStringIndex)
+
+      stack.push(stackValueToPush)
+      eqMap.set(newStackName, stackValueToPush)
+
+      console.log("Pushed stack value:", stackValueToPush)
+
+      const tokenToPushIntoParent: ValueToken<string> = {
+        ...token,
+        fromString: newStackName,
+        type: builderTriggers.TypeUsedForAliases,
+        value: newStackName 
+      }
+
+      const parentStackIndex = stack.length - 2
+      const parentStackValue = stack.getByIndex(parentStackIndex)
+      if (!parentStackValue){
+        return errorContainer.error = `Couldn't get parent value from stack at index ${parentStackIndex}`
+      }
+      
+      parentStackValue.content.push(tokenToPushIntoParent)
+      parentStackValue.children.push(tokenToPushIntoParent.fromString)
+    }
+
+    const topStackIndex = stack.length - 1
+    const topStackValue = stack.getByIndex(topStackIndex)
+    if (!topStackValue){
+      return errorContainer.error = `Couldn't get top stack value at index ${topStackIndex}`
+    }
+
+    topStackValue.content.push(token)
+
+    if (!isOpenBracket && token.type === builderTriggers.ClosedBracket) {
+      if (stack.length <= 1) {
+        return errorContainer.error = `Bracket mismatch at index ${token.initStringIndex}`
+      }
+
+      stack.removeRange(stack.length - 1, 1)
+    }
+  }
+}

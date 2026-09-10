@@ -1,4 +1,5 @@
 import { tokenTypes } from "./Constants/Types/TokenTypes"
+import { Result } from "./Models/Core/Result"
 import type { Token, ValueToken } from "./Models/Core/Token"
 import type { PrevalidationResult } from "./Models/EquationCalculation/PrevalidationResult"
 
@@ -14,55 +15,47 @@ export const handleUnarOperation = (
   equation: Token[],
   prevalidationResult: PrevalidationResult,
   handler: (arg: number) => number
-): ValueToken<number> => {
-  console.log("handleFunction", "equation", equation, "prevalidationResult", prevalidationResult, "handler:", handler)
-
+): Result<ValueToken<number>> => {
   if (!prevalidationResult || !equation
     || prevalidationResult.argumentIndexes.length !== 1
     || equation.length <= prevalidationResult.argumentIndexes[0]) {
-    throw Error("Couldn't handle operation", { cause: { equation, prevalidationResult } })
+    return Result.Fail("Couldn't handle unary operation: invalid prevalidation result or equation")
   }
 
   const argument = equation[prevalidationResult.argumentIndexes[0]]
-
-  console.log("Argument for handleFunc:", argument);
-
   if (!argument) {
-    throw Error("Couldn't handle operation", { cause: { equation, prevalidationResult } })
+    return Result.Fail("Couldn't handle unary operation: argument not found")
   }
 
   const isInstanceResult = tokenTypes.NumberTokenType.isInstance(argument)
   if (!isInstanceResult.success) {
-    throw Error("Couldn't handle operation", { cause: { equation, prevalidationResult } })
+    return Result.Fail("Couldn't handle unary operation: argument is not a number token")
   }
 
   const calculationResult = handler(isInstanceResult.result.value)
-
   const fromSlice = getTokensRangeViaPrevalidationResult(equation, prevalidationResult)
 
-  return {
+  return Result.Success({
     type: tokenTypes.NumberTokenType,
     value: calculationResult,
     initStringIndex: prevalidationResult.operationStartIndex,
     fromString: fromSlice.map(s => s.fromString).join("")
-  }
+  })
 }
 
 export const handleBinarOperation = (
   equation: Token[],
   prevalidationResult: PrevalidationResult,
   handler: (arg1: number, arg2: number) => number
-): ValueToken<number> => {
-  console.log("handleBinarOperation", "equation", equation, "prevalidationResult", prevalidationResult)
-
+): Result<ValueToken<number>> => {
   if (!handler || handler.length !== 2) {
-    throw Error("Invalid handler")
+    return Result.Fail("Invalid binary handler")
   }
 
   if (!prevalidationResult || !equation
     || prevalidationResult.argumentIndexes.length !== 2
     || equation.length <= prevalidationResult.argumentIndexes[1]) {
-    throw Error("Invalid location of operator or arguments")
+    return Result.Fail("Invalid location of operator or arguments")
   }
 
   const argsAsValueTokens: ValueToken<number>[] = []
@@ -70,27 +63,24 @@ export const handleBinarOperation = (
     const argument = equation[index]
 
     if (!argument) {
-      console.log("Couldn't handle operation", argument, prevalidationResult.argumentIndexes, index)
-      throw Error("Invalid arguments")
+      return Result.Fail("Invalid arguments: argument not found")
     }
 
     const isInstanceResult = tokenTypes.NumberTokenType.isInstance(argument)
     if (!isInstanceResult.success) {
-      console.log("Couldn't handle operation", argument, prevalidationResult.argumentIndexes, index)
-      throw Error("Invalid arguments")
+      return Result.Fail("Invalid arguments: argument is not a number token")
     }
 
     argsAsValueTokens.push(isInstanceResult.result)
   }
 
   const calculationResult = handler(argsAsValueTokens[0].value, argsAsValueTokens[1].value)
-
   const fromSlice = getTokensRangeViaPrevalidationResult(equation, prevalidationResult)
 
-  return {
+  return Result.Success({
     type: tokenTypes.NumberTokenType,
     value: calculationResult,
     initStringIndex: prevalidationResult.operationStartIndex,
     fromString: fromSlice.map(s => s.fromString).join("")
-  }
+  })
 }

@@ -1,4 +1,3 @@
-import { DoubleLinkedListClass } from "../IndexedCollections/DoubleLinkedListClass"
 import { Result } from "../Models/Core/Result"
 import { type Token, type ValueToken } from "../Models/Core/Token"
 import { type TokenType } from "../Models/Core/TokenType"
@@ -85,8 +84,8 @@ function createOnTokenParsedDelegate(
       return
     }
 
-    const isOpenBracket = token.type === builderTriggers.OpenBracket
-    const isClosedBracket = token.type === builderTriggers.ClosedBracket
+    const isOpenBracket = builderTriggers.OpenBracket.isInstance(token).success
+    const isClosedBracket = builderTriggers.ClosedBracket.isInstance(token).success
 
     if (isOpenBracket) {
       const newStackName = nameGenerationCallback()
@@ -119,11 +118,23 @@ function createOnTokenParsedDelegate(
 
     let tokenToPush = token
     
-    if (token.type === tokenTypes.SpecSymbolTokenType && token.value === "-") {
+    const specSymbolCheck = tokenTypes.SpecSymbolTokenType.isInstance(token)
+    if (specSymbolCheck.success && specSymbolCheck.result.value === "-") {
       const lastToken = topBracket.content.tailValue
+      let lastTokenValue: string | null = null
+      if (lastToken) {
+        for (const opType of [tokenTypes.WordTokenType, tokenTypes.SpecSymbolTokenType]) {
+          const check = opType.isInstance(lastToken)
+          if (check.success) {
+            lastTokenValue = check.result.value
+            break
+          }
+        }
+      }
+
       const isUnary = !lastToken || 
-                     lastToken.type === builderTriggers.OpenBracket || 
-                     operatorsPriorityMap.has((lastToken as any).value)
+                     builderTriggers.OpenBracket.isInstance(lastToken).success || 
+                     (lastTokenValue !== null && operatorsPriorityMap.has(lastTokenValue))
 
       if (isUnary) {
         tokenToPush = { ...token, type: tokenTypes.WordTokenType, value: "unary-" } as any
@@ -132,7 +143,16 @@ function createOnTokenParsedDelegate(
 
     topBracket.content.push(tokenToPush)
     
-    const priority = operatorsPriorityMap.get((tokenToPush as any).value)
+    let tokenToPushValue: string | null = null
+    for (const opType of [tokenTypes.WordTokenType, tokenTypes.SpecSymbolTokenType]) {
+      const check = opType.isInstance(tokenToPush)
+      if (check.success) {
+        tokenToPushValue = check.result.value
+        break
+      }
+    }
+
+    const priority = tokenToPushValue !== null ? operatorsPriorityMap.get(tokenToPushValue) : undefined
     if (priority !== undefined) {
       const iter = topBracket.content.GetTailIterator()
       if (iter) {
